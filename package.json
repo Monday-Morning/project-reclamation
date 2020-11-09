@@ -5,10 +5,10 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "pm2 start ecosystem.config.js --env production",
+    "start": "npx pm2 start ecosystem.config.js --env production",
     "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
-    "dev": "pm2 start ecosystem.config.js --env development",
-    "stage": "pm2 start ecosystem.config.js --env staging"
+    "dev": "npx pm2 start ecosystem.config.js --env development",
+    "stage": "npx pm2 start ecosystem.config.js --env staging"
   },
   "repository": {
     "type": "git",
@@ -38,5 +38,27 @@
   "bugs": {
     "url": "https://github.com/Monday-Morning/project-reclamation/issues"
   },
-  "homepage": "https://github.com/Monday-Morning/project-reclamation#readme"
+  "homepage": "https://github.com/Monday-Morning/project-reclamation#readme",
+  "dependencies": {
+    "apollo-server-express": "^2.19.0",
+    "connect-mongodb-session": "^2.4.1",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "csurf": "^1.11.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "firebase-admin": "^9.3.0",
+    "graphql": "^15.4.0",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-type-json": "^0.3.2",
+    "https": "^1.0.0",
+    "mongoose": "^5.10.13",
+    "pm2": "^4.5.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "errorhandler": "^1.5.1",
+    "mocha": "^8.2.1"
+  }
 }
