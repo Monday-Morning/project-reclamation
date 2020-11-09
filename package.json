@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
+  "type": "module",
   "scripts": {
-    "start": "SET NODE_ENV=production && pm2 start ecosystem.config.js",
-    "test": "SET NODE_ENV=test && npx mocha --reporter spec",
-    "start-dev": "SET NODE_ENV=development && npx nodemon app.js"
+    "start": "pm2 start ecosystem.config.js --env production",
+    "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
+    "dev": "pm2 start ecosystem.config.js --env development",
+    "stage": "pm2 start ecosystem.config.js --env staging"
   },
   "repository": {
     "type": "git",
