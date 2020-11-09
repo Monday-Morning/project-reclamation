@@ -1,0 +1,40 @@
+{
+  "name": "project-reclamation",
+  "version": "0.1.0",
+  "description": "The Server Application for Monday Morning under Project Infinity",
+  "main": "app.js",
+  "scripts": {
+    "start": "SET NODE_ENV=production && pm2 start ecosystem.config.js",
+    "test": "SET NODE_ENV=test && npx mocha --reporter spec",
+    "start-dev": "SET NODE_ENV=development && npx nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Monday-Morning/project-reclamation.git"
+  },
+  "keywords": [
+    "monday",
+    "morning",
+    "project",
+    "reclamation",
+    "infinity",
+    "server",
+    "node",
+    "nodejs",
+    "js",
+    "express",
+    "mongo",
+    "mongodb",
+    "fb",
+    "firebase",
+    "graphql",
+    "rest",
+    "api"
+  ],
+  "author": "MM Tech Team 2020-21",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/Monday-Morning/project-reclamation/issues"
+  },
+  "homepage": "https://github.com/Monday-Morning/project-reclamation#readme"
+}
