@@ -27,6 +27,32 @@ $ cd project-reclamation
 $ npm install
 ```
 
+### To Run
+
+- Development
+
+```bash
+$ npm run dev
+```
+
+- Testing
+
+```bash
+$ npm run test
+```
+
+- Staging
+
+```bash
+$ npm run stage
+```
+
+- Production
+
+```bash
+$ npm start
+```
+
 ## Contributing
 
 ### Git Workflow
