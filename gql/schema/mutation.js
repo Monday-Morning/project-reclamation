@@ -14,7 +14,7 @@ const {
   GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel } = require('../gql_models');
+const { UserModel } = require('../models');
 const { updateUserByEmail, updateUserById, deleteUser } = require('../resolvers');
 
 const Mutation = new GraphQLObjectType({

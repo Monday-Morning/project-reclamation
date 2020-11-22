@@ -1,4 +1,4 @@
-const { PrivacySettingDB } = require('../mdb_models');
+const { PrivacySettingDB } = require('../../mdb/models');
 
 const readPrivacySetting = async (parents, args, context, info) => {
   try {

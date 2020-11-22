@@ -1,5 +1,5 @@
 const { auth } = require('../config/firebase');
-const { PrivacySettingDB, UserDB } = require('../mdb_models');
+const { PrivacySettingDB, UserDB } = require('../mdb/models');
 const https = require('https');
 
 module.exports.local = async (req, res, next) => {

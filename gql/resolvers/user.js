@@ -1,4 +1,4 @@
-const { UserDB, PrivacySettingDB } = require('../models');
+const { UserDB, PrivacySettingDB } = require('../../mdb/models');
 const { GraphQLError } = require('../scalars');
 const mongoose = require('mongoose');
 
