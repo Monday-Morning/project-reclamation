@@ -5,10 +5,10 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "npx pm2 start ecosystem.config.js --env production",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
     "dev": "npx pm2 start ecosystem.config.js --env development",
-    "stage": "npx pm2 start ecosystem.config.js --env staging"
+    "stage": "pm2-runtime start ecosystem.config.js --env staging"
   },
   "repository": {
     "type": "git",
@@ -52,13 +52,13 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
     "https": "^1.0.0",
-    "mongoose": "^5.10.13",
-    "pm2": "^4.5.0"
+    "mongoose": "^5.10.13"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "errorhandler": "^1.5.1",
-    "mocha": "^8.2.1"
+    "mocha": "^8.2.1",
+    "pm2": "^4.5.0"
   }
 }

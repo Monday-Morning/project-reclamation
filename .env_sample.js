@@ -22,7 +22,7 @@ module.exports = {
   },
   env_staging: {
     NODE_ENV: 'staging',
-    PORT: 80,
+    PORT: 3000,
     SESSION_SECRET: 'RANDOM-SESSION-SECRET',
     SESSION_KEY: 'RANDOM-SESSION-KEY',
     MONGO_SESSION_URL:
@@ -42,7 +42,7 @@ module.exports = {
   },
   env_production: {
     NODE_ENV: 'production',
-    PORT: 80,
+    PORT: 3000,
     SESSION_SECRET: 'RANDOM-SESSION-SECRET',
     SESSION_KEY: 'RANDOM-SESSION-KEY',
     MONGO_SESSION_URL:

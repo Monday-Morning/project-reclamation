@@ -526,3 +526,4 @@ MigrationBackup/
 .gitsecret/keys/random_seed
 !*.secret
 .env.js
+.vscode/launch.json
