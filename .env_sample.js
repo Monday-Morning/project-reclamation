@@ -1,0 +1,63 @@
+module.exports = {
+  env_development: {
+    NODE_ENV: 'development',
+    PORT: 3000,
+    SESSION_SECRET: 'RANDOM-SESSION-SECRET',
+    SESSION_KEY: 'RANDOM-SESSION-KEY',
+    MONGO_SESSION_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    MONGO_APP_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    FIREBASE_PROJECT_ID: 'PROJECT-ID',
+    FIREBASE_KEY_ID: 'KEY-ID',
+    FIREBASE_PRIVATE_KEY: 'PRIVATE-KEY',
+    FIREBASE_CLIENT_EMAIL: 'SERVICE-ACCOUNT-EMAIL',
+    FIREBASE_CLIENT_ID: 'CLIENT-ID',
+    FIREBASE_AUTH_URI: 'https://accounts.google.com/o/oauth2/auth',
+    FIREBASE_TOKEN_URI: 'https://oauth2.googleapis.com/token',
+    FIREBASE_AUTH_PROVIDER_CERT_URL: 'https://www.googleapis.com/oauth2/v1/certs',
+    FIREBASE_CLIENT_CERT_URL: 'https://www.googleapis.com/robot/v1/metadata/x509/SERVICE-ACCOUNT-EMAIL',
+    GCP_STORAGE_BUCKET: 'development.PROJECT-ID.appspot.com',
+    TEST_AUTH_KEY: 'some-sample-jwt-token',
+  },
+  env_staging: {
+    NODE_ENV: 'staging',
+    PORT: 80,
+    SESSION_SECRET: 'RANDOM-SESSION-SECRET',
+    SESSION_KEY: 'RANDOM-SESSION-KEY',
+    MONGO_SESSION_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    MONGO_APP_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    FIREBASE_PROJECT_ID: 'PROJECT-ID',
+    FIREBASE_KEY_ID: 'KEY-ID',
+    FIREBASE_PRIVATE_KEY: 'PRIVATE-KEY',
+    FIREBASE_CLIENT_EMAIL: 'SERVICE-ACCOUNT-EMAIL',
+    FIREBASE_CLIENT_ID: 'CLIENT-ID',
+    FIREBASE_AUTH_URI: 'https://accounts.google.com/o/oauth2/auth',
+    FIREBASE_TOKEN_URI: 'https://oauth2.googleapis.com/token',
+    FIREBASE_AUTH_PROVIDER_CERT_URL: 'https://www.googleapis.com/oauth2/v1/certs',
+    FIREBASE_CLIENT_CERT_URL: 'https://www.googleapis.com/robot/v1/metadata/x509/SERVICE-ACCOUNT-EMAIL',
+    GCP_STORAGE_BUCKET: 'staging.PROJECT-ID.appspot.com',
+  },
+  env_production: {
+    NODE_ENV: 'production',
+    PORT: 80,
+    SESSION_SECRET: 'RANDOM-SESSION-SECRET',
+    SESSION_KEY: 'RANDOM-SESSION-KEY',
+    MONGO_SESSION_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    MONGO_APP_URL:
+      'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
+    FIREBASE_PROJECT_ID: 'PROJECT-ID',
+    FIREBASE_KEY_ID: 'KEY-ID',
+    FIREBASE_PRIVATE_KEY: 'PRIVATE-KEY',
+    FIREBASE_CLIENT_EMAIL: 'SERVICE-ACCOUNT-EMAIL',
+    FIREBASE_CLIENT_ID: 'CLIENT-ID',
+    FIREBASE_AUTH_URI: 'https://accounts.google.com/o/oauth2/auth',
+    FIREBASE_TOKEN_URI: 'https://oauth2.googleapis.com/token',
+    FIREBASE_AUTH_PROVIDER_CERT_URL: 'https://www.googleapis.com/oauth2/v1/certs',
+    FIREBASE_CLIENT_CERT_URL: 'https://www.googleapis.com/robot/v1/metadata/x509/SERVICE-ACCOUNT-EMAIL',
+    GCP_STORAGE_BUCKET: 'PROJECT-ID.appspot.com',
+  },
+};
