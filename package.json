@@ -7,7 +7,9 @@
     "start": "pm2-runtime start ecosystem.config.js --env production",
     "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
     "dev": "npx pm2 start ecosystem.config.js --env development",
-    "stage": "pm2-runtime start ecosystem.config.js --env staging"
+    "stage": "pm2-runtime start ecosystem.config.js --env staging",
+    "stop": "pm2-runtime stop all && pm2-runtime kill",
+    "stop-dev": "npx pm2 kill"
   },
   "repository": {
     "type": "git",
