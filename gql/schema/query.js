@@ -1,71 +1,106 @@
 const {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLID,
-  GraphQLList,
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLDate,
-  GraphQLTime,
-  GraphQLDateTime,
-  GraphQLJSON,
-  GraphQLJSONObject,
+    GraphQLObjectType,
+    GraphQLString,
+    GraphQLSchema,
+    GraphQLID,
+    GraphQLList,
+    GraphQLBoolean,
+    GraphQLInt,
+    GraphQLNonNull,
+    GraphQLDate,
+    GraphQLTime,
+    GraphQLDateTime,
+    GraphQLJSON,
+    GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel } = require('../models');
+const { UserModel, ArticleModel, TagModel } = require('../models');
 const { readUserByEmail, readUserById } = require('../resolvers');
+const article = require('../models/article');
 
 const Query = new GraphQLObjectType({
-  name: 'Query',
-  fields: {
-    user: {
-      type: UserModel,
-      args: {
-        id: { type: GraphQLID },
-        email: { type: GraphQLString },
-      },
-      async resolve(parent, args) {
-        let userRecord;
-        if (args !== null && args !== undefined && args.id !== null && args.id !== undefined)
-          userRecord = await readUserById(parent, args);
-        else if (args !== null && args !== undefined && args.email !== null && args.email !== undefined)
-          userRecord = await readUserByEmail(parent, args);
-        else {
-          return {
-            id: 'NoID',
-            error: 'No Arguments Passed!',
-            isError: true,
-            code: 400,
-            docsCount: 0,
-          };
+    name: 'Query',
+    fields: {
+        user: {
+            type: UserModel,
+            args: {
+                id: { type: GraphQLID },
+                email: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                let userRecord;
+                if (args !== null && args !== undefined && args.id !== null && args.id !== undefined)
+                    userRecord = await readUserById(parent, args);
+                else if (args !== null && args !== undefined && args.email !== null && args.email !== undefined)
+                    userRecord = await readUserByEmail(parent, args);
+                else {
+                    return {
+                        id: 'NoID',
+                        error: 'No Arguments Passed!',
+                        isError: true,
+                        code: 400,
+                        docsCount: 0,
+                    };
+                }
+                return userRecord;
+            },
+        },
+        users: {
+            type: GraphQLList(UserModel),
+            args: {
+                limit: { type: GraphQLInt },
+                offset: { type: GraphQLInt },
+            },
+            async resolve(parent, args) {
+                if (!args.limit) {
+                    args.limit = 10;
+                }
+                if (!args.offset) {
+                    args.offset = 10;
+                }
+                return await readUsers(parent, args);
+            },
+        },
+        article: {
+            type: ArticleModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        },
+        articles: {
+            type: GraphQLList(ArticleModel),
+            args: {
+                // TODO: arguments to be decided
+                offset: { type: GraphQLInt },
+                category: { type: GraphQLInt },
+
+            },
+            async resolve(parent, args) {
+                //code to be written
+            }
+        },
+        tag: {
+            type: TagModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        },
+        tags: {
+            type: GraphQLList(TagModel),
+            args: {
+                // to be decided
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
         }
-        return userRecord;
-      },
     },
-    users: {
-      type: GraphQLList(UserModel),
-      args: {
-        limit: { type: GraphQLInt },
-        offset: { type: GraphQLInt },
-      },
-      async resolve(parent, args) {
-        if (agrs === null || args === undefined)
-          args = {
-            limit: 10,
-            offset: 0,
-          };
-        if (args.limit === null || args.limit === undefined) {
-          args.limit = 10;
-        }
-        if (args.offset === null || args.offset === undefined) {
-          args.offset = 10;
-        }
-        return await readUsers(parent, args);
-      },
-    },
-  },
 });
 
 module.exports = Query;
