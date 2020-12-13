@@ -1,0 +1,26 @@
+<html>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    Collection Relationship
+    <div class="mermaid">
+      stateDiagram-v2
+			articles --> users: 1toN
+			users --> articles: 1toN
+			articles --> tags: 1toN
+			articles --> reactions: 1toN
+			articles --> comments: 1toN
+			reactions --> users: Nto1
+			comments --> users: Nto1
+			roles --> users: Nto1
+			permissions --> roles: Nto1
+			pulse --> users: Nto1
+			issues --> articles: 1toN
+			session --> issues: 1toN
+			clubs --> users: 1toN
+			events --> clubs: Nto1
+			media --> users: Nto1
+			media --> articles: Nto1
+    </div>
+  </body>
+</html>
