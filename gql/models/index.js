@@ -17,6 +17,7 @@ const HolidayModel = require('./holiday');
 const PollModel = require('./poll');
 const ReactionModel = require('./reaction');
 const CompanyModel = require('./company');
+const IssueModel = require('./issue');
 
 module.exports = {
     PrivacySettingModel,
@@ -38,4 +39,5 @@ module.exports = {
     PollModel,
     ReactionModel,
     CompanyModel,
+    IssueModel,
 };
