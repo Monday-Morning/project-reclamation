@@ -7,6 +7,7 @@ const EventModel = require('./event');
 const PlacementModel = require('./placement');
 const RoleModel = require('./role');
 const PhotoJournalismModel = require('./photojournalism');
+const SquiggleModel = require('./squiggle');
 
 module.exports = {
     PrivacySettingModel,
@@ -17,5 +18,6 @@ module.exports = {
     EventModel,
     PlacementModel,
     RoleModel,
-    PhotoJournalismModel
+    PhotoJournalismModel,
+    SquiggleModel
 };
