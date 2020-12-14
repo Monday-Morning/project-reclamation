@@ -14,7 +14,7 @@ const {
     GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel, ArticleModel, TagModel } = require('../models');
+const { UserModel, ArticleModel, TagModel, ClubModel } = require('../models');
 const { readUserByEmail, readUserById } = require('../resolvers');
 const article = require('../models/article');
 
@@ -99,8 +99,25 @@ const Query = new GraphQLObjectType({
             async resolve(parents, args) {
                 //code to be written
             }
-        }
+        },
+        club: {
+            type: ClubModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
+            async resolve(parents, args) {
+                //code to be written
+            },
+        },
+        clubs: {
+            type: GraphQLList(ClubModel),
+            args: {
+                // To be decided
+            }
+        },
+
+
     },
 });
-
+//code to be written
 module.exports = Query;
