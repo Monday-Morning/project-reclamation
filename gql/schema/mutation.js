@@ -14,7 +14,7 @@ const {
     GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel } = require('../models');
+const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel, RoleModel } = require('../models');
 const { updateUserByEmail, updateUserById, deleteUser } = require('../resolvers');
 
 const Mutation = new GraphQLObjectType({
@@ -140,6 +140,24 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parents, args) {
                 return await deletePlacement(parents, args);
+            }
+        },
+        updateRole: {
+            type: RoleModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                return await updateRole(parents, args);
+            }
+        },
+        deleteRole: {
+            type: RoleModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                return await deleteRole(parents, args);
             }
         },
     },
