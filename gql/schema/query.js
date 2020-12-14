@@ -14,7 +14,7 @@ const {
     GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel, RoleModel, PhotoJournalismModel, SquiggleModel, AlbumModel, ForumModel, SubscriberModel, CommentModel, InternshipModel, HolidayModel, PollModel, ReactionModel } = require('../models');
+const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel, RoleModel, PhotoJournalismModel, SquiggleModel, AlbumModel, ForumModel, SubscriberModel, CommentModel, InternshipModel, HolidayModel, PollModel, ReactionModel, CompanyModel } = require('../models');
 const { readUserByEmail, readUserById } = require('../resolvers');
 const article = require('../models/article');
 
@@ -327,6 +327,24 @@ const Query = new GraphQLObjectType({
         },
         reactions: {
             type: GraphQLList(ReactionModel),
+            args: {
+                // To be decided
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        },
+        company: {
+            type: CompanyModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        },
+        companies: {
+            type: GraphQLList(CompanyModel),
             args: {
                 // To be decided
             },

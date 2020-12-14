@@ -14,7 +14,7 @@ const {
     GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel, RoleModel, PhotoJournalismModel, SquiggleModel, AlbumModel, SubscriberModel, CommentModel, InternshipModel, HolidayModel, PollModel, ReactionModel } = require('../models');
+const { UserModel, ArticleModel, TagModel, ClubModel, EventModel, PlacementModel, RoleModel, PhotoJournalismModel, SquiggleModel, AlbumModel, SubscriberModel, CommentModel, InternshipModel, HolidayModel, PollModel, ReactionModel, CompanyModel } = require('../models');
 const { updateUserByEmail, updateUserById, deleteUser } = require('../resolvers');
 
 const Mutation = new GraphQLObjectType({
@@ -321,6 +321,24 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parents, args) {
                 return await deleteReaction(parents, args);
+            }
+        },
+        updateCompany: {
+            type: CompanyModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                return await updateCompany(parents, args);
+            }
+        },
+        deleteCompany: {
+            type: CompanyModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                return await deleteCompany(parents, args);
             }
         },
     },
