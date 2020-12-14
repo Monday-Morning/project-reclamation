@@ -12,6 +12,7 @@ const AlbumModel = require('./album');
 const ForumModel = require('./forum');
 const SubscriberModel = require('./subscriber');
 const CommentModel = require('./comment');
+const InternshipModel = require('./internship');
 
 module.exports = {
     PrivacySettingModel,
@@ -28,4 +29,5 @@ module.exports = {
     ForumModel,
     SubscriberModel,
     CommentModel,
+    InternshipModel
 };
