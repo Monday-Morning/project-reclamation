@@ -13,6 +13,7 @@ const ForumModel = require('./forum');
 const SubscriberModel = require('./subscriber');
 const CommentModel = require('./comment');
 const InternshipModel = require('./internship');
+const HolidayModel = require('./holiday');
 
 module.exports = {
     PrivacySettingModel,
@@ -29,5 +30,6 @@ module.exports = {
     ForumModel,
     SubscriberModel,
     CommentModel,
-    InternshipModel
+    InternshipModel,
+    HolidayModel
 };
