@@ -19,6 +19,7 @@ const ReactionModel = require('./reaction');
 const CompanyModel = require('./company');
 const IssueModel = require('./issue');
 const PollVoteModel = require('./pollVote');
+const SocialPostModel = require('./socialPost');
 
 module.exports = {
     PrivacySettingModel,
@@ -42,4 +43,5 @@ module.exports = {
     CompanyModel,
     IssueModel,
     PollVoteModel,
+    SocialPostModel,
 };
