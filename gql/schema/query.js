@@ -14,7 +14,7 @@ const {
     GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel, ArticleModel, TagModel, ClubModel } = require('../models');
+const { UserModel, ArticleModel, TagModel, ClubModel, EventModel } = require('../models');
 const { readUserByEmail, readUserById } = require('../resolvers');
 const article = require('../models/article');
 
@@ -113,9 +113,29 @@ const Query = new GraphQLObjectType({
             type: GraphQLList(ClubModel),
             args: {
                 // To be decided
+            },
+            async resolve(parents, args) {
+                //code to be written
             }
         },
-
+        event: {
+            type: EventModel,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) }
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        },
+        events: {
+            type: GraphQLList(EventModel),
+            args: {
+                // To be decided
+            },
+            async resolve(parents, args) {
+                //code to be written
+            }
+        }
 
     },
 });

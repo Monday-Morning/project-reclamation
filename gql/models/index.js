@@ -3,6 +3,7 @@ const UserModel = require('./user');
 const ArticleModel = require('./article');
 const TagModel = require('./tag');
 const ClubModel = require('./club');
+const EventModel = require('./event');
 
 module.exports = {
     PrivacySettingModel,
@@ -10,4 +11,5 @@ module.exports = {
     ArticleModel,
     TagModel,
     ClubModel,
+    EventModel,
 };

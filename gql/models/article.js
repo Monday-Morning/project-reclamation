@@ -21,7 +21,7 @@ const { readPrivacySetting } = require('../resolvers');
 
 const { bucket } = require('../../config/firebase');
 const User = require('../../mdb/models/user');
-const tags = require('./tags');
+const tags = require('./tag');
 
 
 function Article() {
