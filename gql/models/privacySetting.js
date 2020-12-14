@@ -3,15 +3,15 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLID,
-  GraphQLList,
+  // GraphQLList,
   GraphQLBoolean,
   GraphQLInt,
-  GraphQLNonNull,
-  GraphQLDate,
-  GraphQLTime,
+  // GraphQLNonNull,
+  // GraphQLDate,
+  // GraphQLTime,
   GraphQLDateTime,
-  GraphQLJSON,
-  GraphQLJSONObject,
+  // GraphQLJSON,
+  // GraphQLJSONObject,
 } = require('../scalars');
 
 module.exports = PrivacySetting();
