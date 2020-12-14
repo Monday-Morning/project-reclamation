@@ -10,6 +10,7 @@ const PhotoJournalismModel = require('./photojournalism');
 const SquiggleModel = require('./squiggle');
 const AlbumModel = require('./album');
 const ForumModel = require('./forum');
+const SubscriberModel = require('./subscriber');
 
 module.exports = {
     PrivacySettingModel,
@@ -24,4 +25,5 @@ module.exports = {
     SquiggleModel,
     AlbumModel,
     ForumModel,
+    SubscriberModel,
 };
