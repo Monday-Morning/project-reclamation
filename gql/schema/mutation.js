@@ -214,6 +214,7 @@ const Mutation = new GraphQLObjectType({
                 return await deleteAlbum(parents, args);
             }
         },
+        // Mutation for forum to be decided
     },
 });
 
