@@ -11,6 +11,7 @@ const SquiggleModel = require('./squiggle');
 const AlbumModel = require('./album');
 const ForumModel = require('./forum');
 const SubscriberModel = require('./subscriber');
+const CommentModel = require('./comment');
 
 module.exports = {
     PrivacySettingModel,
@@ -26,4 +27,5 @@ module.exports = {
     AlbumModel,
     ForumModel,
     SubscriberModel,
+    CommentModel,
 };
