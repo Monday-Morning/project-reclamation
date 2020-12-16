@@ -1,0 +1,26 @@
+stateDiagram-v2
+	articles --> users: 1toN & Nto1
+	articles --> tags: 1toN
+	articles --> reactions: 1toN
+	articles --> comments: 1toN
+	reactions --> users: Nto1
+	comments --> users: Nto1
+	users --> roles: 1toN
+	roles --> permissions: 1toN
+	pollVotes --> polls: Nto1
+	issues --> articles: 1toN
+	issues --> session: Nto1
+	users --> clubs: Nto1
+	clubs --> events: 1toN
+	media --> users: Nto1
+	users --> forum: 1toN
+	media --> articles: Nto1
+	articles --> categories: 1toN
+	polls --> issues: Nto1
+	articles --> polls: 1to1
+	internships --> companies: Nto1
+	albums --> media: 1toN
+	users --> teams: Nto1
+	teams --> session: 1to1
+	placements --> companies: Nto1
+	users --> pollVotes: 1toN
