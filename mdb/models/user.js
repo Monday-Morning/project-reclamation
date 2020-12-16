@@ -3,6 +3,36 @@ const model = require('mongoose').model;
 
 const userSchema = new Schema(
   {
+    firstname: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    lastname: {
+      type: String,
+      trim: true,
+      required: false,
+      default: null,
+    },
+    username: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+      lowercase: true,
+    },
+    roles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Role',
+        required: true,
+      },
+    ],
     address: {
       type: String,
       required: false,
@@ -30,24 +60,7 @@ const userSchema = new Schema(
       max: [new Date(Date.now() - 12 * 365 * 24 * 60 * 60 * 1000), 'Age To Low'],
       default: new Date(946684800),
     },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
-      lowercase: true,
-    },
-    firstname: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    lastname: {
-      type: String,
-      trim: true,
-      required: false,
-      default: null,
-    },
+
     level: {
       type: Number,
       min: 1,
@@ -77,6 +90,21 @@ const userSchema = new Schema(
       trim: true,
       default: 'other',
       lowercase: true,
+      required: true,
+    },
+    schemaVersion: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
   },
