@@ -84,13 +84,13 @@ const UserSchema = new Schema(
     },
     contributions: [
       {
-        type: Schema.Types.Embedded,
+        type: Object,
         required: false,
       },
     ],
     positions: [
       {
-        type: Schema.Types.Embedded,
+        type: Object,
         require: false,
       },
     ],
