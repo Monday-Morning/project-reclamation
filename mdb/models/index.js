@@ -1,7 +1,5 @@
-const PrivacySettingDB = require('./privacySetting');
-const UserDB = require('./user');
+const UserModel = require('./user');
 
 module.exports = {
-  PrivacySettingDB,
-  UserDB,
+  UserModel,
 };
