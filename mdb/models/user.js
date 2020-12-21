@@ -35,7 +35,7 @@ const UserSchema = new Schema(
     },
     nitrMail: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@nitrkl\.ac\.in$/i,
       lowercase: true,
@@ -131,13 +131,8 @@ UserSchema.virtual('fullname')
     return this.firstName + ' ' + this.lastName;
   })
   .set(function (v) {
-    if (v.split(' ').length <= 1) {
-      this.firstName = v.split(' ')[0];
-      this.lastName = null;
-    } else {
-      this.firstName = v.substr(0, v.indexOf(' '));
-      this.lastName = v.substr(v.indexOf(' ') + 1);
-    }
+    this.firstName = v.split(' ')[0];
+    this.lastName = v.split(' ')[1] ? v.split(' ')[1] : null;
   });
 
 const UserModel = model('User', UserSchema);
