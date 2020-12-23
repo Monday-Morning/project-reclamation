@@ -53,7 +53,8 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
     "https": "^1.0.0",
-    "mongoose": "^5.10.13"
+    "mongoose": "^5.10.13",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
