@@ -9,7 +9,8 @@
     "dev": "npx pm2 start ecosystem.config.js --env development",
     "stage": "pm2-runtime start ecosystem.config.js --env staging",
     "stop": "pm2-runtime stop all && pm2-runtime kill",
-    "stop-dev": "npx pm2 kill"
+    "stop-dev": "npx pm2 kill",
+    "create:docs": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json . && npx jsdoc2md -c ./.jsdoc.conf.js -f ./* >> DOCS.md"
   },
   "repository": {
     "type": "git",
