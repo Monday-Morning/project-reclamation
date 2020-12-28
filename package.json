@@ -10,7 +10,7 @@
     "stage": "pm2-runtime start ecosystem.config.js --env staging",
     "stop": "pm2-runtime stop all && pm2-runtime kill",
     "stop-dev": "npx pm2 kill",
-    "create:docs": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json . && npx jsdoc2md -c ./.jsdoc.conf.js -f ./* >> DOCS.md"
+    "create:docs": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r . && npx jsdoc2md -c ./.jsdoc.conf.js -f ./*.js > ./docs/README.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./routes/*.js > ./docs/ROUTES.md"
   },
   "repository": {
     "type": "git",
