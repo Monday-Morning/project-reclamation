@@ -1,12 +1,30 @@
+/**
+ * @module app.models.role
+ * @description Role Model
+ *
+ * @requires mongoose.Schema
+ * @requires mongoose.model
+ *
+ * @version schema:v1
+ * @since 0.1.0
+ */
+
 const Schema = require('mongoose').Schema;
 const model = require('mongoose').model;
 
+/**
+ * @description The schema definition for Role Model
+ * @constant RoleSchema
+ *
+ * @type {Schema}
+ */
 const RoleSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     permissions: [
       {
@@ -40,6 +58,10 @@ const RoleSchema = new Schema(
   }
 );
 
-const RoleModel = model('Role', RoleSchema);
-
-module.exports = RoleModel;
+/**
+ * @description Generated Role Model
+ * @constant RoleModel
+ *
+ * @type {model}
+ */
+module.exports = model('Role', RoleSchema);

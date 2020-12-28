@@ -1,6 +1,23 @@
+/**
+ * @module app.models.user
+ * @description User Model
+ *
+ * @requires mongoose.Schema
+ * @requires mongoose.model
+ *
+ * @version schema:v1
+ * @since 0.1.0
+ */
+
 const Schema = require('mongoose').Schema;
 const model = require('mongoose').model;
 
+/**
+ * @description The schema definition for User Model
+ * @constant UserSchema
+ *
+ * @type {Schema}
+ */
 const UserSchema = new Schema(
   {
     firstName: {
@@ -19,7 +36,9 @@ const UserSchema = new Schema(
       trim: true,
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
       lowercase: true,
+      unique: true,
     },
+    /** @default reader */
     roles: [
       {
         type: Schema.Types.ObjectId,
@@ -27,6 +46,7 @@ const UserSchema = new Schema(
         required: true,
       },
     ],
+    /** @enum [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
     verifiedType: {
       type: Number,
       required: true,
@@ -44,50 +64,69 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      // TODO: add path to default neutral profile picture
-      default: '',
     },
+    /** Only For MM & NITR Faculty */
     bio: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM & NITR Faculty */
     facebook: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM & NITR Faculty */
     twitter: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM & NITR Faculty */
     instagram: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM & NITR Faculty */
     linkedin: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM & NITR Faculty */
     website: {
       type: String,
       required: false,
       trim: true,
     },
+    /** Only For MM Tech Team */
     github: {
       type: String,
       required: false,
       trim: true,
     },
+    /**
+     * Object {
+     * 	onModel: "Article" || "Media",
+     *	modelRef: Schema.Types.ObjectID
+     * }
+     */
     contributions: [
       {
         type: Object,
         required: false,
       },
     ],
+    /**
+     * Only For MM
+     * Object {
+     * 	type: {Number}[0 - Member, 1 - Coordinator, 3 - Mentor],
+     * 	team: {Number}[0 - Content, 1 - Technical, 2 - Design, 3 - Photography],
+     *	session: Number,
+     * }
+     */
     positions: [
       {
         type: Object,
@@ -126,7 +165,8 @@ const UserSchema = new Schema(
   }
 );
 
-UserSchema.virtual('fullname')
+/** Creating a virtual field - fullName */
+UserSchema.virtual('fullName')
   .get(function () {
     return this.firstName + ' ' + this.lastName;
   })
@@ -135,6 +175,10 @@ UserSchema.virtual('fullname')
     this.lastName = v.split(' ')[1] ? v.split(' ')[1] : null;
   });
 
-const UserModel = model('User', UserSchema);
-
-module.exports = UserModel;
+/**
+ * @description Generated User Model
+ * @constant UserModel
+ *
+ * @type {model}
+ */
+module.exports = model('User', UserSchema);
