@@ -133,7 +133,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 
 /**
  * @summary Main Apollo Server
- * @description initialize apollo server with required configration and attach schema
+ * @description initialize Apollo server with required configration and attach schema
  * @constant apolloServer
  *
  * @type {ApolloServer}
