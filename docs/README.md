@@ -29,30 +29,33 @@
 <a name="module_app"></a>
 
 ## app
+
 <p>The Node.js Application for Monday Morning's Project Infinity, codenamed Project Reclamation</p>
 
-**Requires**: <code>module:express</code>, <code>module:express-session</code>, <code>module:connect-mongodb-session</code>, <code>module:apollo-server-session</code>, <code>module:cookie-parser</code>, <code>module:csurf</code>, <code>module:cors</code>, <code>module:errorhandler</code>, <code>module:app.router</code>, <code>module:app.mongoose</code>, <code>module:app.firebase</code>  
+**Requires**: <code>module:express</code>, <code>module:express-session</code>, <code>module:connect-mongodb-session</code>, <code>module:apollo-server-session</code>, <code>module:cookie-parser</code>, <code>module:csurf</code>, <code>module:cors</code>, <code>module:errorhandler</code>, <code>module:app.router</code>, <code>module:app.mongoose</code>, <code>module:app.firebase</code>, <code>module:app.winston</code>  
 **Since**: 0.1.0  
-**Version**: 0.1.0  
+**Version**: 0.1.0
 
-* [app](#module_app)
-    * [module.exports](#exp_module_app--module.exports) : <code>express.Express</code> ⏏
-        * [~router](#module_app--module.exports..router) : <code>express.Router</code>
-        * [~app](#module_app--module.exports..app) : <code>express.Express</code>
-        * [~PORT](#module_app--module.exports..PORT) : <code>Number</code>
-        * [~corsOptions](#module_app--module.exports..corsOptions) : <code>String</code>
-        * [~store](#module_app--module.exports..store) : <code>MongoDBStore</code>
-        * [~apolloServer](#module_app--module.exports..apolloServer) : <code>ApolloServer</code>
+- [app](#module_app)
+  - [module.exports](#exp_module_app--module.exports) : <code>express.Express</code> ⏏
+    - [~router](#module_app--module.exports..router) : <code>express.Router</code>
+    - [~app](#module_app--module.exports..app) : <code>express.Express</code>
+    - [~PORT](#module_app--module.exports..PORT) : <code>Number</code>
+    - [~corsOptions](#module_app--module.exports..corsOptions) : <code>String</code>
+    - [~store](#module_app--module.exports..store) : <code>MongoDBStore</code>
+    - [~apolloServer](#module_app--module.exports..apolloServer) : <code>ApolloServer</code>
 
 <a name="exp_module_app--module.exports"></a>
 
 ### module.exports : <code>express.Express</code> ⏏
+
 <p>Main Express Application</p>
 
 **Kind**: Exported member  
 <a name="module_app--module.exports..router"></a>
 
 #### module.exports~router : <code>express.Router</code>
+
 <p>Import and initialize the express router</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
@@ -61,6 +64,7 @@
 <a name="module_app--module.exports..app"></a>
 
 #### module.exports~app : <code>express.Express</code>
+
 <p>Initialize Express Server</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
@@ -68,6 +72,7 @@
 <a name="module_app--module.exports..PORT"></a>
 
 #### module.exports~PORT : <code>Number</code>
+
 <p>Server Port</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
@@ -75,6 +80,7 @@
 <a name="module_app--module.exports..corsOptions"></a>
 
 #### module.exports~corsOptions : <code>String</code>
+
 <p>Setup Cross-Origin Resource Sharing for the development environment</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
@@ -83,6 +89,7 @@
 <a name="module_app--module.exports..store"></a>
 
 #### module.exports~store : <code>MongoDBStore</code>
+
 <p>initialize mongodb store with required configuration</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
@@ -90,55 +97,64 @@
 <a name="module_app--module.exports..apolloServer"></a>
 
 #### module.exports~apolloServer : <code>ApolloServer</code>
-<p>initialize apollo server with required configration and attach schema</p>
+
+<p>initialize Apollo server with required configration and attach schema</p>
 
 **Kind**: inner constant of [<code>module.exports</code>](#exp_module_app--module.exports)  
 **Summary**: <p>Main Apollo Server</p>  
 <a name="NODE_ENV"></a>
 
-## NODE\_ENV : <code>String</code>
+## NODE_ENV : <code>String</code>
+
 <p>Node environment mode</p>
 
 **Kind**: global constant  
 <a name="PORT"></a>
 
 ## PORT : <code>Number</code>
+
 <p>Server port</p>
 
 **Kind**: global constant  
 <a name="SESSION_SECRET"></a>
 
-## SESSION\_SECRET : <code>String</code>
+## SESSION_SECRET : <code>String</code>
+
 <p>MongoDB store's session secret</p>
 
 **Kind**: global constant  
 <a name="SESSION_KEY"></a>
 
-## SESSION\_KEY : <code>String</code>
+## SESSION_KEY : <code>String</code>
+
 <p>MongoDB store's session key</p>
 
 **Kind**: global constant  
 <a name="MONGO_SESSION_URL"></a>
 
-## MONGO\_SESSION\_URL : <code>String</code>
+## MONGO_SESSION_URL : <code>String</code>
+
 <p>MongoDB session table access URL</p>
 
 **Kind**: global constant  
 <a name="MONGO_APP_URL"></a>
 
-## MONGO\_APP\_URL : <code>String</code>
+## MONGO_APP_URL : <code>String</code>
+
 <p>MongoDB app table access URL</p>
 
 **Kind**: global constant  
 <a name="GCP_STORAGE_BUCKET"></a>
 
-## GCP\_STORAGE\_BUCKET : <code>String</code>
+## GCP_STORAGE_BUCKET : <code>String</code>
+
 <p>GCP storage bucket address</p>
 
 **Kind**: global constant  
 <a name="TEST_AUTH_KEY"></a>
 
-## TEST\_AUTH\_KEY : <code>String</code>
+## TEST_AUTH_KEY : <code>String</code>
+
 <p>Test JWT token for auth bypass</p>
 
-**Kind**: global constant  
+**Kind**: global constant
