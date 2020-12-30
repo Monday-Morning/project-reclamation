@@ -1,3 +1,13 @@
+/**
+ * @module app.mongoose
+ * @description Mongoose (MongoDB) Configuration File
+ *
+ * @requires mongoose
+ * @requires module:app.winston
+ *
+ * @version 0.1.0
+ * @since 0.1.0
+ */
 const mongoose = require('mongoose');
 const winston = require('./winston');
 
@@ -20,6 +30,19 @@ db.once('open', (data) => {
 });
 
 module.exports = {
+  /**
+   * @description Mongoose Database Connection
+   * @constant
+   *
+   * @type {mongoose.Connection}
+   */
   db,
+
+  /**
+   * @description Mongoose Library (Initialized)
+   * @constant
+   *
+   * @type {mongoose.Mongoose}
+   */
   mongoose,
 };

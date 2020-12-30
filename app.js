@@ -1,30 +1,75 @@
-// Import all libraries
+/**
+ * @module app
+ * @description The Node.js Application for Monday Morning's Project Infinity, codenamed Project Reclamation
+ *
+ * @requires express
+ * @requires express-session
+ * @requires connect-mongodb-session
+ * @requires apollo-server-session
+ * @requires cookie-parser
+ * @requires csurf
+ * @requires cors
+ * @requires errorhandler - Only in development
+ * @requires module:app.router
+ * @requires module:app.mongoose
+ * @requires module:app.firebase
+ * @requires module:app.winston
+ *
+ * @version 0.1.0
+ * @since 0.1.0
+ */
+
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { ApolloServer } = require('apollo-server-express');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
-const errorhandler = require('errorhandler');
 const cors = require('cors');
 const winston = require('./config/winston');
 
-//TODO: use star instead of slash for docs
-//TODO: error handler class
-
-// Import router
+/**
+ * @summary Express Router Object
+ * @description Import and initialize the express router
+ * @constant router
+ *
+ * @type {express.Router}
+ *
+ * @see module:app.router
+ */
 const router = require('./routes');
 
-// Initialize MongoDB and Firebase Admin SDK
+/** Initialize Mongoose and Firebase */
 require('./config/mongoose');
 require('./config/firebase');
 
-// Initialise Express Server and define server port
+/**
+ * @summary Main Express Application
+ * @description Initialize Express Server
+ * @constant app
+ *
+ * @type {express.Express}
+ */
 const app = express();
+
+/**
+ * @description Server Port
+ * @constant PORT
+ *
+ * @type {Number}
+ * @default 8080
+ */
 const PORT = process.env.PORT || 8080;
 
-// Setup Cross-Origin Resource Sharing for the development environment
-var corsOptions = {
+/**
+ * @summary Cross Origin Options
+ * @description Setup Cross-Origin Resource Sharing for the development environment
+ * @constant corsOptions
+ *
+ * @type {String}
+ * @default http://localhost:3000
+ */
+const corsOptions = {
   origin:
     !process.env.NODE_ENV || process.env.NODE_ENV !== 'production'
       ? 'http://localhost:3000'
@@ -32,16 +77,16 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Use Cookie Parse, JSON and Encoded URL Body Parser, and CSURF in Express
+/** Use Cookie Parse, JSON and Encoded URL Body Parser, and CSURF in Express */
 app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
-// Use Error Handler in development environment
+/** Use Error Handler in development environment */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
-  app.use(errorhandler());
+  app.use(require('errorhandler')());
 }
 
-// Use Express Session (w/ MongoDB Store in Production)
+/** Use Express Session and MongoDB Store for Production */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   app.use(
     session({
@@ -52,6 +97,13 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
     })
   );
 } else {
+  /**
+   * @summary MongoDB Store
+   * @description initialize mongodb store with required configuration
+   * @constant store
+   *
+   * @type {MongoDBStore}
+   */
   const store = new MongoDBStore({
     uri: process.env.MONGO_SESSION_URL,
     collection: 'sessionCacheStore',
@@ -80,7 +132,13 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   );
 }
 
-// Initialise the Apollo Server
+/**
+ * @summary Main Apollo Server
+ * @description initialize Apollo server with required configration and attach schema
+ * @constant apolloServer
+ *
+ * @type {ApolloServer}
+ */
 const apolloServer = new ApolloServer({
   schema: require('./gql/schema'),
   context: ({ req, res }) => ({
@@ -93,13 +151,13 @@ const apolloServer = new ApolloServer({
   debug: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
 });
 
-// Attach Express Server with Apollo Server
+/** Attach Express Server with Apollo Server */
 apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: corsOptions });
 
-// Attach Express Router
+/** Attach Express Router */
 app.use(router);
 
-// Start Express Server on defined port
+/** Start Express Server on defined port */
 app.listen(PORT, function (err) {
   if (err) {
     winston.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
@@ -108,4 +166,8 @@ app.listen(PORT, function (err) {
   winston.info(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
 });
 
+/**
+ * @description Main Express Application
+ * @type {express.Express}
+ */
 module.exports = app;

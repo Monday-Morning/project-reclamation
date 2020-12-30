@@ -9,7 +9,9 @@
     "dev": "npx pm2 start ecosystem.config.js --env development",
     "stage": "pm2-runtime start ecosystem.config.js --env staging",
     "stop": "pm2-runtime stop all && pm2-runtime kill",
-    "stop-dev": "npx pm2 kill"
+    "stop-dev": "npx pm2 kill",
+    "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r .",
+    "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./*.js > ./docs/README.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./routes/*.js > ./docs/ROUTES.md"
   },
   "repository": {
     "type": "git",
@@ -60,6 +62,8 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "errorhandler": "^1.5.1",
+    "jsdoc": "^3.6.6",
+    "jsdoc-to-markdown": "^6.0.1",
     "mocha": "^8.2.1",
     "pm2": "^4.5.0"
   }

@@ -1,0 +1,180 @@
+## Modules
+
+<dl>
+<dt><a href="#app.module_firebase">firebase</a></dt>
+<dd><p>Firebase Confguration file</p></dd>
+<dt><a href="#app.module_mongoose">mongoose</a></dt>
+<dd><p>Mongoose (MongoDB) Configuration File</p></dd>
+<dt><a href="#app.module_winston">winston</a></dt>
+<dd><p>Winston (Logger) Configuration File</p></dd>
+</dl>
+
+## Constants
+
+<dl>
+<dt><a href="#NODE_ENV">NODE_ENV</a> : <code>String</code></dt>
+<dd><p>Node environment mode</p></dd>
+<dt><a href="#PORT">PORT</a> : <code>Number</code></dt>
+<dd><p>Server port</p></dd>
+<dt><a href="#SESSION_SECRET">SESSION_SECRET</a> : <code>String</code></dt>
+<dd><p>MongoDB store's session secret</p></dd>
+<dt><a href="#SESSION_KEY">SESSION_KEY</a> : <code>String</code></dt>
+<dd><p>MongoDB store's session key</p></dd>
+<dt><a href="#MONGO_SESSION_URL">MONGO_SESSION_URL</a> : <code>String</code></dt>
+<dd><p>MongoDB session table access URL</p></dd>
+<dt><a href="#MONGO_APP_URL">MONGO_APP_URL</a> : <code>String</code></dt>
+<dd><p>MongoDB app table access URL</p></dd>
+<dt><a href="#GCP_STORAGE_BUCKET">GCP_STORAGE_BUCKET</a> : <code>String</code></dt>
+<dd><p>GCP storage bucket address</p></dd>
+<dt><a href="#TEST_AUTH_KEY">TEST_AUTH_KEY</a> : <code>String</code></dt>
+<dd><p>Test JWT token for auth bypass</p></dd>
+</dl>
+
+<a name="app.module_firebase"></a>
+
+## firebase
+
+<p>Firebase Confguration file</p>
+
+**Requires**: <code>module:firebase-admin</code>, <code>module:app.winston</code>  
+**Since**: 0.1.0  
+**Version**: 0.1.0
+
+- [firebase](#app.module_firebase)
+  - [.auth](#app.module_firebase.auth) : <code>admin.auth.Auth</code>
+  - [.bucket](#app.module_firebase.bucket) : <code>admin.storage.Storage</code>
+
+<a name="app.module_firebase.auth"></a>
+
+### firebase.auth : <code>admin.auth.Auth</code>
+
+<p>Firebase Authentication Library</p>
+
+**Kind**: static constant of [<code>firebase</code>](#app.module_firebase)  
+<a name="app.module_firebase.bucket"></a>
+
+### firebase.bucket : <code>admin.storage.Storage</code>
+
+<p>Firebase Storage Library</p>
+
+**Kind**: static constant of [<code>firebase</code>](#app.module_firebase)  
+<a name="app.module_mongoose"></a>
+
+## mongoose
+
+<p>Mongoose (MongoDB) Configuration File</p>
+
+**Requires**: <code>module:mongoose</code>, <code>module:app.winston</code>  
+**Since**: 0.1.0  
+**Version**: 0.1.0
+
+- [mongoose](#app.module_mongoose)
+  - [.db](#app.module_mongoose.db) : <code>mongoose.Connection</code>
+  - [.mongoose](#app.module_mongoose.mongoose) : <code>mongoose.Mongoose</code>
+
+<a name="app.module_mongoose.db"></a>
+
+### mongoose.db : <code>mongoose.Connection</code>
+
+<p>Mongoose Database Connection</p>
+
+**Kind**: static constant of [<code>mongoose</code>](#app.module_mongoose)  
+<a name="app.module_mongoose.mongoose"></a>
+
+### mongoose.mongoose : <code>mongoose.Mongoose</code>
+
+<p>Mongoose Library (Initialized)</p>
+
+**Kind**: static constant of [<code>mongoose</code>](#app.module_mongoose)  
+<a name="app.module_winston"></a>
+
+## winston
+
+<p>Winston (Logger) Configuration File</p>
+
+**Requires**: <code>module:winston</code>  
+**Since**: 0.1.0  
+**Version**: 0.1.0
+
+- [winston](#app.module_winston)
+  - [.module.exports](#exp_app.module_winston--module.exports) : <code>createLogger</code> ⏏
+    - [~logFormat](#app.module_winston--module.exports..logFormat) : <code>printf</code>
+    - [~options](#app.module_winston--module.exports..options) : <code>Object</code>
+
+<a name="exp_app.module_winston--module.exports"></a>
+
+### .module.exports : <code>createLogger</code> ⏏
+
+<p>Winston Logger</p>
+
+**Kind**: static constant of [<code>winston</code>](#app.module_winston)  
+<a name="app.module_winston--module.exports..logFormat"></a>
+
+#### module.exports~logFormat : <code>printf</code>
+
+<p>Log Format</p>
+
+**Kind**: inner constant of [<code>module.exports</code>](#exp_app.module_winston--module.exports)  
+<a name="app.module_winston--module.exports..options"></a>
+
+#### module.exports~options : <code>Object</code>
+
+<p>Winston Options</p>
+
+**Kind**: inner constant of [<code>module.exports</code>](#exp_app.module_winston--module.exports)  
+<a name="NODE_ENV"></a>
+
+## NODE_ENV : <code>String</code>
+
+<p>Node environment mode</p>
+
+**Kind**: global constant  
+<a name="PORT"></a>
+
+## PORT : <code>Number</code>
+
+<p>Server port</p>
+
+**Kind**: global constant  
+<a name="SESSION_SECRET"></a>
+
+## SESSION_SECRET : <code>String</code>
+
+<p>MongoDB store's session secret</p>
+
+**Kind**: global constant  
+<a name="SESSION_KEY"></a>
+
+## SESSION_KEY : <code>String</code>
+
+<p>MongoDB store's session key</p>
+
+**Kind**: global constant  
+<a name="MONGO_SESSION_URL"></a>
+
+## MONGO_SESSION_URL : <code>String</code>
+
+<p>MongoDB session table access URL</p>
+
+**Kind**: global constant  
+<a name="MONGO_APP_URL"></a>
+
+## MONGO_APP_URL : <code>String</code>
+
+<p>MongoDB app table access URL</p>
+
+**Kind**: global constant  
+<a name="GCP_STORAGE_BUCKET"></a>
+
+## GCP_STORAGE_BUCKET : <code>String</code>
+
+<p>GCP storage bucket address</p>
+
+**Kind**: global constant  
+<a name="TEST_AUTH_KEY"></a>
+
+## TEST_AUTH_KEY : <code>String</code>
+
+<p>Test JWT token for auth bypass</p>
+
+**Kind**: global constant
