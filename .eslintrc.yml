@@ -6,11 +6,7 @@ rules:
   # Group - Best Practices
   no-async-promise-executor: error
   no-await-in-loop: error
-  no-console:
-    - error
-    - allow:
-        - error
-        - warn
+  no-console: error
 
   # no-extra-parens: error # conflicts with prettier
   no-misleading-character-class: error
