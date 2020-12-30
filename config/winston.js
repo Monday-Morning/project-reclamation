@@ -1,10 +1,31 @@
+/**
+ * @module app.winston
+ * @description Winston (Logger) Configuration File
+ *
+ * @requires winston
+ *
+ * @version 0.1.0
+ * @since 0.1.0
+ */
 const { createLogger, format, transports } = require('winston');
 
+/**
+ * @description Log Format
+ * @constant logFormat
+ *
+ * @type {printf}
+ */
 const logFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} | Project Reclamation | ${level.toUpperCase()} | ${message}`;
 });
 
-let options = {
+/**
+ * @description Winston Options
+ * @constant options
+ *
+ * @type {Object}
+ */
+const options = {
   error: {
     level: 'error',
     filename: './logs/error.log',
@@ -34,16 +55,19 @@ let options = {
   },
 };
 
-if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
-  let logger = createLogger({
-    transports: [new transports.Console(options.console)],
-    exitOnError: false,
-  });
-} else {
-  let logger = createLogger({
-    transports: [new transports.File(options.error), new transports.File(options.combined)],
-    exitOnError: false,
-  });
-}
-
-module.exports = logger;
+/**
+ * @description Winston Logger
+ * @constant
+ *
+ * @type {createLogger}
+ */
+module.exports =
+  !process.env.NODE_ENV || process.env.NODE_ENV !== 'production'
+    ? createLogger({
+        transports: [new transports.Console(options.console)],
+        exitOnError: false,
+      })
+    : createLogger({
+        transports: [new transports.File(options.error), new transports.File(options.combined)],
+        exitOnError: false,
+      });

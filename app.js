@@ -13,6 +13,7 @@
  * @requires module:app.router
  * @requires module:app.mongoose
  * @requires module:app.firebase
+ * @requires module:app.winston
  *
  * @version 0.1.0
  * @since 0.1.0

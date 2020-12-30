@@ -3,6 +3,7 @@
  * @description Firebase Confguration file
  *
  * @requires firebase-admin
+ * @requires module:app.winston
  *
  * @version 0.1.0
  * @since 0.1.0

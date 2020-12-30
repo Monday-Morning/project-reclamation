@@ -3,6 +3,7 @@
  * @description Mongoose (MongoDB) Configuration File
  *
  * @requires mongoose
+ * @requires module:app.winston
  *
  * @version 0.1.0
  * @since 0.1.0
