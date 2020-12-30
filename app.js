@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const errorhandler = require('errorhandler');
 const cors = require('cors');
+const winston = require('./config/winston');
 
 //TODO: use star instead of slash for docs
 //TODO: error handler class
@@ -63,7 +64,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
     },
   });
   store.on('error', function (error) {
-    console.error(new Error(`Reclamation Server | App | Error on Session Store`), error);
+    winston.error(new Error(`Reclamation Server | App | Error on Session Store`), error);
   });
   app.use(
     session({
@@ -101,10 +102,10 @@ app.use(router);
 // Start Express Server on defined port
 app.listen(PORT, function (err) {
   if (err) {
-    console.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
+    winston.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
     return;
   }
-  console.info(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
+  winston.info(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
 });
 
 module.exports = app;
