@@ -4,7 +4,7 @@ const logFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} | Project Reclamation | ${level.toUpperCase()} | ${message}`;
 });
 
-var options = {
+let options = {
   error: {
     level: 'error',
     filename: './logs/error.log',
@@ -35,12 +35,12 @@ var options = {
 };
 
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
-  var logger = createLogger({
+  let logger = createLogger({
     transports: [new transports.Console(options.console)],
     exitOnError: false,
   });
 } else {
-  var logger = createLogger({
+  let logger = createLogger({
     transports: [new transports.File(options.error), new transports.File(options.combined)],
     exitOnError: false,
   });
