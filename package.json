@@ -4,14 +4,16 @@
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
   "scripts": {
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start:prod": "pm2-runtime start ecosystem.config.js --env production",
     "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
-    "dev": "npx pm2 start ecosystem.config.js --env development",
-    "stage": "pm2-runtime start ecosystem.config.js --env staging",
-    "stop": "pm2-runtime stop all && pm2-runtime kill",
-    "stop-dev": "npx pm2 kill",
+    "start": "npx pm2 start ecosystem.config.js --env development",
+    "start:stage": "pm2-runtime start ecosystem.config.js --env staging",
+    "stop:prod": "pm2-runtime stop all && pm2-runtime kill",
     "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r .",
-    "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./*.js > ./docs/README.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./routes/*.js > ./docs/ROUTES.md"
+    "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./*.js > ./docs/README.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./routes/*.js > ./docs/ROUTES.md",
+    "stop": "npx pm2 kill",
+    "restart:prod": "pm2-runtime restart all",
+    "restart": "npx pm2 restart all"
   },
   "repository": {
     "type": "git",

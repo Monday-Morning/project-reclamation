@@ -2,7 +2,7 @@
 
 The Server Application for Monday Morning under [Project Infinity](https://github.com/orgs/Monday-Morning/projects)
 
-- Developed on Node.js v12 LTS
+- Developed on Node.js v14 LTS
 
 ## Modules
 
@@ -16,7 +16,7 @@ The Server Application for Monday Morning under [Project Infinity](https://githu
 
 ### Requirements
 
-- Node.js v12 or later (with NPM CLI)
+- Node.js v14 LTS or later (with NPM CLI)
 - Git CLI
 
 ### Procedure
