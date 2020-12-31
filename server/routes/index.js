@@ -15,31 +15,6 @@ const authController = require('../controllers/auth_controller');
 const { auth } = require('../config/firebase');
 
 /**
- * @summary Express Router Object
- * @description Initialize Express Router
- * @constant router
- *
- * @type {express.Router}
- */
-const router = express.Router();
-
-/** Authentication APIs */
-router.post('/v1/auth/local', authController.local);
-router.post('/v1/auth/google', authController.google);
-
-router.post('/v1/auth/session', authController.start);
-router.delete('/v1/auth/session', checkUserAuth, authController.end);
-
-/** 404 Not Found - Default Response for Invalid Path */
-router.use((req, res, next) => {
-  res.json({
-    error: true,
-    code: 404,
-    data: 'Page Not Found',
-  });
-});
-
-/**
  * @method checkUserAuth
  * @description Method to check user authentication status and validate using Firebase Admin SDK
  * @private
@@ -100,5 +75,30 @@ const checkUserAuth = async (req, res, next) => {
     return next();
   }
 };
+
+/**
+ * @summary Express Router Object
+ * @description Initialize Express Router
+ * @constant router
+ *
+ * @type {express.Router}
+ */
+const router = express.Router();
+
+/** Authentication APIs */
+router.post('/v1/auth/local', authController.local);
+router.post('/v1/auth/google', authController.google);
+
+router.post('/v1/auth/session', authController.start);
+router.delete('/v1/auth/session', checkUserAuth, authController.end);
+
+/** 404 Not Found - Default Response for Invalid Path */
+router.use((req, res, next) => {
+  res.json({
+    error: true,
+    code: 404,
+    data: 'Page Not Found',
+  });
+});
 
 module.exports = router;
