@@ -16,9 +16,9 @@ let options = {
   useUnifiedTopology: true,
   poolSize: 100,
   useFindAndModify: false,
+  useCreateIndex: true,
 };
 mongoose.connect(process.env.MONGO_APP_URL, options);
-mongoose.set('autoIndex', false);
 
 const db = mongoose.connection;
 

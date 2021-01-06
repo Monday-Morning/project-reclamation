@@ -13,9 +13,9 @@ const { createLogger, format, transports } = require('winston');
  * @description Log Format
  * @constant logFormat
  *
- * @type {printf}
+ * @type {format.printf}
  */
-const logFormat = printf(({ level, message, timestamp }) => {
+const logFormat = format.printf(({ level, message, timestamp }) => {
   return `${timestamp} | Project Reclamation | ${level.toUpperCase()} | ${message}`;
 });
 

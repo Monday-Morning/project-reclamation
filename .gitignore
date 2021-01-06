@@ -534,5 +534,6 @@ out
 .gitsecret/keys/random_seed
 !*.secret
 .env.js
-.vscode/launch.json
-config/firebase-service-account.json
+firebase-service-account.json
+
+.vscode/**

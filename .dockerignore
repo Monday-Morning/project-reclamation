@@ -57,6 +57,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Dependancy File
+package-lock.json
+
 # TypeScript v1 declaration files
 typings/
 
@@ -523,3 +526,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+#JSDoc
+out
+
+.vscode/**

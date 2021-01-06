@@ -1,9 +1,8 @@
 name: Lint Check
 
 on:
-  pull_request:
-    branches:
-      - development
+  pull_request_target:
+    branches: [development]
 
 jobs:
   eslint:

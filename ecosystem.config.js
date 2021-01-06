@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: 'Reclamation Server',
-      script: './app.js',
+      script: './server/app.js',
       watch: false,
       instances: 1, //TODO: change to 'max' for production
       exec_mode: 'cluster',
