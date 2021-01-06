@@ -24,7 +24,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { ApolloServer } = require('apollo-server-express');
 var cookieParser = require('cookie-parser')
-const csrf = require('csurf');
+var csrf = require('csurf')
 const cors = require('cors');
 const winston = require('./config/winston');
 
