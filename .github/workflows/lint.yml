@@ -1,7 +1,7 @@
 name: Lint Check
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [development]
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -24,6 +24,7 @@ jobs:
         uses: reviewdog/action-eslint@v1
         with:
           reporter: github-pr-review
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   prettier:
     name: Prettier Check
@@ -42,10 +43,14 @@ jobs:
 
       - name: Run Prettier
         id: prettier_run
-        run: npx prettier --check .
+        run: |
+          $output=(npx prettier --check .)
+          Write-Output "::set-output name=prettier_output::$output"
 
-      - name: Comment Prettier Output
-        uses: github-actions-up-and-running/pr-comment@v1.0.0
+      - name: comment PR
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          message: ${{ steps.prettier_run.outputs }}
+          check_for_duplicate_msg: true
+          msg: ${{ steps.prettier_run.outputs.prettier_output }}
