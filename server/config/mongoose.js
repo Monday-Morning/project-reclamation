@@ -11,7 +11,7 @@
 const mongoose = require('mongoose');
 const winston = require('./winston');
 
-let options = {
+const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   poolSize: 100,
