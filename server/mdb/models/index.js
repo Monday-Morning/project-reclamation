@@ -6,6 +6,8 @@
  * @requires module:app.models.role
  * @requires module:app.models.club
  * @requires module:app.models.event
+ * @requires module:app.models.categoryMap
+ * @requires module:app.models.tag
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -43,4 +45,20 @@ module.exports = {
    * @see module:app.models.event
    */
   EventModel: require('./event'),
+
+  /**
+   * @description Category Map Model
+   * @constant
+   *
+   * @see module:app.models.categoryMap
+   */
+  CategoryMapModel: require('./categoryMap'),
+
+  /**
+   * @description Tag Model
+   * @constant
+   *
+   * @see module:app.models.tag
+   */
+  TagModel: require('./tag'),
 };
