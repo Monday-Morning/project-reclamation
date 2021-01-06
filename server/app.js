@@ -163,7 +163,7 @@ app.listen(PORT, function (err) {
     winston.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
     return;
   }
-  winston.info(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
+  console.log(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
 });
 
 /**
