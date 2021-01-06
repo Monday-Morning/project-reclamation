@@ -19,4 +19,4 @@ Please describe your pull request.
 
 ### Post merge checklist
 
-- [ ] Follow steps from the [guidelines for contributing](../CONTRIBUTING.md) to this repository.
+- [ ] Follow steps from the [guidelines for contributing](../blob/development/CONTRIBUTING.md) to this repository.
