@@ -45,35 +45,34 @@ const checkUserAuth = async (req, res, next) => {
       data: 'No Authorization Credential',
     });
   } else if (
-    req.session.auth != null &&
-    req.session.auth.key != null &&
+    req.session.auth !== null &&
+    req.session.auth.key !== null &&
     req.session.auth.flag &&
-    req.session.auth.key != req.headers.authorization
+    req.session.auth.key !== req.headers.authorization
   ) {
     return next();
-  } else {
-    if (req.headers.authorization == process.env.TEST_AUTH_KEY) {
-      req.session.auth.key = req.headers.authorization;
-      req.session.auth.flag = true;
-      return next();
-    }
-    req.session.auth = {
-      key: null,
-      flag: false,
-    };
-    try {
-      await auth.verifyIdToken(req.headers.authorization, true);
-    } catch (e) {
-      return res.json({
-        error: e,
-        code: 403,
-        data: e.message || 'Access Forbidden',
-      });
-    }
+  }
+  if (req.headers.authorization === process.env.TEST_AUTH_KEY) {
     req.session.auth.key = req.headers.authorization;
     req.session.auth.flag = true;
     return next();
   }
+  req.session.auth = {
+    key: null,
+    flag: false,
+  };
+  try {
+    await auth.verifyIdToken(req.headers.authorization, true);
+  } catch (e) {
+    return res.json({
+      error: e,
+      code: 403,
+      data: e.message || 'Access Forbidden',
+    });
+  }
+  req.session.auth.key = req.headers.authorization;
+  req.session.auth.flag = true;
+  return next();
 };
 
 /**
@@ -93,7 +92,7 @@ router.post('/v1/auth/session', authController.start);
 router.delete('/v1/auth/session', checkUserAuth, authController.end);
 
 /** 404 Not Found - Default Response for Invalid Path */
-router.use((req, res, next) => {
+router.use((req, res) => {
   res.json({
     error: true,
     code: 404,

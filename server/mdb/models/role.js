@@ -9,8 +9,7 @@
  * @since 0.1.0
  */
 
-const Schema = require('mongoose').Schema;
-const model = require('mongoose').model;
+const { Schema, model } = require('mongoose');
 
 /**
  * @description The schema definition for Role Model

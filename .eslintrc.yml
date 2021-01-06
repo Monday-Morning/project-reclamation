@@ -1,5 +1,8 @@
 env:
   node: true
+  es6: true
+parserOptions:
+  ecmaVersion: 2020
 extends:
   - prettier
 rules:
@@ -76,7 +79,7 @@ rules:
   prefer-promise-reject-errors: error
   radix: error
   require-await: error
-  require-unicode-regexp: error
+  require-unicode-regexp: off
   wrap-iife: error
   yoda: error
 
@@ -103,9 +106,6 @@ rules:
 
   # Group - ECMAScript 6
   arrow-body-style:
-    - error
-    - as-needed
-  arrow-parens:
     - error
     - as-needed
   arrow-spacing:
