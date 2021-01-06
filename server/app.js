@@ -19,11 +19,11 @@
  * @since 0.1.0
  */
 
-var express = require('express');
+const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { ApolloServer } = require('apollo-server-express');
-var cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const cors = require('cors');
 const winston = require('./config/winston');
@@ -52,6 +52,8 @@ require('./config/firebase');
  */
 const app = express();
 
+const DEFAULT_PORT = 8080;
+
 /**
  * @description Server Port
  * @constant PORT
@@ -59,7 +61,7 @@ const app = express();
  * @type {Number}
  * @default 8080
  */
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || DEFAULT_PORT;
 
 /**
  * @summary Cross Origin Options
@@ -107,7 +109,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   const store = new MongoDBStore({
     uri: process.env.MONGO_SESSION_URL,
     collection: 'sessionCacheStore',
-    expires: 1000 * 60 * 60 * 24 * 5,
+    expires: 432000000,
     connectionOptions: {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -115,7 +117,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
       serverSelectionTimeoutMS: 10000,
     },
   });
-  store.on('error', function (error) {
+  store.on('error', (error) => {
     winston.error(new Error(`Reclamation Server | App | Error on Session Store`), error);
   });
   app.use(
@@ -123,9 +125,9 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
       secret: process.env.SESSION_SECRET,
       key: process.env.SESSION_KEY,
       cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 1,
+        maxAge: 86400000,
       },
-      store: store,
+      store,
       resave: true,
       saveUninitialized: true,
     })
@@ -141,7 +143,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
  */
 const apolloServer = new ApolloServer({
   schema: require('./gql/schema'),
-  context: ({ req, res }) => ({
+  context: ({ req }) => ({
     authToken: req.headers.authorization,
     csrfToken: req.csrfToken(),
     authScope: true, //TODO: function to check and append auth scopes from req.headers.authrorization
@@ -158,7 +160,7 @@ apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: corsOptions });
 app.use(router);
 
 /** Start Express Server on defined port */
-app.listen(PORT, function (err) {
+app.listen(PORT, (err) => {
   if (err) {
     winston.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
     return;

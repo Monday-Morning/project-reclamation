@@ -9,8 +9,7 @@
  * @since 0.1.0
  */
 
-const Schema = require('mongoose').Schema;
-const model = require('mongoose').model;
+const { Schema, model } = require('mongoose');
 
 /**
  * @description The schema definition for User Model
@@ -171,8 +170,8 @@ UserSchema.virtual('fullName')
     return this.firstName + ' ' + this.lastName;
   })
   .set(function (v) {
-    this.firstName = v.split(' ')[0];
-    this.lastName = v.split(' ')[1] ? v.split(' ')[1] : null;
+    [this.firstName, this.lastName] = v.split(' ');
+    this.lastName = !this.lastName ? null : this.lastName;
   });
 
 /**
