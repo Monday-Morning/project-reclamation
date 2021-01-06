@@ -66,9 +66,11 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "errorhandler": "^1.5.1",
+    "eslint": "^7.17.0",
     "jsdoc": "^3.6.6",
     "jsdoc-to-markdown": "^6.0.1",
     "mocha": "^8.2.1",
-    "pm2": "^4.5.0"
+    "pm2": "^4.5.0",
+    "prettier": "^2.2.1"
   }
 }
