@@ -41,5 +41,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: "Prettier Run:\n${{ steps.prettier_run.outputs.prettier_output }}"
+          msg: "Prettier Response:\n${{ steps.prettier_run.outputs.prettier_output }}"
           check_for_duplicate_msg: true
