@@ -19,7 +19,7 @@
  * @since 0.1.0
  */
 
-const express = require('express');
+var express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { ApolloServer } = require('apollo-server-express');
