@@ -8,6 +8,8 @@
  * @requires module:app.models.event
  * @requires module:app.models.categoryMap
  * @requires module:app.models.tag
+ * @requires module:app.models.media
+ * @requires module:app.models.album
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -61,4 +63,20 @@ module.exports = {
    * @see module:app.models.tag
    */
   TagModel: require('./tag'),
+
+  /**
+   * @description Media Model
+   * @constant
+   *
+   * @see module:app.models.media
+   */
+  MediaModel: require('./media'),
+
+  /**
+   * @description Album Model
+   * @constant
+   *
+   * @see module:app.models.album
+   */
+  AlbumModel: require('./album'),
 };
