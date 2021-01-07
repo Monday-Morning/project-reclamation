@@ -28,7 +28,7 @@ const EventSchema = new Schema(
       type: Date,
       required: true,
     },
-    endTs: {
+    endTS: {
       type: Date,
       required: true,
     },
