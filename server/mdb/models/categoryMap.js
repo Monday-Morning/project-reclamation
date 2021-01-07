@@ -23,7 +23,6 @@ const CategoryMapSchema = new Schema(
       type: Number,
       required: true,
       min: 0,
-      default: 0,
     },
     name: {
       type: String,
@@ -33,7 +32,7 @@ const CategoryMapSchema = new Schema(
     parent: {
       type: Number,
       required: false,
-      min: 1,
+      min: 0,
       default: null,
     },
     createdBy: {
