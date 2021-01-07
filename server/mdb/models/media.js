@@ -39,6 +39,12 @@ const MediaSchema = new Schema(
       max: 1,
       default: 0,
     },
+    /** Only if type is 0 */
+    blurhash: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
