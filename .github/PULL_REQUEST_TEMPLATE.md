@@ -2,9 +2,9 @@
 
 Reference any and all issues solved and related to this pull request here. Mention if there are none.
 
-### Description
+### Description and Changes
 
-Please describe your pull request.
+Please describe your pull request with all changes made.
 
 ### Your checklist for this pull request
 
@@ -19,4 +19,4 @@ Please describe your pull request.
 
 ### Post merge checklist
 
-- [ ] Follow steps from the [guidelines for contributing](../CONTRIBUTING.md) to this repository.
+- [ ] Follow steps from the [guidelines for contributing](../blob/development/CONTRIBUTING.md) to this repository.
