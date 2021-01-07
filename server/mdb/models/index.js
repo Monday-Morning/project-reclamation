@@ -10,6 +10,9 @@
  * @requires module:app.models.tag
  * @requires module:app.models.media
  * @requires module:app.models.album
+ * @requires module:app.models.article
+ * @requires module:app.models.comment
+ * @requires module:app.models.reaction
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -79,4 +82,28 @@ module.exports = {
    * @see module:app.models.album
    */
   AlbumModel: require('./album'),
+
+  /**
+   * @description Article Model
+   * @constant
+   *
+   * @see module:app.models.article
+   */
+  ArticleModel: require('./article'),
+
+  /**
+   * @description Comment Model
+   * @constant
+   *
+   * @see module:app.models.comment
+   */
+  CommentModel: require('./comment'),
+
+  /**
+   * @description Reaction Model
+   * @constant
+   *
+   * @see module:app.models.reaction
+   */
+  ReactionModel: require('./reaction'),
 };
