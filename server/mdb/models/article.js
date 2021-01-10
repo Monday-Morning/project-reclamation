@@ -73,9 +73,9 @@ const ArticleSchema = new Schema(
     /** [Square Image, Rectangle Image] */
     coverMedia: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Media',
         required: true,
-        trim: true,
       },
     ],
     /** @enum [0 - Unpublished, 1 - Published, 2 - Archive, 3 - Trash] */

@@ -60,9 +60,9 @@ const UserSchema = new Schema(
       lowercase: true,
     },
     picture: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Media',
       required: true,
-      trim: true,
     },
     /** Only For MM & NITR Faculty */
     bio: {
