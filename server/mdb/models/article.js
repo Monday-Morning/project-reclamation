@@ -49,16 +49,20 @@ const ArticleSchema = new Schema(
         required: true,
       },
     ],
-    category: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    subcategory: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+    category: [
+      {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+    ],
+    subcategory: [
+      {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+    ],
     tags: [
       {
         type: Schema.Types.ObjectId,
