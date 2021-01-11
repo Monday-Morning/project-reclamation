@@ -13,6 +13,7 @@
  * @requires module:app.models.article
  * @requires module:app.models.comment
  * @requires module:app.models.reaction
+ * @requires module:app.models.squiggle
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -106,4 +107,12 @@ module.exports = {
    * @see module:app.models.reaction
    */
   ReactionModel: require('./reaction'),
+
+  /**
+   * @description Squiggle Model
+   * @constant
+   *
+   * @see module:app.models.squiggle
+   */
+  SquiggleModel: require('./squiggle'),
 };
