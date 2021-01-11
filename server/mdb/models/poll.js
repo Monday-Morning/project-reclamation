@@ -55,12 +55,6 @@ const PollSchema = new Schema(
       ref: 'Article',
       required: false,
     },
-    reponses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',

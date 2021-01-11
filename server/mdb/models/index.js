@@ -19,6 +19,9 @@
  * @requires module:app.models.company
  * @requires module:app.models.live
  * @requires module:app.models.shareInternship
+ * @requires module:app.models.forum.thread
+ * @requires module:app.models.forum.message
+ * @requires module:app.models.poll
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -160,4 +163,28 @@ module.exports = {
    * @see module:app.models.shareInternship
    */
   ShareInternshipModel: require('./shareInternship'),
+
+  /**
+   * @description Forum Thread Model
+   * @constant
+   *
+   * @see module:app.models.forum.thread
+   */
+  ForumThreadModel: require('./forumThread'),
+
+  /**
+   * @description Forum Message Model
+   * @constant
+   *
+   * @see module:app.models.forum.message
+   */
+  ForumMessageModel: require('./forumMessage'),
+
+  /**
+   * @description Poll Model
+   * @constant
+   *
+   * @see module:app.models.poll
+   */
+  PollModel: require('./poll'),
 };
