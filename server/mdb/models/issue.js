@@ -44,9 +44,9 @@ const IssueSchema = new Schema(
     ],
     // TODO: Add poll field after Poll Model
     thumbnail: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Media',
       required: true,
-      trim: true,
     },
     description: {
       type: String,
