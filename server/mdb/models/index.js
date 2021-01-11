@@ -13,6 +13,8 @@
  * @requires module:app.models.article
  * @requires module:app.models.comment
  * @requires module:app.models.reaction
+ * @requires module:app.models.issue
+ * @requires module:app.models.mmSession
  * @requires module:app.models.squiggle
  *
  * @version 0.1.0
@@ -107,6 +109,22 @@ module.exports = {
    * @see module:app.models.reaction
    */
   ReactionModel: require('./reaction'),
+
+  /**
+   * @description Issue Model
+   * @constant
+   *
+   * @see module:app.models.issue
+   */
+  IssueModel: require('./issue'),
+
+  /**
+   * @description MMSession Model
+   * @constant
+   *
+   * @see module:app.models.mmSession
+   */
+  MMSessionModel: require('./mmSession'),
 
   /**
    * @description Squiggle Model
