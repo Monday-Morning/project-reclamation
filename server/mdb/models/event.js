@@ -32,6 +32,11 @@ const EventSchema = new Schema(
       type: Date,
       required: true,
     },
+    poster: {
+      type: Schema.Types.ObjectId,
+      ref: 'Media',
+      required: true,
+    },
     /** @enum [0 - Club, 1 - Institute, 2 - Fest, 3 - Holiday] */
     type: {
       type: Number,
