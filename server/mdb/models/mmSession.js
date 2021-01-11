@@ -1,6 +1,6 @@
 /**
  * @module app.models.mmSession
- * @description MMSession Model
+ * @description MM Session Model
  *
  * @requires mongoose.Schema
  * @requires mongoose.model
@@ -12,7 +12,7 @@
 const { Schema, model } = require('mongoose');
 
 /**
- * @description The schema definition for MMSession Model
+ * @description The schema definition for MM Session Model
  * @constant MMSessionSchema
  *
  * @type {Schema}
@@ -75,7 +75,7 @@ const MMSessionSchema = new Schema(
 );
 
 /**
- * @description Generated MMSession Model
+ * @description Generated MM Session Model
  * @constant MMSessionModel
  *
  * @type {model}
