@@ -22,7 +22,7 @@ const ShareInternshipSchema = new Schema(
     internYear: {
       type: Number,
       required: true,
-      max: new Date.now(),
+      max: new Date(Date.now()).getFullYear(),
     },
     student: {
       type: Schema.Types.ObjectId,
