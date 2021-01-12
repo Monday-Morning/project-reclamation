@@ -137,6 +137,12 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    /** @see module:app.models.poll */
+    lastPoll: {
+      type: Schema.Types.ObjectId,
+      ref: 'Poll',
+      required: false,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
