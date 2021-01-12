@@ -47,6 +47,18 @@ const MMSessionSchema = new Schema(
         required: true,
       },
     ],
+    /**
+     * Object {
+     * 	infoKey: String,
+     * 	infoValue: String,
+     * }
+     */
+    static: [
+      {
+        type: Object,
+        required: true,
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
