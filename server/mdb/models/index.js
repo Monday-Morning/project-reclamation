@@ -16,6 +16,9 @@
  * @requires module:app.models.issue
  * @requires module:app.models.mmSession
  * @requires module:app.models.squiggle
+ * @requires module:app.models.company
+ * @requires module:app.models.live
+ * @requires module:app.models.shareInternship
  *
  * @version 0.1.0
  * @since 0.1.0
@@ -133,4 +136,28 @@ module.exports = {
    * @see module:app.models.squiggle
    */
   SquiggleModel: require('./squiggle'),
+
+  /**
+   * @description Company Model
+   * @constant
+   *
+   * @see module:app.models.company
+   */
+  CompanyModel: require('./company'),
+
+  /**
+   * @description Live Model
+   * @constant
+   *
+   * @see module:app.models.live
+   */
+  LiveModel: require('./live'),
+
+  /**
+   * @description Share Internship Model
+   * @constant
+   *
+   * @see module:app.models.shareInternship
+   */
+  ShareInternshipModel: require('./shareInternship'),
 };
