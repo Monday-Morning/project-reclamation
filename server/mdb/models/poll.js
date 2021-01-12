@@ -50,11 +50,13 @@ const PollSchema = new Schema(
       required: true,
       min: new Date(Date.now()),
     },
-    article: {
-      type: Schema.Types.ObjectId,
-      ref: 'Article',
-      required: false,
-    },
+    article: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Article',
+        required: false,
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
