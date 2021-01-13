@@ -43,10 +43,10 @@ const ForumThreadSchema = new Schema(
     },
     authority: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
-    /** @enum [0 - Open, 1 - Closed, 2 - Answered] */
+    /** @enum [0 - Pending Moderation, 1 - Open, 2 - Closed] */
     threadStatus: {
       type: Number,
       required: false,
@@ -54,19 +54,25 @@ const ForumThreadSchema = new Schema(
       min: 0,
       max: 2,
     },
-    response: {
-      type: Schema.Types.ObjectId,
-      ref: 'ForumMessage',
+    /**
+      response: {
+        type: Schema.Types.ObjectId,
+        ref: 'ForumMessage',
+        required: false,
+        default: null,
+      },
+      @enum [0 - Unanswered, 1 - Public Answer Verified, 2 - MM Answered, 3 - Authority Answered]
+      responseType: {
+        type: Number,
+        required: false,
+        default: 0,
+        min: 0,
+        max: 3,
+      },
+    */
+    verifiedResponse: {
+      type: Object,
       required: false,
-      default: null,
-    },
-    /** @enum [0 - Unanswered, 1 - Public Answer Verified, 2 - MM Answered, 3 - Authority Answered] */
-    responseType: {
-      type: Number,
-      required: false,
-      default: 0,
-      min: 0,
-      max: 3,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
