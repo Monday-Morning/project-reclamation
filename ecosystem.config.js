@@ -32,7 +32,7 @@ module.exports = {
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '~/www',
       'post-deploy':
-        'rm -f -r node_modules; git secret clean; npm install; git secret reveal; npm run start:stage; npx pm2 dump;',
+        'rm -f -r node_modules; git secret remove; npm install; git secret reveal; npm run start:stage; npx pm2 dump;',
     },
     production: {
       user: 'github',
@@ -41,7 +41,7 @@ module.exports = {
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '/var/www',
       'post-deploy':
-        'rm -f -r node_modules; git secret clean; npm install --only=production; git secret reveal; npm run start:prod; npx pm2 dump;',
+        'rm -f -r node_modules; git secret remove; npm install --only=production; git secret reveal; npm run start:prod; npx pm2 dump;',
     },
   },
 };
