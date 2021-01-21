@@ -1,0 +1,21 @@
+name: Production Server Deploy
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  devDeploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Run PM2 Deploy
+        run: npx pm2 deploy production

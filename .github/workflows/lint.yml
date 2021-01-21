@@ -1,11 +1,14 @@
 name: Lint Check
 
-on: [pull_request]
+on:
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   eslint:
     name: ESLint Check
     runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
@@ -19,6 +22,7 @@ jobs:
   prettier:
     name: Prettier Check
     runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -38,6 +42,7 @@ jobs:
 
       - name: comment PR
         uses: unsplash/comment-on-pr@master
+        if: contains(${{ steps.prettier_run.outputs.prettier_output }}, '.');
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
