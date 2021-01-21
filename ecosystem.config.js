@@ -24,4 +24,22 @@ module.exports = {
       ...ENV_VARS,
     },
   ],
+  deploy: {
+    staging: {
+      user: 'mm',
+      host: 'server1.dashnet.in',
+      ref: 'origin/development',
+      repo: 'git@github.com:Monday-Morning/project-reclamation.git',
+      path: '~/www',
+      'post-deploy': 'npm install; git secret reveal; npm run start:stage;',
+    },
+    production: {
+      user: 'github',
+      host: 'mm.nitrkl.ac.in',
+      ref: 'origin/production',
+      repo: 'git@github.com:Monday-Morning/project-reclamation.git',
+      path: '/var/www',
+      'post-deploy': 'npm install --only=production; git secret reveal; npm run start:prod;',
+    },
+  },
 };
