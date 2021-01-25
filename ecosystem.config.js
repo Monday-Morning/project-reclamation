@@ -24,4 +24,24 @@ module.exports = {
       ...ENV_VARS,
     },
   ],
+  deploy: {
+    staging: {
+      user: 'mm',
+      host: 'server1.dashnet.in',
+      ref: 'origin/development',
+      repo: 'git@github.com:Monday-Morning/project-reclamation.git',
+      path: '~/www',
+      'post-deploy':
+        'rm -f -r node_modules; git secret remove; npm install; git secret reveal; npm run start:stage; npx pm2 dump;',
+    },
+    production: {
+      user: 'github',
+      host: 'mm.nitrkl.ac.in',
+      ref: 'origin/production',
+      repo: 'git@github.com:Monday-Morning/project-reclamation.git',
+      path: '/var/www',
+      'post-deploy':
+        'rm -f -r node_modules; git secret remove; npm install --only=production; git secret reveal; npm run start:prod; npx pm2 dump;',
+    },
+  },
 };
