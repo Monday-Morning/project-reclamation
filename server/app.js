@@ -26,7 +26,8 @@ const { ApolloServer } = require('apollo-server-express');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const cors = require('cors');
-const winston = require('./config/winston');
+const winston = require('./helpers/winston');
+const logger = new winston('app');
 
 /**
  * @summary Express Router Object
@@ -73,8 +74,10 @@ const PORT = process.env.PORT || DEFAULT_PORT;
  */
 const corsOptions = {
   origin:
-    !process.env.NODE_ENV || process.env.NODE_ENV !== 'production'
+    !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
+      : process.env.NODE_ENV === 'staging'
+      ? 'http://mm.server1.dashnet.in'
       : 'https://mondaymorning.nitrkl.ac.in',
 };
 app.use(cors(corsOptions));
@@ -118,7 +121,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
     },
   });
   store.on('error', (error) => {
-    winston.error(new Error(`Reclamation Server | App | Error on Session Store`), error);
+    logger.error(`Error on Session Store`, error);
   });
   app.use(
     session({
@@ -150,7 +153,7 @@ const apolloServer = new ApolloServer({
   }),
   cors: corsOptions,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
-  debug: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
+  debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
 });
 
 /** Attach Express Server with Apollo Server */
@@ -162,10 +165,10 @@ app.use(router);
 /** Start Express Server on defined port */
 app.listen(PORT, (err) => {
   if (err) {
-    winston.error(new Error(`Reclamation Server | App | Express Server Error on Port ${PORT}`), err);
+    logger.error(`Express Server Error on Port ${PORT}`, err);
     return;
   }
-  winston.info(`Reclamation Server | App | Express Server Started on Port ${PORT}`);
+  logger.info(`Express Server Started on Port ${PORT}`);
 });
 
 /**
