@@ -9,11 +9,10 @@ module.exports = {
       instances: 1, //TODO: change to 'max' for production
       exec_mode: 'cluster',
       max_memmory_restart: '500M',
-      log_date_format: 'YYYY-MM-DD HH:MM:SS Z',
+      time: false,
       error_file: './logs/err.log',
       out_file: './logs/out.log',
       log_file: './logs/combined.log',
-      time: true,
       combine_logs: true,
       kill_timeout: 2000,
       min_uptime: '1m',
