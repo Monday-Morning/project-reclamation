@@ -20,8 +20,13 @@ module.exports = {
    * @param {Object} errorData Custom Error Data
    * @returns {Object}
    */
-  APIError: (code, errorObject = null, errorData = HttpResponseConstants[code]) =>
-    new Object({ code, message: errorObject ? errorObject.message : errorData.message, error: errorObject }),
+  APIError: (code, errorObject = null, errorData = null) =>
+    new Object({
+      code,
+      message: HttpResponseConstants[code].message,
+      additional: errorData,
+      error: errorObject,
+    }),
 
   /**
    * Creates a GraphQLError and returns it
@@ -30,6 +35,9 @@ module.exports = {
    * @param {Object} errorData Custom Error Data
    * @returns {GraphQLError}
    */
-  GraphQLError: (code, errorObject = null, errorData = HttpResponseConstants[code]) =>
-    new GraphQLError(code, null, null, null, null, errorObject, errorData),
+  GraphQLError: (code, errorObject = null, errorData = null) =>
+    new GraphQLError(code, null, null, null, null, errorObject, {
+      ...HttpResponseConstants[code],
+      additional: { ...errorData },
+    }),
 };
