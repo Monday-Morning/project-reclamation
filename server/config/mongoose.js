@@ -8,20 +8,20 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-const mongoose = require('mongoose');
-const winston = require('../helpers/winston');
-const logger = new winston('mongoose');
+const Mongoose = require('mongoose');
+const Winston = require('../helpers/winston');
+const logger = new Winston('mongoose');
 
-const options = {
+const MONGOOSE_OPTIONS = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   poolSize: 100,
   useFindAndModify: false,
   useCreateIndex: true,
 };
-mongoose.connect(process.env.MONGO_APP_URL, options);
+Mongoose.connect(process.env.MONGO_APP_URL, MONGOOSE_OPTIONS);
 
-const db = mongoose.connection;
+const db = Mongoose.connection;
 
 db.on('error', (err) => {
   logger.error('Could not connect to database', err);
@@ -35,7 +35,7 @@ module.exports = {
    * @description Mongoose Database Connection
    * @constant
    *
-   * @type {mongoose.Connection}
+   * @type {Mongoose.Connection}
    */
   db,
 
@@ -43,7 +43,7 @@ module.exports = {
    * @description Mongoose Library (Initialized)
    * @constant
    *
-   * @type {mongoose.Mongoose}
+   * @type {Mongoose.Mongoose}
    */
-  mongoose,
+  Mongoose,
 };
