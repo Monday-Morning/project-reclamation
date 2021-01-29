@@ -11,7 +11,8 @@
 
 const admin = require('firebase-admin');
 const firebaseServiceAccount = require('./firebase-service-account.json');
-const winston = require('./winston');
+const winston = require('../helpers/winston');
+const logger = new winston('firebase');
 
 try {
   /** Inititalize Firebase Admin SDK with required configuration */
@@ -19,9 +20,9 @@ try {
     credential: admin.credential.cert(firebaseServiceAccount),
     storageBucket: process.env.GCP_STORAGE_BUCKET,
   });
-  winston.info('Reclamation Server | Firebase | Admin Application Initialized');
+  logger.info('Admin Application Initialized');
 } catch (e) {
-  winston.error(new Error('Reclamation Server | Firebase | Could not initialize admin application'), e);
+  logger.error('Could not initialize admin application', e);
   return;
 }
 

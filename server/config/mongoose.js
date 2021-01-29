@@ -9,7 +9,8 @@
  * @since 0.1.0
  */
 const mongoose = require('mongoose');
-const winston = require('./winston');
+const winston = require('../helpers/winston');
+const logger = new winston('mongoose');
 
 const options = {
   useNewUrlParser: true,
@@ -23,10 +24,10 @@ mongoose.connect(process.env.MONGO_APP_URL, options);
 const db = mongoose.connection;
 
 db.on('error', (err) => {
-  winston.error(new Error('Reclamation Server | MongoDB | Could not connect to database'), err);
+  logger.error('Could not connect to database', err);
 });
 db.once('open', (data) => {
-  winston.info('Reclamation Server | MongoDB | Database Connected', data);
+  logger.info('Database Connected', data);
 });
 
 module.exports = {

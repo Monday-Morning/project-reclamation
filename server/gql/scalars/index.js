@@ -7,7 +7,6 @@ const {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
-  GraphQLError,
 } = require('graphql');
 
 const { GraphQLDate, GraphQLTime, GraphQLDateTime } = require('graphql-iso-date');
@@ -23,7 +22,6 @@ module.exports = {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
-  GraphQLError,
   GraphQLDate,
   GraphQLTime,
   GraphQLDateTime,
