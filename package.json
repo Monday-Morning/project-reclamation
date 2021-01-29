@@ -1,0 +1,48 @@
+{
+  "name": "project-reclamation",
+  "version": "0.1.0",
+  "description": "The Server Application for Monday Morning under Project Infinity",
+  "main": "app.js",
+  "scripts": {
+    "eslint": "npx eslint ./server",
+    "prettier": "npx prettier --check .",
+    "lint": "npm run eslint && npm run prettier"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Monday-Morning/project-reclamation.git"
+  },
+  "keywords": [
+    "monday",
+    "morning",
+    "project",
+    "reclamation",
+    "infinity",
+    "server",
+    "node",
+    "nodejs",
+    "js",
+    "express",
+    "mongo",
+    "mongodb",
+    "fb",
+    "firebase",
+    "graphql",
+    "rest",
+    "api"
+  ],
+  "author": "MM Tech Team 2020-21",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/Monday-Morning/project-reclamation/issues"
+  },
+  "homepage": "https://github.com/Monday-Morning/project-reclamation#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
+  }
+}
