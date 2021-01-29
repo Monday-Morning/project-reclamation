@@ -14,7 +14,7 @@
     "restart:stage": "pm2 restart ecosystem.config.js",
     "restart:prod": "pm2 restart ecosystem.config.js",
     "pm2:list": "pm2 list",
-    "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
+    "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --recursive --exit",
     "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r ./server",
     "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./app.js > ./docs/APP.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/routes/*.js > ./docs/ROUTES.md"
   },

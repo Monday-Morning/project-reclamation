@@ -38,7 +38,7 @@ const logger = new winston('app');
  *
  * @see module:app.router
  */
-const router = require('./routes');
+const router = require('./router');
 
 /** Initialize Mongoose and Firebase */
 require('./config/mongoose');

@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const chaiHttp = require('chai-http');
-const expressApp = require('../server/app');
+const expressApp = require('../app');
 const environmentVars = require('../ecosystem.config');
 
 process.env = {
