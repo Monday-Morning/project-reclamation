@@ -30,7 +30,6 @@ module.exports = {
       ref: 'origin/development',
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '~/www',
-      'pre-setup': 'npm -g i pm2; pm2 update; pm2 startup;',
       'post-deploy':
         'cd server && rm -rf node_modules; npm install; git secret reveal -f; npm run start:stage; pm2 dump;',
     },
@@ -40,7 +39,6 @@ module.exports = {
       ref: 'origin/production',
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '/var/www',
-      'pre-setup': 'npm -g i pm2; pm2 update; pm2 startup;',
       'post-deploy':
         'cd server && rm -rf node_modules; npm install --only=production; git secret reveal -f; npm run start:prod; pm2 dump;',
     },
