@@ -2,11 +2,13 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY server ./
+COPY server/package.json .
 
 RUN npm -g install pm2
 
-RUN npm install
+RUN npm install --only=production
+
+COPY server .
 
 EXPOSE 3000
 
