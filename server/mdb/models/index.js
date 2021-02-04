@@ -14,7 +14,7 @@
  * @requires module:app.models.comment
  * @requires module:app.models.reaction
  * @requires module:app.models.issue
- * @requires module:app.models.mmSession
+ * @requires module:app.models.session
  * @requires module:app.models.squiggle
  * @requires module:app.models.company
  * @requires module:app.models.live
@@ -125,12 +125,12 @@ module.exports = {
   IssueModel: require('./issue'),
 
   /**
-   * @description MMSession Model
+   * @description Session Model
    * @constant
    *
-   * @see module:app.models.mmSession
+   * @see module:app.models.session
    */
-  MMSessionModel: require('./mmSession'),
+  SessionModel: require('./session'),
 
   /**
    * @description Squiggle Model
