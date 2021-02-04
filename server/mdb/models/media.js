@@ -21,9 +21,16 @@ const MediaSchema = new Schema(
   {
     authors: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        reference: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
       },
     ],
     storePath: {
@@ -31,10 +38,10 @@ const MediaSchema = new Schema(
       required: true,
       trim: true,
     },
-    /** @enum [0 - Image, 1 - Video] */
+    /** [0 - Image, 1 - Video] */
     type: {
       type: Number,
-      required: true,
+      required: false,
       min: 0,
       max: 1,
       default: 0,
@@ -59,7 +66,7 @@ const MediaSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
