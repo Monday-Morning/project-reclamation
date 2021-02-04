@@ -24,7 +24,7 @@ const TagSchema = new Schema(
       required: true,
       trim: true,
     },
-    admin: {
+    isAdmin: {
       type: Boolean,
       required: true,
       default: false,
@@ -43,7 +43,7 @@ const TagSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
