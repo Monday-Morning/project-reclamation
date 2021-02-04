@@ -19,7 +19,7 @@ const { Schema, model } = require('mongoose');
  */
 const LiveSchema = new Schema(
   {
-    /** @enum [0-3 - Category 0-3, 4 - Internship] */
+    /** [0-3 - Category 0-3, 4 - Internship] */
     type: {
       type: Number,
       required: true,
@@ -36,18 +36,32 @@ const LiveSchema = new Schema(
       required: false,
       min: 0,
     },
-    /**
-     * Object {
-     * 	name: String,
-     * 	rollno: String,
-     * 	branch: String, @enum [All Branches]
-     * 	degree: String, @enum [All Degrees]
-     * }
-     */
     studentsRecruited: [
       {
-        type: Object,
-        required: false,
+        name: {
+          type: String,
+          required: false,
+          trim: true,
+        },
+        rollNumber: {
+          type: String,
+          required: false,
+          trim: true,
+          minlength: 9,
+          maxlength: 9,
+        },
+        branch: {
+          type: String,
+          required: false,
+          trim: true,
+          // TODO: add enumarated list of branches
+        },
+        degree: {
+          type: String,
+          required: false,
+          trim: true,
+          // TODO: add enumerated list of degrees
+        },
       },
     ],
     ctc: {
@@ -79,7 +93,7 @@ const LiveSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
@@ -91,6 +105,10 @@ const LiveSchema = new Schema(
     toJSON: { virtuals: true },
   }
 );
+
+LiveSchema.virtual('internshipDuration')
+  .get(() => this.benefits)
+  .set((v) => (this.benefits = x));
 
 /**
  * @description Generated Live Model
