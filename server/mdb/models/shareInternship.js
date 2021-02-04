@@ -25,32 +25,40 @@ const ShareInternshipSchema = new Schema(
       max: new Date(Date.now()).getFullYear(),
     },
     student: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      year: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 6,
+      },
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+      },
     },
-    studentYear: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 6,
-    },
-    /** if company is registred */
     company: {
-      type: Schema.Types.ObjectId,
-      ref: 'Company',
-      required: false,
-    },
-    /**
-     * if company is not registered
-     * Object {
-     * 	name: String,
-     * 	location: String,
-     * }
-     */
-    organization: {
-      type: Object,
-      required: false,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      location: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      /** if company is registred */
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        required: false,
+      },
     },
     /** Written in weeks */
     duration: {
@@ -58,12 +66,14 @@ const ShareInternshipSchema = new Schema(
       required: true,
       min: 1,
     },
+    // TODO: update with standard content structure
     applyProcess: [
       {
         type: Object,
         required: true,
       },
     ],
+    // TODO: update with standard content structure
     experience: [
       {
         type: Object,
@@ -89,7 +99,7 @@ const ShareInternshipSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
