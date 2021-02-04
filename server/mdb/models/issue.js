@@ -32,21 +32,27 @@ const IssueSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: 'Article',
-        required: true,
+        required: false,
       },
     ],
     featured: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Article',
-        required: true,
+        required: false,
       },
     ],
-    // TODO: Add poll field after Poll Model
+    polls: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Poll',
+        required: false,
+      },
+    ],
     thumbnail: {
       type: Schema.Types.ObjectId,
       ref: 'Media',
-      required: true,
+      required: false,
     },
     description: {
       type: String,
@@ -67,7 +73,7 @@ const IssueSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
