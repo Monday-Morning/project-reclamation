@@ -26,9 +26,16 @@ const AlbumSchema = new Schema(
     },
     tags: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'Tag',
-        required: false,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        reference: {
+          type: Schema.Types.ObjectId,
+          ref: 'Tag',
+          required: false,
+        },
       },
     ],
     cover: {
@@ -45,9 +52,15 @@ const AlbumSchema = new Schema(
     ],
     authors: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+        name: {
+          type: String,
+          required: true,
+        },
+        details: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
       },
     ],
     hits: {
@@ -70,7 +83,7 @@ const AlbumSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
