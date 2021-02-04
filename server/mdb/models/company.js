@@ -27,7 +27,7 @@ const CompanySchema = new Schema(
     alias: [
       {
         type: String,
-        required: true,
+        required: false,
         trim: true,
       },
     ],
@@ -38,8 +38,8 @@ const CompanySchema = new Schema(
     },
     logo: {
       type: Schema.Types.ObjectId,
+      ref: 'Media',
       required: true,
-      trim: true,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -55,7 +55,7 @@ const CompanySchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
