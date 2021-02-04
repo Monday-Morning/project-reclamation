@@ -71,7 +71,7 @@ const PollSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
