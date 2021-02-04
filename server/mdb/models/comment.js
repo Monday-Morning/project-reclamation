@@ -19,6 +19,7 @@ const { Schema, model } = require('mongoose');
  */
 const CommentSchema = new Schema(
   {
+    // TODO: update content with final structure
     content: [
       {
         type: Object,
@@ -26,19 +27,28 @@ const CommentSchema = new Schema(
       },
     ],
     author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        trim: true,
+      },
     },
-    parentModel: {
-      type: String,
-      required: true,
-      enum: ['Article', 'Comment'],
-    },
-    parentRef: {
-      type: Schema.Types.ObjectId,
-      refPath: 'parentModel',
-      required: true,
+    parent: {
+      model: {
+        type: String,
+        required: true,
+        enum: ['Article', 'Comment'],
+      },
+      reference: {
+        type: Schema.Types.ObjectId,
+        refPath: 'parent.model',
+        required: true,
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -54,7 +64,7 @@ const CommentSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
