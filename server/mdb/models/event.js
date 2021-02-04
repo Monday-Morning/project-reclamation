@@ -35,12 +35,12 @@ const EventSchema = new Schema(
     poster: {
       type: Schema.Types.ObjectId,
       ref: 'Media',
-      required: true,
+      required: false,
     },
-    /** @enum [0 - Club, 1 - Institute, 2 - Fest, 3 - Holiday] */
+    /** [0 - Club, 1 - Institute, 2 - Fest, 3 - Holiday] */
     type: {
       type: Number,
-      required: true,
+      required: false,
       default: 0,
       min: 0,
       max: 3,
@@ -53,10 +53,13 @@ const EventSchema = new Schema(
     url: {
       type: String,
       required: false,
+      trim: true,
+      match: /^[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~/?#[\]@!\$&'\(\)\*\+,;=.]+$/i,
     },
     venue: {
       type: String,
       required: false,
+      trim: true,
     },
     hits: {
       type: Number,
@@ -77,7 +80,7 @@ const EventSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
