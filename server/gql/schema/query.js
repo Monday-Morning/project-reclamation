@@ -14,7 +14,7 @@ const {
   GraphQLJSONObject,
 } = require('../scalars');
 
-const { UserModel } = require('../models');
+const { UserModel } = require('../types');
 const { readUserByEmail, readUserById } = require('../resolvers');
 
 const Query = new GraphQLObjectType({

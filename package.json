@@ -4,19 +4,9 @@
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
   "scripts": {
-    "start": "npx pm2 startOrGracefulReload ecosystem.config.js --env development",
-    "start:stage": "pm2 startOrGracefulReload ecosystem.config.js --env staging",
-    "start:prod": "pm2 startOrGracefulReload ecosystem.config.js --env production",
-    "stop": "npx pm2 stop ecosystem.config.js && npx pm2 delete ecosystem.config.js",
-    "stop:stage": "pm2 stop ecosystem.config.js && pm2 delete ecosystem.config.js",
-    "stop:prod": "pm2 stop ecosystem.config.js && pm2 delete ecosystem.config.js",
-    "restart": "npx pm2 restart ecosystem.config.js",
-    "restart:stage": "pm2 restart ecosystem.config.js",
-    "restart:prod": "pm2 restart ecosystem.config.js",
-    "pm2:list": "pm2 list",
-    "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --exit",
-    "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r ./server",
-    "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./app.js > ./docs/APP.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/routes/*.js > ./docs/ROUTES.md"
+    "eslint": "npx eslint ./server",
+    "prettier": "npx prettier --check .",
+    "lint": "npm run eslint && npm run prettier"
   },
   "repository": {
     "type": "git",
@@ -47,34 +37,12 @@
     "url": "https://github.com/Monday-Morning/project-reclamation/issues"
   },
   "homepage": "https://github.com/Monday-Morning/project-reclamation#readme",
-  "dependencies": {
-    "apollo-server-express": "^2.19.0",
-    "connect-mongodb-session": "^2.4.1",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "csurf": "^1.11.0",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "firebase-admin": "^9.3.0",
-    "graphql": "^15.4.0",
-    "graphql-iso-date": "^3.6.1",
-    "graphql-type-json": "^0.3.2",
-    "https": "^1.0.0",
-    "mongoose": "^5.10.13",
-    "winston": "^3.3.3"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
-    "errorhandler": "^1.5.1",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
-    "jsdoc": "^3.6.6",
-    "jsdoc-to-markdown": "^6.0.1",
-    "mocha": "^8.2.1",
-    "pm2": "^4.5.0",
     "prettier": "^2.2.1"
   }
 }

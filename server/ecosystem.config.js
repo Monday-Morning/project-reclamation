@@ -4,15 +4,15 @@ module.exports = {
   apps: [
     {
       name: 'Reclamation Server',
-      script: './server/app.js',
+      script: './app.js',
       watch: false,
-      instances: 1, //TODO: change to 'max' for production
+      instances: 1, // TODO: change to max for production
       exec_mode: 'cluster',
       max_memmory_restart: '500M',
       time: false,
-      error_file: './logs/err.log',
-      out_file: './logs/out.log',
-      log_file: './logs/combined.log',
+      error_file: './logs/pm2-err.log',
+      out_file: './logs/pm2-out.log',
+      log_file: './logs/pm2-app.log',
       combine_logs: true,
       kill_timeout: 2000,
       min_uptime: '1m',
@@ -31,7 +31,7 @@ module.exports = {
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '~/www',
       'post-deploy':
-        'rm -f -r node_modules; git secret remove; npm install; git secret reveal; npm run start:stage; npx pm2 dump;',
+        'git secret reveal -f; cd server; rm -rf node_modules; npm install; npm run start:stage; pm2 dump;',
     },
     production: {
       user: 'github',
@@ -40,7 +40,7 @@ module.exports = {
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
       path: '/var/www',
       'post-deploy':
-        'rm -f -r node_modules; git secret remove; npm install --only=production; git secret reveal; npm run start:prod; npx pm2 dump;',
+        'git secret reveal -f; cd server; rm -rf node_modules; npm install --only=production; npm run start:prod; pm2 dump;',
     },
   },
 };

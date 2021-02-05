@@ -33,19 +33,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+      match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@gmail(\.([^<>()[\]\.,;:\s@\"]{2,})){1,}$/i,
       lowercase: true,
       unique: true,
     },
-    /** @default reader */
-    roles: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Role',
-        required: true,
-      },
-    ],
-    /** @enum [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
+    /** [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
     verifiedType: {
       type: Number,
       required: true,
@@ -58,6 +50,7 @@ const UserSchema = new Schema(
       trim: true,
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@nitrkl\.ac\.in$/i,
       lowercase: true,
+      unique: true,
     },
     picture: {
       type: Schema.Types.ObjectId,
@@ -65,74 +58,82 @@ const UserSchema = new Schema(
       required: true,
     },
     /** Only For MM & NITR Faculty */
-    bio: {
-      type: String,
-      required: false,
-      trim: true,
+    profile: {
+      bio: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      facebook: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      twitter: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      instagram: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      linkedin: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      website: {
+        type: String,
+        required: false,
+        trim: true,
+      },
+      /** Only For MM Tech Team */
+      github: {
+        type: String,
+        required: false,
+        trim: true,
+      },
     },
-    /** Only For MM & NITR Faculty */
-    facebook: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /** Only For MM & NITR Faculty */
-    twitter: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /** Only For MM & NITR Faculty */
-    instagram: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /** Only For MM & NITR Faculty */
-    linkedin: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /** Only For MM & NITR Faculty */
-    website: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /** Only For MM Tech Team */
-    github: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    /**
-     * Object {
-     * 	onModel: "Article" || "Media",
-     *	modelRef: Schema.Types.ObjectID
-     * }
-     */
     contributions: [
       {
-        type: Object,
-        required: false,
+        model: {
+          type: String,
+          required: false,
+          trim: true,
+          enum: ['Article', 'Media'],
+        },
+        reference: {
+          type: Schema.Types.ObjectId,
+          refPath: 'contributions.model',
+          required: false,
+        },
       },
     ],
-    /**
-     * Only For MM
-     * Object {
-     * 	type: {Number}[0 - Member, 1 - Coordinator, 3 - Mentor],
-     * 	team: {Number}[0 - Content, 1 - Technical, 2 - Design, 3 - Photography],
-     *	session: Number,
-     * }
-     */
     positions: [
       {
-        type: Object,
-        require: false,
+        /** [0 - Member, 1 - Coordinator, 2 - Mentor] */
+        positionType: {
+          type: Number,
+          required: false,
+          min: 0,
+          max: 2,
+        },
+        /** [0 - Content, 1 - Photography, 2 - Design, 3 - Technical] */
+        team: {
+          type: Number,
+          required: false,
+          min: 0,
+          max: 3,
+        },
+        session: {
+          type: Number,
+          required: false,
+        },
       },
     ],
-    ban: {
+    isBanned: {
       type: Boolean,
       required: true,
       default: false,
@@ -157,7 +158,7 @@ const UserSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },

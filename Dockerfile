@@ -2,18 +2,16 @@ FROM node:alpine
 
 WORKDIR /app
 
+COPY server/package.json .
+
 RUN npm -g install pm2
 
-COPY package.json ./
+RUN npm install --only=production --force
 
-RUN npm install
-
-COPY .env.js ./
-
-COPY ecosystem.config.js ./
-
-COPY server ./
+COPY server .
 
 EXPOSE 3000
 
-CMD ["npm", "start:prod"]
+CMD ["npm", "run", "start:prod"]
+
+# CMD ["node", "app.js"]

@@ -19,26 +19,26 @@
  * @since 0.1.0
  */
 
-const express = require('express');
-const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session);
+const Express = require('express');
+const Session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(Session);
 const { ApolloServer } = require('apollo-server-express');
-const cookieParser = require('cookie-parser');
-const csrf = require('csurf');
-const cors = require('cors');
-const winston = require('./helpers/winston');
-const logger = new winston('app');
+const CookieParser = require('cookie-parser');
+const CSRF = require('csurf');
+const CORS = require('cors');
+const Winston = require('./helpers/winston');
+const logger = new Winston('app');
 
 /**
  * @summary Express Router Object
  * @description Import and initialize the express router
  * @constant router
  *
- * @type {express.Router}
+ * @type {Express.Router}
  *
  * @see module:app.router
  */
-const router = require('./routes');
+const router = require('./router');
 
 /** Initialize Mongoose and Firebase */
 require('./config/mongoose');
@@ -49,9 +49,9 @@ require('./config/firebase');
  * @description Initialize Express Server
  * @constant app
  *
- * @type {express.Express}
+ * @type {Express.Express}
  */
-const app = express();
+const app = Express();
 
 const DEFAULT_PORT = 8080;
 
@@ -67,12 +67,12 @@ const PORT = process.env.PORT || DEFAULT_PORT;
 /**
  * @summary Cross Origin Options
  * @description Setup Cross-Origin Resource Sharing for the development environment
- * @constant corsOptions
+ * @constant CORS_OPTIONS
  *
  * @type {String}
  * @default http://localhost:3000
  */
-const corsOptions = {
+const CORS_OPTIONS = {
   origin:
     !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
@@ -80,11 +80,11 @@ const corsOptions = {
       ? 'http://mm.server1.dashnet.in'
       : 'https://mondaymorning.nitrkl.ac.in',
 };
-app.use(cors(corsOptions));
+app.use(CORS(CORS_OPTIONS));
 
 /** Use Cookie Parse, JSON and Encoded URL Body Parser, and CSURF in Express */
-app.use(cookieParser());
-app.use(csrf({ cookie: true }));
+app.use(CookieParser());
+app.use(CSRF({ cookie: true }));
 
 /** Use Error Handler in development environment */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
@@ -94,7 +94,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 /** Use Express Session and MongoDB Store for Production */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   app.use(
-    session({
+    Session({
       secret: process.env.SESSION_SECRET,
       key: process.env.SESSION_KEY,
       resave: false,
@@ -124,7 +124,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
     logger.error(`Error on Session Store`, error);
   });
   app.use(
-    session({
+    Session({
       secret: process.env.SESSION_SECRET,
       key: process.env.SESSION_KEY,
       cookie: {
@@ -151,13 +151,13 @@ const apolloServer = new ApolloServer({
     csrfToken: req.csrfToken(),
     authScope: true, //TODO: function to check and append auth scopes from req.headers.authrorization
   }),
-  cors: corsOptions,
+  cors: CORS_OPTIONS,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
   debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
 });
 
 /** Attach Express Server with Apollo Server */
-apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: corsOptions });
+apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: CORS_OPTIONS });
 
 /** Attach Express Router */
 app.use(router);
@@ -173,6 +173,6 @@ app.listen(PORT, (err) => {
 
 /**
  * @description Main Express Application
- * @type {express.Express}
+ * @type {Express.Express}
  */
 module.exports = app;

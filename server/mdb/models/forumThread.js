@@ -24,6 +24,7 @@ const ForumThreadSchema = new Schema(
       required: true,
       trim: true,
     },
+    // TODO: update with standard structure
     content: [
       {
         type: Object,
@@ -31,9 +32,16 @@ const ForumThreadSchema = new Schema(
       },
     ],
     author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+      },
     },
     /** Additional permission required */
     anonymous: {
@@ -41,12 +49,13 @@ const ForumThreadSchema = new Schema(
       required: false,
       default: false,
     },
+    // TODO: create enumerated list of options
     authority: {
       type: String,
       required: false,
       trim: true,
     },
-    /** @enum [0 - Pending Moderation, 1 - Open, 2 - Closed] */
+    /** [0 - Pending Moderation, 1 - Open, 2 - Closed] */
     threadStatus: {
       type: Number,
       required: false,
@@ -54,25 +63,25 @@ const ForumThreadSchema = new Schema(
       min: 0,
       max: 2,
     },
-    /**
+    verifiedResponse: {
       response: {
-        type: Schema.Types.ObjectId,
-        ref: 'ForumMessage',
+        type: String,
         required: false,
-        default: null,
+        trim: true,
+        maxlength: 100,
       },
-      @enum [0 - Unanswered, 1 - Public Answer Verified, 2 - MM Answered, 3 - Authority Answered]
+      /** [0 - Public Answer Verified, 1 - MM Answered, 2 - Authority Answered] */
       responseType: {
         type: Number,
         required: false,
-        default: 0,
         min: 0,
-        max: 3,
+        max: 2,
       },
-    */
-    verifiedResponse: {
-      type: Object,
-      required: false,
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'ThreadMessage',
+        required: false,
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -88,7 +97,7 @@ const ForumThreadSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },

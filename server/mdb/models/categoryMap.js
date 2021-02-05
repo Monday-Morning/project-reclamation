@@ -19,7 +19,7 @@ const { Schema, model } = require('mongoose');
  */
 const CategoryMapSchema = new Schema(
   {
-    categoryNumber: {
+    number: {
       type: Number,
       required: true,
       min: 0,
@@ -30,10 +30,17 @@ const CategoryMapSchema = new Schema(
       trim: true,
     },
     parent: {
-      type: Number,
-      required: false,
-      min: 0,
-      default: null,
+      number: {
+        type: Number,
+        required: false,
+        min: 0,
+        default: null,
+      },
+      reference: {
+        type: Schema.Types.ObjectId,
+        ref: 'CategoryMap',
+        required: false,
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -49,7 +56,7 @@ const CategoryMapSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },

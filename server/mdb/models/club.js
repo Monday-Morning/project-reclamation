@@ -63,27 +63,49 @@ const ClubSchema = new Schema(
       type: String,
       required: false,
       trim: true,
+      match: /^[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~/?#[\]@!\$&'\(\)\*\+,;=.]+$/i,
     },
     github: {
       type: String,
       required: false,
       trim: true,
     },
-    /**
-     * Object {
-     *	user: Schema.Types.ObjectId,
-     *	name: String,
-     *	picture: String,
-     *	nitrMail: String,
-     * 	desgination: String
-     * }
-     */
     executive: [
       {
-        type: Object,
-        required: true,
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        picture: {
+          type: Schema.Types.ObjectId,
+          ref: 'Media',
+          required: true,
+        },
+        nitrMail: {
+          type: String,
+          required: true,
+          trim: true,
+          match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@nitrkl\.ac\.in$/i,
+          lowercase: true,
+        },
+        designation: {
+          type: String,
+          required: true,
+          trim: true,
+        },
       },
     ],
+    isFest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -98,7 +120,7 @@ const ClubSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },

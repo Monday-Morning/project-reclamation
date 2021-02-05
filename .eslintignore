@@ -1,4 +1,6 @@
 /**/node_modules/
-/planning/**/*
-/test/**
-/.gitsecret/*
+/**/planning/
+/**/.gitsecret/
+/**/logs/
+/**/out/
+/**/test/

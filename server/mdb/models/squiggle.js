@@ -19,6 +19,7 @@ const { Schema, model } = require('mongoose');
  */
 const SquiggleSchema = new Schema(
   {
+    // TODO: update with standard content structure
     content: [
       {
         type: Object,
@@ -39,7 +40,7 @@ const SquiggleSchema = new Schema(
     },
     schemaVersion: {
       type: Number,
-      required: true,
+      required: false,
       default: 1,
       min: 1,
     },
