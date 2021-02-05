@@ -108,7 +108,7 @@ const LiveSchema = new Schema(
 
 LiveSchema.virtual('internshipDuration')
   .get(() => this.benefits)
-  .set((v) => (this.benefits = x));
+  .set((x) => (this.benefits = x));
 
 /**
  * @description Generated Live Model
