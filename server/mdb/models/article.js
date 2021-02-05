@@ -123,7 +123,7 @@ const ArticleSchema = new Schema(
       min: 0,
       max: 3,
     },
-    isLanRestricted: {
+    isInstituteRestricted: {
       type: Boolean,
       required: false,
       default: false,

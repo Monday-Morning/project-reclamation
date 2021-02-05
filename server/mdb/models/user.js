@@ -113,12 +113,14 @@ const UserSchema = new Schema(
     ],
     positions: [
       {
+        /** [0 - Member, 1 - Coordinator, 2 - Mentor] */
         positionType: {
           type: Number,
           required: false,
           min: 0,
           max: 2,
         },
+        /** [0 - Content, 1 - Photography, 2 - Design, 3 - Technical] */
         team: {
           type: Number,
           required: false,

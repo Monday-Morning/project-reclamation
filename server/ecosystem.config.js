@@ -6,7 +6,7 @@ module.exports = {
       name: 'Reclamation Server',
       script: './app.js',
       watch: false,
-      instances: max,
+      instances: 1, // TODO: change to max for production
       exec_mode: 'cluster',
       max_memmory_restart: '500M',
       time: false,
