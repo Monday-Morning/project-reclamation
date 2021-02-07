@@ -3,11 +3,6 @@ name: Development Server Deploy
 on:
   push:
     branches: [development]
-    paths:
-      - '.env.js.secret'
-      - 'ecosystem.config.js'
-      - 'package.json'
-      - 'server/**'
 
 jobs:
   devDeploy:
@@ -23,4 +18,4 @@ jobs:
           node-version: '14'
 
       - name: Run PM2 Deploy
-        run: npx pm2 deploy staging
+        run: cd server && npx pm2 deploy staging
