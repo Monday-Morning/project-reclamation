@@ -40,9 +40,10 @@ const UserSchema = new Schema(
     /** [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
     verifiedType: {
       type: Number,
-      required: true,
+      required: false,
       min: 0,
       max: 3,
+      default: 0,
     },
     nitrMail: {
       type: String,
@@ -56,6 +57,18 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Media',
       required: true,
+    },
+    interestedTopics: [
+      {
+        type: Number,
+        required: false,
+        min: 0,
+      },
+    ],
+    newsletter: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     /** Only For MM & NITR Faculty */
     profile: {
