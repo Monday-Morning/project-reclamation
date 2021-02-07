@@ -31,7 +31,7 @@ module.exports = {
    * @description Firebase Authentication Library
    * @constant
    *
-   * @type {admin.auth.Auth}
+   * @type {Admin.auth.Auth}
    */
   auth: Admin.auth(),
 
@@ -39,7 +39,7 @@ module.exports = {
    * @description Firebase Storage Library
    * @constant
    *
-   * @type {admin.storage.Storage}
+   * @type {Admin.storage}
    */
   bucket: Admin.storage().bucket(),
 };
