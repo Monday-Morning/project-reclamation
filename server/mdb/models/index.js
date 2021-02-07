@@ -27,11 +27,22 @@
  * @since 0.1.0
  */
 
+const { Model } = require('mongoose');
+
 module.exports = {
+  /**
+   * @description Prototype Model
+   * @constant
+   *
+   * @type {Model}
+   */
+  Model,
+
   /**
    * @description User Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.user
    */
   UserModel: require('./user'),
@@ -40,6 +51,7 @@ module.exports = {
    * @description Role Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.role
    */
   RoleModel: require('./role'),
@@ -48,6 +60,7 @@ module.exports = {
    * @description Club Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.club
    */
   ClubModel: require('./club'),
@@ -56,6 +69,7 @@ module.exports = {
    * @description Event Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.event
    */
   EventModel: require('./event'),
@@ -64,6 +78,7 @@ module.exports = {
    * @description Category Map Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.categoryMap
    */
   CategoryMapModel: require('./categoryMap'),
@@ -72,6 +87,7 @@ module.exports = {
    * @description Tag Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.tag
    */
   TagModel: require('./tag'),
@@ -80,6 +96,7 @@ module.exports = {
    * @description Media Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.media
    */
   MediaModel: require('./media'),
@@ -88,6 +105,7 @@ module.exports = {
    * @description Album Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.album
    */
   AlbumModel: require('./album'),
@@ -96,6 +114,7 @@ module.exports = {
    * @description Article Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.article
    */
   ArticleModel: require('./article'),
@@ -104,6 +123,7 @@ module.exports = {
    * @description Comment Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.comment
    */
   CommentModel: require('./comment'),
@@ -112,6 +132,7 @@ module.exports = {
    * @description Reaction Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.reaction
    */
   ReactionModel: require('./reaction'),
@@ -120,6 +141,7 @@ module.exports = {
    * @description Issue Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.issue
    */
   IssueModel: require('./issue'),
@@ -136,6 +158,7 @@ module.exports = {
    * @description Squiggle Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.squiggle
    */
   SquiggleModel: require('./squiggle'),
@@ -144,6 +167,7 @@ module.exports = {
    * @description Company Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.company
    */
   CompanyModel: require('./company'),
@@ -152,6 +176,7 @@ module.exports = {
    * @description Live Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.live
    */
   LiveModel: require('./live'),
@@ -160,6 +185,7 @@ module.exports = {
    * @description Share Internship Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.shareInternship
    */
   ShareInternshipModel: require('./shareInternship'),
@@ -168,6 +194,7 @@ module.exports = {
    * @description Forum Thread Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.forum.thread
    */
   ForumThreadModel: require('./forumThread'),
@@ -176,6 +203,7 @@ module.exports = {
    * @description Forum Message Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.forum.message
    */
   ForumMessageModel: require('./forumMessage'),
@@ -184,6 +212,7 @@ module.exports = {
    * @description Poll Model
    * @constant
    *
+   * @type {Model}
    * @see module:app.models.poll
    */
   PollModel: require('./poll'),
