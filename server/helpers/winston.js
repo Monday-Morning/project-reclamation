@@ -10,6 +10,11 @@
 const { createLogger, format, transports } = require('winston');
 
 class Winston {
+  /**
+   *
+   * @param {String} logModule Sets the module name for the logger
+   * @returns {Winston}
+   */
   constructor(logModule) {
     /**
      * @description Log Format
