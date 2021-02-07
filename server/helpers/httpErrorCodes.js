@@ -1,6 +1,6 @@
 /**
- * @module app.error.httpResponseConstants
- * @description HTTP Response Constants
+ * @module app.error.httpErrorCodes
+ * @description HTTP Error Codes
  *
  * @version 0.1.0
  * @since 0.1.0
