@@ -531,7 +531,7 @@ MigrationBackup/
 out
 
 .vscode/**
-server/helpers/roles.json
+roles.json
 
 # Git Secret
 .gitsecret/keys/random_seed

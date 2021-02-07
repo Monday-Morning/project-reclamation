@@ -151,7 +151,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
  */
 const apolloServer = new ApolloServer({
   schema: require('./gql/schema'),
-  context: async (req) => ({
+  context: async ({ req }) => ({
     authToken: req.headers.authorization,
     // csrfToken: req.csrfToken(), // Disabled CSURF
     decodedToken: await GetUserAuthScope(req.session, req.header.authorization),
