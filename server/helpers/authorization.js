@@ -33,8 +33,7 @@ module.exports = {
 
       if (!decodedToken.email_verified) {
         return APIError('UNAUTHORIZED', null, {
-          message: 'The user is not valid.',
-          reason: 'The users email id is not verified.',
+          message: 'The users email id is not verified.',
         });
       }
 
@@ -74,11 +73,12 @@ module.exports = {
    *
    * @param {session.Session} session
    * @param {String} jwt
+   * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  StartSession: async (session, jwt) => {
+  StartSession: async (session, jwt, _auth = auth) => {
     try {
-      const decodedToken = await this.AuthenticateUser(jwt);
+      const decodedToken = await this.AuthenticateUser(jwt, _auth);
       if (decodedToken instanceof GraphQLError) {
         return decodedToken;
       }
@@ -202,13 +202,13 @@ module.exports = {
    * @param {String} jwt
    * @returns {NULL | Object | GraphQLError}
    */
-  GetUserAuthScope: (session, jwt) => {
+  GetUserAuthScope: (session, jwt, _auth = auth) => {
     if (!jwt) {
       return null;
     }
     if (this.CheckSession(session, jwt)) {
       return session.auth.roles;
     }
-    return this.StartSession(session, jwt);
+    return this.StartSession(session, jwt, _auth);
   },
 };
