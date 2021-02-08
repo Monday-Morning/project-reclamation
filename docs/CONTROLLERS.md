@@ -21,57 +21,49 @@
 
 <a name="NODE_ENV"></a>
 
-## NODE_ENV : <code>String</code>
-
+## NODE\_ENV : <code>String</code>
 <p>Node environment mode</p>
 
 **Kind**: global constant  
 <a name="PORT"></a>
 
 ## PORT : <code>Number</code>
-
 <p>Server port</p>
 
 **Kind**: global constant  
 <a name="SESSION_SECRET"></a>
 
-## SESSION_SECRET : <code>String</code>
-
+## SESSION\_SECRET : <code>String</code>
 <p>MongoDB store's session secret</p>
 
 **Kind**: global constant  
 <a name="SESSION_KEY"></a>
 
-## SESSION_KEY : <code>String</code>
-
+## SESSION\_KEY : <code>String</code>
 <p>MongoDB store's session key</p>
 
 **Kind**: global constant  
 <a name="MONGO_SESSION_URL"></a>
 
-## MONGO_SESSION_URL : <code>String</code>
-
+## MONGO\_SESSION\_URL : <code>String</code>
 <p>MongoDB session table access URL</p>
 
 **Kind**: global constant  
 <a name="MONGO_APP_URL"></a>
 
-## MONGO_APP_URL : <code>String</code>
-
+## MONGO\_APP\_URL : <code>String</code>
 <p>MongoDB app table access URL</p>
 
 **Kind**: global constant  
 <a name="GCP_STORAGE_BUCKET"></a>
 
-## GCP_STORAGE_BUCKET : <code>String</code>
-
+## GCP\_STORAGE\_BUCKET : <code>String</code>
 <p>GCP storage bucket address</p>
 
 **Kind**: global constant  
 <a name="TEST_AUTH_KEY"></a>
 
-## TEST_AUTH_KEY : <code>String</code>
-
+## TEST\_AUTH\_KEY : <code>String</code>
 <p>Test JWT token for auth bypass</p>
 
-**Kind**: global constant
+**Kind**: global constant  
