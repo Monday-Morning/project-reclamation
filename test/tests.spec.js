@@ -1,3 +1,4 @@
+/* eslint-disable */
 const expect = require('chai').expect;
 
 describe('Random Integer Check', function () {
