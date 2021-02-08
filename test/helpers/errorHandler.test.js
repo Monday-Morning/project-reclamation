@@ -2,7 +2,7 @@
 const expect = require('chai').expect;
 const { APIError, FirebaseAuthError, GraphQLError } = require('../../server/helpers/errorHandler');
 
-describe('Error Helper Check', () => {
+describe('Error Handler Check', () => {
   describe('APIError Check', () => {
     it('Response is of type GraphQLError', () => {
       expect(APIError(null)).to.be.instanceOf(GraphQLError);
