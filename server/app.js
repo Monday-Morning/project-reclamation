@@ -26,9 +26,11 @@ const { ApolloServer } = require('apollo-server-express');
 // const CookieParser = require('cookie-parser');
 // const CSRF = require('csurf');
 const CORS = require('cors');
+const { init: firebaseInit } = require('./config/firebase');
+const { init: mongooseInit } = require('./config/mongoose');
+const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 const Winston = require('./helpers/winston');
 const logger = new Winston('app');
-const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 
 /**
  * @summary Express Router Object
@@ -42,8 +44,8 @@ const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 const router = require('./router');
 
 /** Initialize Mongoose, Firebase and Cache Roles */
-require('./config/mongoose');
-require('./config/firebase');
+firebaseInit();
+mongooseInit();
 CacheRoles();
 
 /**
