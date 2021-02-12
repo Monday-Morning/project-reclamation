@@ -17,7 +17,7 @@ const Winston = require('./winston');
 const logger = new Winston('authorization');
 const S_TO_MS = 1000;
 
-module.exports = {
+const Authorization = {
   /**
    * @description Authenticates a user and returns the uid
    * @function
@@ -62,7 +62,7 @@ module.exports = {
     !session.auth.exp ||
     !session.auth.roles ||
     session.auth.jwt !== jwt ||
-    session.auth.exp <= Date.now()
+    session.auth.exp <= Date.now() / S_TO_MS
       ? false
       : true,
 
@@ -78,7 +78,7 @@ module.exports = {
    */
   StartSession: async (session, jwt, _auth = auth) => {
     try {
-      const decodedToken = await this.AuthenticateUser(jwt, _auth);
+      const decodedToken = await Authorization.AuthenticateUser(jwt, _auth);
       if (decodedToken instanceof GraphQLError) {
         return decodedToken;
       }
@@ -91,7 +91,7 @@ module.exports = {
         uid,
         mid,
         jwt,
-        exp: exp * S_TO_MS,
+        exp,
         roles,
       };
       await session.save();
@@ -112,10 +112,11 @@ module.exports = {
    */
   EndSession: async (session, jwt) => {
     try {
-      if (this.CheckSession(session, jwt)) {
+      if (Authorization.CheckSession(session, jwt)) {
         await session.destroy();
+        return true;
       }
-      return null;
+      return false;
     } catch (e) {
       return APIError(null, e, { message: 'Could not destroy users session.' });
     }
@@ -161,7 +162,7 @@ module.exports = {
    * @returns {Array<String>}
    */
   GetPermissions: (roleName) => {
-    const _roles = this.GetRoles();
+    const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
       return _roles;
     }
@@ -178,13 +179,13 @@ module.exports = {
    * @returns {Boolean | GraphQLError}
    */
   HasPermmission: (session, jwt, permission) => {
-    if (!this.CheckSession(session, jwt)) {
+    if (!Authorization.CheckSession(session, jwt)) {
       session.destroy();
       return APIError('UNAUTHORIZED', null, {
         message: 'The users session has either expired or is invaid. Please regenerate the session.',
       });
     }
-    const _roles = this.GetRoles();
+    const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
       return _roles;
     }
@@ -206,9 +207,11 @@ module.exports = {
     if (!jwt) {
       return null;
     }
-    if (this.CheckSession(session, jwt)) {
+    if (Authorization.CheckSession(session, jwt)) {
       return session.auth.roles;
     }
-    return this.StartSession(session, jwt, _auth);
+    return Authorization.StartSession(session, jwt, _auth);
   },
 };
+
+module.exports = Authorization;
