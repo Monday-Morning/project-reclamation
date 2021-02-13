@@ -83,10 +83,9 @@ describe('Authorization Handler Check', async () => {
       let decodedToken = await AuthenticateUser(authMock.expiredToken.jwt, authMock);
       expect(decodedToken).to.be.instanceOf(GraphQLError);
       expect(decodedToken.name).to.be.equal('GraphQLError');
-      expect(decodedToken.message).to.be.equal('UNAUTHORIZED');
-      expect(decodedToken.extensions.code).to.be.equal(httpsErrorCodes['UNAUTHORIZED'].code);
-      expect(decodedToken.extensions.message).to.be.equal(httpsErrorCodes['UNAUTHORIZED'].message);
-      expect(decodedToken.extensions.additional.message).to.be.equal('The users JWT token has expired');
+      expect(decodedToken.message).to.be.equal('auth/id-token-expired');
+      expect(decodedToken.extensions.code).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].code);
+      expect(decodedToken.extensions.message).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].message);
     });
 
     it('Returns UNAUTHORIZED error for unverified case', async () => {

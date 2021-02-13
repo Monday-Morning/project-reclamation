@@ -37,10 +37,6 @@ const Authorization = {
         });
       }
 
-      if (decodedToken.exp * S_TO_MS <= Date.now()) {
-        return APIError('UNAUTHORIZED', null, { message: 'The users JWT token has expired' });
-      }
-
       return decodedToken;
     } catch (e) {
       return FirebaseAuthError(e);
