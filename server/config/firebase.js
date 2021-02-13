@@ -10,7 +10,6 @@
  */
 
 const Admin = require('firebase-admin');
-const firebaseServiceAccount = require('./firebase-service-account.json');
 const Winston = require('../helpers/winston');
 const logger = new Winston('firebase');
 
@@ -22,6 +21,7 @@ module.exports = {
   init: () => {
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
+      const firebaseServiceAccount = require('./firebase-service-account.json');
       Admin.initializeApp({
         credential: Admin.credential.cert(firebaseServiceAccount),
         storageBucket: process.env.GCP_STORAGE_BUCKET || null,
