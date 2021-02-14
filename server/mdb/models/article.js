@@ -69,22 +69,24 @@ const ArticleSchema = new Schema(
         },
       },
     ],
-    category: {
-      subcategory: {
-        type: Boolean,
-        required: true,
+    category: [
+      {
+        subcategory: {
+          type: Boolean,
+          required: true,
+        },
+        number: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+        reference: {
+          type: Schema.Types.ObjectId,
+          ref: 'CategoryMap',
+          required: true,
+        },
       },
-      number: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
-      reference: {
-        type: Schema.Types.ObjectId,
-        ref: 'CategoryMap',
-        required: true,
-      },
-    },
+    ],
     tags: [
       {
         name: {

@@ -1,4 +1,4 @@
-name: Lint Check
+name: PR Checks
 
 on:
   pull_request_review:
@@ -64,3 +64,23 @@ jobs:
               repo: context.repo.repo,
               body: `Prettier Response:\n ${cmdoutput}`
             })
+
+  mocha:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Install packages
+        run: npm install && cd server && npm install
+
+      - name: Run Mocha
+        id: mocha_run
+        run: npm test

@@ -12,32 +12,38 @@ const Mongoose = require('mongoose');
 const Winston = require('../helpers/winston');
 const logger = new Winston('mongoose');
 
-const MONGOOSE_OPTIONS = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  poolSize: 100,
-  useFindAndModify: false,
-  useCreateIndex: true,
-};
-Mongoose.connect(process.env.MONGO_APP_URL, MONGOOSE_OPTIONS);
-
-const db = Mongoose.connection;
-
-db.on('error', (err) => {
-  logger.error('Could not connect to database', err);
-});
-db.once('open', (data) => {
-  logger.info('Database Connected', data);
-});
-
 module.exports = {
+  /**
+   * @description Mongoose Initialization Sequence
+   * @function
+   */
+  init: () => {
+    const MONGOOSE_OPTIONS = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      poolSize: 100,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    };
+    Mongoose.connect(process.env.MONGO_APP_URL, MONGOOSE_OPTIONS);
+
+    const db = Mongoose.connection;
+
+    db.on('error', (err) => {
+      logger.error('Could not connect to database', err);
+    });
+    db.once('open', (data) => {
+      logger.info('Database Connected', data);
+    });
+  },
+
   /**
    * @description Mongoose Database Connection
    * @constant
    *
    * @type {Mongoose.Connection}
    */
-  db,
+  db: Mongoose.connection.readyState !== 1 ? Mongoose.connection : null,
 
   /**
    * @description Mongoose Library (Initialized)

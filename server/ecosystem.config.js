@@ -13,7 +13,7 @@ module.exports = {
       error_file: './logs/pm2-err.log',
       out_file: './logs/pm2-out.log',
       log_file: './logs/pm2-app.log',
-      combine_logs: true,
+      combine_logs: false,
       kill_timeout: 2000,
       min_uptime: '1m',
       max_restarts: 5,

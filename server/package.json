@@ -13,10 +13,7 @@
     "restart": "npx pm2 restart ecosystem.config.js",
     "restart:stage": "pm2 restart ecosystem.config.js",
     "restart:prod": "pm2 restart ecosystem.config.js",
-    "pm2:list": "pm2 list",
-    "test": "SET NODE_ENV=test && npx mocha --package ./package.json --check-leaks --reporter spec --recursive --exit",
-    "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./package.json -r ./server",
-    "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./app.js > ./docs/APP.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/gql/**/*.js > ./docs/GQL.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/mdb/**/*.js > ./docs/MDB.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/routes/*.js > ./docs/ROUTES.md"
+    "pm2:list": "pm2 list"
   },
   "repository": {
     "type": "git",
@@ -65,11 +62,6 @@
     "pm2": "^4.5.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
-    "errorhandler": "^1.5.1",
-    "jsdoc": "^3.6.6",
-    "jsdoc-to-markdown": "^6.0.1",
-    "mocha": "^8.2.1"
+    "errorhandler": "^1.5.1"
   }
 }

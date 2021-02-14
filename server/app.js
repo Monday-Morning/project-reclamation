@@ -23,9 +23,12 @@ const Express = require('express');
 const Session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(Session);
 const { ApolloServer } = require('apollo-server-express');
-const CookieParser = require('cookie-parser');
-const CSRF = require('csurf');
+// const CookieParser = require('cookie-parser');
+// const CSRF = require('csurf');
 const CORS = require('cors');
+const { init: firebaseInit } = require('./config/firebase');
+const { init: mongooseInit } = require('./config/mongoose');
+const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 const Winston = require('./helpers/winston');
 const logger = new Winston('app');
 
@@ -40,9 +43,10 @@ const logger = new Winston('app');
  */
 const router = require('./router');
 
-/** Initialize Mongoose and Firebase */
-require('./config/mongoose');
-require('./config/firebase');
+/** Initialize Mongoose, Firebase and Cache Roles */
+firebaseInit();
+mongooseInit();
+CacheRoles();
 
 /**
  * @summary Main Express Application
@@ -83,8 +87,11 @@ const CORS_OPTIONS = {
 app.use(CORS(CORS_OPTIONS));
 
 /** Use Cookie Parse, JSON and Encoded URL Body Parser, and CSURF in Express */
-app.use(CookieParser());
-app.use(CSRF({ cookie: true }));
+/** 
+ * Disabled CSURF as Authorization: Bearer<> header is not vulnerable
+ app.use(CookieParser());
+ app.use(CSRF({ cookie: true }));
+ */
 
 /** Use Error Handler in development environment */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
@@ -112,7 +119,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   const store = new MongoDBStore({
     uri: process.env.MONGO_SESSION_URL,
     collection: 'sessionCacheStore',
-    expires: 432000000,
+    expires: 3600000, // 1 Hour
     connectionOptions: {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -146,10 +153,10 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
  */
 const apolloServer = new ApolloServer({
   schema: require('./gql/schema'),
-  context: ({ req }) => ({
+  context: async ({ req }) => ({
     authToken: req.headers.authorization,
-    csrfToken: req.csrfToken(),
-    authScope: true, //TODO: function to check and append auth scopes from req.headers.authrorization
+    // csrfToken: req.csrfToken(), // Disabled CSURF
+    decodedToken: await GetUserAuthScope(req.session, req.header.authorization),
   }),
   cors: CORS_OPTIONS,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
