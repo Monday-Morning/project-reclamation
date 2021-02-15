@@ -8,6 +8,7 @@
     "prettier": "npx prettier --check .",
     "lint": "npm run eslint && npm run prettier",
     "test": "npx mocha --package ./server/package.json --check-leaks --reporter spec --recursive --exit",
+    "checks": "npm run lint && npm test",
     "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./server/package.json -r ./server",
     "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/app.js > ./docs/APP.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/schema/**/*.js > ./docs/SCHEMA.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/router/*.js > ./docs/ROUTES.md"
   },
