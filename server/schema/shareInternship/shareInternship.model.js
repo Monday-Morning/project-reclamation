@@ -1,5 +1,5 @@
 /**
- * @module app.schema.shareInternships.model
+ * @module app.schema.ShareInternshipModel
  * @description Share Internship Model
  *
  * @requires mongoose.Schema

@@ -1,5 +1,5 @@
 /**
- * @module app.schema.issue.model
+ * @module app.schema.IssueModel
  * @description Issue Model
  *
  * @requires mongoose.Schema

@@ -1,5 +1,5 @@
 /**
- * @module app.schema.tag.model
+ * @module app.schema.TagModel
  * @description Tag Model
  *
  * @requires mongoose.Schema

@@ -1,5 +1,5 @@
 /**
- * @module app.schema.comment.model
+ * @module app.schema.CommentModel
  * @description Comment Model
  *
  * @requires mongoose.Schema

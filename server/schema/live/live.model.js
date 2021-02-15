@@ -1,5 +1,5 @@
 /**
- * @module app.schema.live.model
+ * @module app.schema.LiveModel
  * @description Live Model
  *
  * @requires mongoose.Schema

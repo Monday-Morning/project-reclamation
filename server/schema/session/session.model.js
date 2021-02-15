@@ -1,5 +1,5 @@
 /**
- * @module app.schema.session.model
+ * @module app.schema.SessionModel
  * @description Session Model
  *
  * @requires mongoose.Schema

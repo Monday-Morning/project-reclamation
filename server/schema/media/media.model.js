@@ -1,5 +1,5 @@
 /**
- * @module app.schema.media.model
+ * @module app.schema.MediaModel
  * @description Media Model
  *
  * @requires mongoose.Schema

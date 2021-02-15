@@ -1,5 +1,5 @@
 /**
- * @module app.schema.squiggle.model
+ * @module app.schema.SquiggleModel
  * @description Squiggle Model
  *
  * @requires mongoose.Schema

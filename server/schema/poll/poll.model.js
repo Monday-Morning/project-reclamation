@@ -1,5 +1,5 @@
 /**
- * @module app.schema.poll.model
+ * @module app.schema.PollModel
  * @description Poll Model
  *
  * @requires mongoose.Schema

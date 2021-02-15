@@ -1,5 +1,5 @@
 /**
- * @module app.schema.club.model
+ * @module app.schema.ClubModel
  * @description Club Model
  *
  * @requires mongoose.Schema

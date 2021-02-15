@@ -1,5 +1,5 @@
 /**
- * @module app.schema.company.model
+ * @module app.schema.CompanyModel
  * @description Company Model
  *
  * @requires mongoose.Schema

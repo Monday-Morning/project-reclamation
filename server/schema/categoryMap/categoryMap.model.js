@@ -1,5 +1,5 @@
 /**
- * @module app.schema.categoryMap.model
+ * @module app.schema.CategoryMapModel
  * @description Category Map Model
  *
  * @requires mongoose.Schema

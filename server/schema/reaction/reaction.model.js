@@ -1,5 +1,5 @@
 /**
- * @module app.schema.reaction.model
+ * @module app.schema.ReactionModel
  * @description Reaction Model
  *
  * @requires mongoose.Schema

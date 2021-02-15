@@ -1,5 +1,5 @@
 /**
- * @module app.schema.event.model
+ * @module app.schema.EventModel
  * @description Event Model
  *
  * @requires mongoose.Schema

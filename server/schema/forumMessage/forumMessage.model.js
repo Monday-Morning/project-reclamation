@@ -1,5 +1,5 @@
 /**
- * @module app.schema.forum.message.model
+ * @module app.schema.ForumMessageModel
  * @description Forum Message Model
  *
  * @requires mongoose.Schema

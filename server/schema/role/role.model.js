@@ -1,5 +1,5 @@
 /**
- * @module app.schema.role.model
+ * @module app.schema.RoleModel
  * @description Role Model
  *
  * @requires mongoose.Schema

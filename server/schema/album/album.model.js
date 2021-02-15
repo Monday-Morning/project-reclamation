@@ -1,5 +1,5 @@
 /**
- * @module app.schema.album.model
+ * @module app.schema.AlbumModel
  * @description Album Model
  *
  * @requires mongoose.Schema
