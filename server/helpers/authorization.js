@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { RoleModel } = require('../mdb/models');
+const { RoleModel } = require('../schema/models');
 const { auth } = require('../config/firebase');
 const { APIError, FirebaseAuthError, GraphQLError } = require('./errorHandler');
 const fs = require('fs');

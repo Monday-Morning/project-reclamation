@@ -152,7 +152,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
  * @type {ApolloServer}
  */
 const apolloServer = new ApolloServer({
-  schema: require('./gql/schema'),
+  schema: require('./schema'),
   context: async ({ req }) => ({
     authToken: req.headers.authorization,
     // csrfToken: req.csrfToken(), // Disabled CSURF
