@@ -1,3 +1,13 @@
+/**
+ * @module app.schema.UserType
+ * @description User Type
+ *
+ * @requires module:app.schema.scalars
+ *
+ * @version v1
+ * @since 0.1.0
+ */
+
 const {
   GraphQLObjectType,
   // GraphQLString,
@@ -14,18 +24,15 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const UserType = () =>
-  new GraphQLObjectType({
-    name: 'User',
-    fields: () => ({
-      id: { type: GraphQLID },
+module.exports = new GraphQLObjectType({
+  name: 'User',
+  fields: () => ({
+    id: { type: GraphQLID },
 
-      createdAt: { type: GraphQLDateTime },
-      createdBy: { type: GraphQLID },
-      updatedAt: { type: GraphQLDateTime },
-      updatedBy: { type: GraphQLID },
-      schemaVersion: { type: GraphQLInt },
-    }),
-  });
-
-module.exports = UserType();
+    createdAt: { type: GraphQLDateTime },
+    createdBy: { type: GraphQLID },
+    updatedAt: { type: GraphQLDateTime },
+    updatedBy: { type: GraphQLID },
+    schemaVersion: { type: GraphQLInt },
+  }),
+});

@@ -1,10 +1,19 @@
-const { GraphQLSchema } = require('graphql');
-const Query = require('./query');
-const Mutation = require('./mutation');
-const Subscription = require('./subscription');
+/**
+ * @module app.schema
+ * @description Compiled GraphQL Schema
+ *
+ * @requires graphql
+ * @requires module:app.schema.query
+ * @requires module:app.schema.mutation
+ * @requires module:app.schema.subscription
+ *
+ * @version v1
+ * @since 0.1.0
+ */
 
-module.exports = new GraphQLSchema({
-  query: Query,
-  mutation: Mutation,
-  subscription: Subscription,
+const { mergeSchemas } = require('graphql-tools');
+const UserSchema = require('./user/user.schema');
+
+module.exports = mergeSchemas({
+  schemas: [UserSchema],
 });
