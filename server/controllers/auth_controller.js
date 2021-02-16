@@ -1,5 +1,5 @@
 const { auth } = require('../config/firebase');
-const { PrivacySettingDB, UserDB } = require('../mdb/models');
+const { PrivacySettingDB, UserModel } = require('../schema/models');
 const https = require('https');
 
 module.exports.local = async (req, res, next) => {
@@ -21,7 +21,7 @@ module.exports.local = async (req, res, next) => {
     });
   }
   try {
-    let user = await UserDB.findOne({ email: req.body.email });
+    let user = await UserModel.findOne({ email: req.body.email });
     if (user) {
       return res.json({
         error: true,
@@ -40,7 +40,7 @@ module.exports.local = async (req, res, next) => {
     });
     let privacy = await PrivacySettingDB.create({});
     newUserRecord.privacy = privacy;
-    let p2 = UserDB.create(newUserRecord);
+    let p2 = UserModel.create(newUserRecord);
     await p1;
     p2 = await (await p2).toObject();
     (await p2).authToken = await auth.createCustomToken((await p1).uid);
@@ -185,7 +185,7 @@ module.exports.google = async (req, res) => {
     });
     let privacy = await PrivacySettingDB.create({});
     newUserRecord.privacy = privacy;
-    let p2 = UserDB.create(newUserRecord);
+    let p2 = UserModel.create(newUserRecord);
     p2 = await (await p2).toObject();
     delete (await p2)._id;
     delete (await p2).__v;
@@ -295,7 +295,7 @@ module.exports.start = async (req, res) => {
   }
   // }
   try {
-    let user = await UserDB.findOne({ email: req.headers.user }).populate('privacy');
+    let user = await UserModel.findOne({ email: req.headers.user }).populate('privacy');
     if (!user) {
       return res.json({
         error: true,

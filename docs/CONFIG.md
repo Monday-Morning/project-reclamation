@@ -41,6 +41,8 @@
 - [firebase](#app.module_firebase)
   - [.auth](#app.module_firebase.auth) : <code>Admin.auth.Auth</code>
   - [.bucket](#app.module_firebase.bucket) : <code>Admin.storage</code>
+  - [.init()](#app.module_firebase.init)
+    - [~firebaseServiceAccount](#app.module_firebase.init..firebaseServiceAccount)
 
 <a name="app.module_firebase.auth"></a>
 
@@ -56,6 +58,20 @@
 <p>Firebase Storage Library</p>
 
 **Kind**: static constant of [<code>firebase</code>](#app.module_firebase)  
+<a name="app.module_firebase.init"></a>
+
+### firebase.init()
+
+<p>Firebase Initialization Sequence</p>
+
+**Kind**: static method of [<code>firebase</code>](#app.module_firebase)  
+<a name="app.module_firebase.init..firebaseServiceAccount"></a>
+
+#### init~firebaseServiceAccount
+
+<p>Inititalize Firebase Admin SDK with required configuration</p>
+
+**Kind**: inner constant of [<code>init</code>](#app.module_firebase.init)  
 <a name="app.module_mongoose"></a>
 
 ## mongoose
@@ -69,6 +85,7 @@
 - [mongoose](#app.module_mongoose)
   - [.db](#app.module_mongoose.db) : <code>Mongoose.Connection</code>
   - [.Mongoose](#app.module_mongoose.Mongoose) : <code>Mongoose.Mongoose</code>
+  - [.init()](#app.module_mongoose.init)
 
 <a name="app.module_mongoose.db"></a>
 
@@ -84,6 +101,13 @@
 <p>Mongoose Library (Initialized)</p>
 
 **Kind**: static constant of [<code>mongoose</code>](#app.module_mongoose)  
+<a name="app.module_mongoose.init"></a>
+
+### mongoose.init()
+
+<p>Mongoose Initialization Sequence</p>
+
+**Kind**: static method of [<code>mongoose</code>](#app.module_mongoose)  
 <a name="NODE_ENV"></a>
 
 ## NODE_ENV : <code>String</code>

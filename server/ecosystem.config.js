@@ -1,4 +1,7 @@
-const ENV_VARS = require('./.env.js');
+let ENV_VARS = null;
+try {
+  ENV_VARS = require('./.env.js');
+} catch (error) {}
 
 module.exports = {
   apps: [

@@ -11,7 +11,7 @@
  */
 
 const express = require('express');
-const authController = require('../controllers/auth_controller');
+// const authController = require('../controllers/auth_controller');
 const { auth } = require('../config/firebase');
 
 /**
@@ -34,6 +34,7 @@ const { auth } = require('../config/firebase');
  * @version 0.1.0
  * @since 0.1.0
  */
+/* eslint-disable-next-line */
 const checkUserAuth = async (req, res, next) => {
   if (!process.env.NODE_ENV) {
     return next();
@@ -85,11 +86,11 @@ const checkUserAuth = async (req, res, next) => {
 const router = express.Router();
 
 /** Authentication APIs */
-router.post('/v1/auth/local', authController.local);
-router.post('/v1/auth/google', authController.google);
+// router.post('/v1/auth/local', authController.local);
+// router.post('/v1/auth/google', authController.google);
 
-router.post('/v1/auth/session', authController.start);
-router.delete('/v1/auth/session', checkUserAuth, authController.end);
+// router.post('/v1/auth/session', authController.start);
+// router.delete('/v1/auth/session', checkUserAuth, authController.end);
 
 /** 404 Not Found - Default Response for Invalid Path */
 router.use((req, res) => {
