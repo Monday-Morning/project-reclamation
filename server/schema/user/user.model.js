@@ -38,7 +38,7 @@ const UserSchema = new Schema(
       unique: true,
     },
     /** [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
-    verifiedType: {
+    verified: {
       type: Number,
       required: false,
       min: 0,
@@ -65,7 +65,7 @@ const UserSchema = new Schema(
         min: 0,
       },
     ],
-    newsletter: {
+    isNewsletterSubscribed: {
       type: Boolean,
       required: false,
       default: false,
@@ -127,7 +127,7 @@ const UserSchema = new Schema(
     positions: [
       {
         /** [0 - Member, 1 - Coordinator, 2 - Mentor] */
-        positionType: {
+        position: {
           type: Number,
           required: false,
           min: 0,
