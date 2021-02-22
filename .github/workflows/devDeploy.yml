@@ -12,6 +12,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          config: ${{ secrets.SSH_CONFIG }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
