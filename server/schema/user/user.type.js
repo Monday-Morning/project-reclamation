@@ -3,6 +3,7 @@
  * @description User Type
  *
  * @requires module:app.schema.scalars
+ * @requires module:app.schema.UserResolver
  *
  * @version v1
  * @since 0.1.0
@@ -13,7 +14,7 @@ const {
   // GraphQLScalarType,
   // GraphQLUnionType,
   // GraphQLInputObjectType,
-  GraphQLEnumType,
+  // GraphQLEnumType,
   // GraphQLInterfaceType,
   // GraphQLSchema,
   // GraphQLNonNull,
@@ -31,21 +32,9 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-/**
- * @description Verified Field Enumerator
- * @constant
- *
- * @type {GraphQLEnumType}
- */
-const VerifiedEnumType = new GraphQLEnumType({
-  name: 'VerifiedEnum',
-  values: {
-    NORMAL: { value: 0 },
-    NITR_STUDENT: { value: 1 },
-    MM_TEAM: { value: 2 },
-    NITR_FACULTY: { value: 3 },
-  },
-});
+const { readUserById } = require('./user.resolver');
+
+const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
 
 /**
  * @description User Profile Type
@@ -83,37 +72,6 @@ const ContributionType = new GraphQLObjectType({
 */
 
 /**
- * @description Position Field Enumerator
- * @constant
- *
- * @type {GraphQLEnumType}
- */
-const PositionEnumType = new GraphQLEnumType({
-  name: 'PositionEnum',
-  values: {
-    MEMBER: { value: 0 },
-    COORDINATOR: { value: 1 },
-    MENTOR: { value: 2 },
-  },
-});
-
-/**
- * @description Team Field Enumerator
- * @constant
- *
- * @type {GraphQLEnumType}
- */
-const TeamEnumType = new GraphQLEnumType({
-  name: 'TeamEnum',
-  values: {
-    CONTENT: { value: 0 },
-    PHOTOGRAPHY: { value: 1 },
-    DESIGN: { value: 2 },
-    TECHNICAL: { value: 3 },
-  },
-});
-
-/**
  * @description User Position Type
  * @constant
  *
@@ -142,7 +100,7 @@ const UserType = new GraphQLObjectType({
     lastName: { type: GraphQLString },
     fullName: { type: GraphQLString },
     email: { type: GraphQLString },
-    verified: { type: VerifiedEnumType },
+    accountType: { type: AccountTypeEnumType },
     nitrMail: { type: GraphQLString },
 
     pictureId: { type: GraphQLID },
@@ -184,21 +142,20 @@ const UserType = new GraphQLObjectType({
 		},
 		*/
 
+    isNameChanged: { type: GraphQLBoolean },
+    verifyEmailToken: { type: GraphQLString },
+
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
     createdByUser: {
       type: UserType,
-      resolve: async (parent, args, context, info) => {
-        // TODO: Resolve to UserType
-      },
+      resolve: (parent, _, context) => readUserById(null, { id: parent.id }, context, null),
     },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
     updatedByUser: {
       type: UserType,
-      resolve: async (parent, args, context, info) => {
-        // TODO: Resolve to UserType
-      },
+      resolve: (parent, _, context) => readUserById(null, { id: parent.id }, context, null),
     },
     schemaVersion: { type: GraphQLInt },
   }),
@@ -206,7 +163,7 @@ const UserType = new GraphQLObjectType({
 
 /**
  * @description User Type
- * @constant
+ * @constant UserType
  *
  * @type {GraphQLObjectType}
  */
