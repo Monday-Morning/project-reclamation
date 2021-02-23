@@ -38,7 +38,7 @@ const UserSchema = new Schema(
       unique: true,
     },
     /** [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
-    verified: {
+    accountType: {
       type: Number,
       required: false,
       min: 0,
@@ -155,6 +155,15 @@ const UserSchema = new Schema(
     lastPoll: {
       type: Schema.Types.ObjectId,
       ref: 'Poll',
+      required: false,
+    },
+    isNameChanged: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    verfiyEmailToken: {
+      type: String,
       required: false,
     },
     createdBy: {
