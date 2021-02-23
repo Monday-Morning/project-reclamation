@@ -89,6 +89,7 @@ const Authorization = {
         jwt,
         exp,
         roles,
+        decodedToken,
       };
       await session.save();
       return decodedToken;
@@ -174,20 +175,14 @@ const Authorization = {
    * @param {String} permission
    * @returns {Boolean | GraphQLError}
    */
-  HasPermmission: (session, jwt, permission) => {
-    if (!Authorization.CheckSession(session, jwt)) {
-      session.destroy();
-      return APIError('UNAUTHORIZED', null, {
-        message: 'The users session has either expired or is invaid. Please regenerate the session.',
-      });
-    }
+  HasPermmission: (context, permission) => {
     const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
       return _roles;
     }
-    const UserPermissions = session.roles.map((x) => _roles.find((y) => y.name === x));
+    const UserPermissions = context.decodedToken.customClaims.roles.map((x) => _roles.find((y) => y.name === x));
     if (!UserPermissions.contains(permission)) {
-      return false;
+      return APIError('FORBIDDEN');
     }
     return true;
   },
@@ -199,14 +194,18 @@ const Authorization = {
    * @param {String} jwt
    * @returns {NULL | Object | GraphQLError}
    */
-  GetUserAuthScope: (session, jwt, _auth = auth) => {
+  GetUserAuthScope: async (session, jwt, _auth = auth) => {
     if (!jwt) {
       return null;
     }
     if (Authorization.CheckSession(session, jwt)) {
-      return session.auth.roles;
+      return session.auth.decodedToken;
     }
-    return Authorization.StartSession(session, jwt, _auth);
+    const decodedToken = await Authorization.StartSession(session, jwt, _auth);
+    if (decodedToken instanceof GraphQLError) {
+      throw decodedToken;
+    }
+    return decodedToken.customClaims.roles;
   },
 };
 

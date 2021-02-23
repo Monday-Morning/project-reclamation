@@ -156,7 +156,8 @@ const apolloServer = new ApolloServer({
   context: async ({ req }) => ({
     authToken: req.headers.authorization,
     // csrfToken: req.csrfToken(), // Disabled CSURF
-    decodedToken: await GetUserAuthScope(req.session, req.header.authorization),
+    userRoles: await GetUserAuthScope(req.session, req.headers.authorization),
+    session: req.session,
   }),
   cors: CORS_OPTIONS,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
