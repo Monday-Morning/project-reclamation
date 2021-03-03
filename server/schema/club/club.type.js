@@ -1,26 +1,30 @@
-const { GraphQLString, GraphQLList } = require('graphql');
-const { GraphQLObjectType, GraphQLID, GraphQLDateTime, GraphQLInt } = require('../scalars');
+/**
+ * @module app.schema.ClubType
+ * @description User Type
+ *
+ * @requires module:app.schema.scalars
+ *
+ * @version v1
+ * @since 0.1.0
+ */
 
-const ExecutiveType = new GraphQLObjectType({
-  name: 'Executive',
-  fields: () => ({
-    user: {
-      type: GraphQLID,
-    },
-    name: {
-      type: GraphQLString,
-    },
-    picture: {
-      type: GraphQLID,
-    },
-    nitrMail: {
-      type: GraphQLString,
-    },
-    designation: {
-      type: GraphQLString,
-    },
-  }),
-});
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  // GraphQLSchema,
+  GraphQLID,
+  GraphQLList,
+  // GraphQLBoolean,
+  GraphQLInt,
+  // GraphQLNonNull,
+  // GraphQLDate,
+  // GraphQLTime,
+  GraphQLDateTime,
+  // GraphQLJSON,
+  // GraphQLJSONObject,
+} = require('../scalars');
+const ExecutiveType = require('./executive.type');
+
 const ClubType = new GraphQLObjectType({
   name: 'Club',
   fields: () => ({
@@ -31,7 +35,6 @@ const ClubType = new GraphQLObjectType({
     facebook: { type: GraphQLString },
     twitter: { type: GraphQLString },
     logo: { type: GraphQLString },
-    //TODO: Mention the type of array for executive
     executive: { type: GraphQLList(ExecutiveType) },
     society: { type: GraphQLString },
     description: { type: GraphQLString },
