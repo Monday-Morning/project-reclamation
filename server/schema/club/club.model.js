@@ -34,6 +34,10 @@ const ClubSchema = new Schema(
       required: false,
       trim: true,
     },
+    facAd: {
+      type: String,
+      required: true,
+    },
     facebook: {
       type: String,
       required: false,
