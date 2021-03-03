@@ -174,7 +174,7 @@ const Authorization = {
    * @param {String} permission
    * @returns {Boolean | GraphQLError}
    */
-  HasPermmission: (session, jwt, permission) => {
+  HasPermission: (session, jwt, permission) => {
     if (!Authorization.CheckSession(session, jwt)) {
       session.destroy();
       return APIError('UNAUTHORIZED', null, {
