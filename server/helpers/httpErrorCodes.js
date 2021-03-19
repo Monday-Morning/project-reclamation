@@ -17,11 +17,11 @@ module.exports = {
   },
   /**
    * @constant BAD_REQUEST
-   * @description The server could not understand the request due to invalid syntax.
+   * @description The server could not understand the request due to invalid syntax || The server could not process the request due to missing query fields
    */
   BAD_REQUEST: {
     code: 400,
-    message: 'The server could not understand the request due to invalid syntax.',
+    message: 'The server could not process the request due to missing query fields.',
   },
   /**
    * @constant UNAUTHORIZED
