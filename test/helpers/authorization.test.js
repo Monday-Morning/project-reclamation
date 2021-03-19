@@ -69,7 +69,7 @@ const session = {
   email_verified: true,
 };
 
-describe('Authorization Handler Check', async () => {
+describe('Authorization Module', async () => {
   describe('AuthenticateUser Function', async () => {
     it('Returns decoded token for valid case', async () => {
       let decodedToken = await AuthenticateUser(authMock.validToken.jwt, authMock);
@@ -84,8 +84,6 @@ describe('Authorization Handler Check', async () => {
       expect(decodedToken).to.be.instanceOf(GraphQLError);
       expect(decodedToken.name).to.be.equal('GraphQLError');
       expect(decodedToken.message).to.be.equal('auth/id-token-expired');
-      expect(decodedToken.extensions.code).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].code);
-      expect(decodedToken.extensions.message).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].message);
     });
 
     it('Returns UNAUTHORIZED error for unverified case', async () => {
@@ -93,8 +91,6 @@ describe('Authorization Handler Check', async () => {
       expect(decodedToken).to.be.instanceOf(GraphQLError);
       expect(decodedToken.name).to.be.equal('GraphQLError');
       expect(decodedToken.message).to.be.equal('UNAUTHORIZED');
-      expect(decodedToken.extensions.code).to.be.equal(httpsErrorCodes['UNAUTHORIZED'].code);
-      expect(decodedToken.extensions.message).to.be.equal(httpsErrorCodes['UNAUTHORIZED'].message);
       expect(decodedToken.extensions.additional.message).to.be.equal('The users email id is not verified.');
     });
 
@@ -103,8 +99,6 @@ describe('Authorization Handler Check', async () => {
       expect(decodedToken).to.be.instanceOf(GraphQLError);
       expect(decodedToken.name).to.be.equal('GraphQLError');
       expect(decodedToken.message).to.be.equal('auth/invalid-id-token');
-      expect(decodedToken.extensions.code).to.be.equal(firebaseAuthErrorCodes['auth/invalid-id-token'].code);
-      expect(decodedToken.extensions.message).to.be.equal(firebaseAuthErrorCodes['auth/invalid-id-token'].message);
     });
   });
 
@@ -164,13 +158,11 @@ describe('Authorization Handler Check', async () => {
   });
 
   describe('StartSession Function', async () => {
-    it('Returns GraphQLError when user cannot be authenticated', async () => {
+    it('Returns auth/id-token-expired error when user cannot be authenticated', async () => {
       let decodedToken = await StartSession(session, authMock.expiredToken.jwt, authMock);
       expect(decodedToken).to.be.instanceOf(GraphQLError);
       expect(decodedToken.name).to.be.equal('GraphQLError');
       expect(decodedToken.message).to.be.equal('auth/id-token-expired');
-      expect(decodedToken.extensions.code).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].code);
-      expect(decodedToken.extensions.message).to.be.equal(firebaseAuthErrorCodes['auth/id-token-expired'].message);
     });
 
     it('Returns decodedToken when session is created', async () => {
@@ -181,22 +173,22 @@ describe('Authorization Handler Check', async () => {
       expect(decodedToken.customClaims.roles).to.be.equal(authMock.validToken.customClaims.roles);
     });
 
-    it('Returns GraphQLError when error is caught', async () => {
+    it('Returns GraphQLError instance when error is caught', async () => {
       let decodedToken = await StartSession(null, true, true);
       expect(decodedToken).to.be.instanceOf(GraphQLError);
     });
   });
 
   describe('EndSession Function', async () => {
-    it('Return false if session does not exist', async () => {
+    it('Returns false if session does not exist', async () => {
       expect(await EndSession(session, authMock.expiredToken.jwt)).to.be.false;
     });
 
-    it('Return true if session does exist', async () => {
+    it('Returns true if session does exist', async () => {
       expect(await EndSession(session, authMock.validToken.jwt)).to.be.true;
     });
 
-    it('Return error for rest', async () => {
+    it('Returns GraphQLError instance for rest', async () => {
       let invalidSession = {
         ...session,
         destroy: () => {

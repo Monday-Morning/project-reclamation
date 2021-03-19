@@ -2,13 +2,13 @@
 const expect = require('chai').expect;
 const { APIError, FirebaseAuthError, GraphQLError } = require('../../server/helpers/errorHandler');
 
-describe('Error Handler Check', () => {
-  describe('APIError Check', () => {
-    it('Response is of type GraphQLError', () => {
+describe('Error Module', () => {
+  describe('APIError Function', () => {
+    it('Returns GraphQLError instance', () => {
       expect(APIError(null)).to.be.instanceOf(GraphQLError);
     });
 
-    it('Response for INTERNAL_SERVER_ERROR returns expected error', () => {
+    it('Returns code 500 for INTERNAL_SERVER_ERROR', () => {
       let error = APIError('INTERNAL_SERVER_ERROR', null, { reason: 'Testing' });
       expect(error).to.be.instanceOf(GraphQLError);
       expect(error.name).to.be.equal('GraphQLError');
@@ -20,7 +20,7 @@ describe('Error Handler Check', () => {
       expect(error.extensions.additional.reason).to.be.equal('Testing');
     });
 
-    it('Response for FORBIDDEN returns expected error', () => {
+    it('Return code 403 for FORBIDDEN', () => {
       let error = APIError('FORBIDDEN', null, { reason: 'Testing' });
       expect(error).to.be.instanceOf(GraphQLError);
       expect(error.name).to.be.equal('GraphQLError');
@@ -33,12 +33,12 @@ describe('Error Handler Check', () => {
     });
   });
 
-  describe('FirebaseAuthError', () => {
-    it('Response is of type GraphQLError', () => {
+  describe('FirebaseAuthError Function', () => {
+    it('Returns GraphQLError instance', () => {
       expect(FirebaseAuthError({ code: 'auth/internal-error' })).to.be.instanceOf(GraphQLError);
     });
 
-    it('Response for auth/email-already-exists returns expected error', () => {
+    it('Returns code 500 for auth/email-already-exist', () => {
       let error = FirebaseAuthError({ code: 'auth/email-already-exists' }, { reason: 'Testing' });
       expect(error).to.be.instanceOf(GraphQLError);
       expect(error.name).to.be.equal('GraphQLError');
@@ -50,7 +50,7 @@ describe('Error Handler Check', () => {
       expect(error.extensions.additional.reason).to.be.equal('Testing');
     });
 
-    it('Response for auth/invalid-id-token returns expected error', () => {
+    it('Returns code 500 for auth/invalid-id-token', () => {
       let error = FirebaseAuthError({ code: 'auth/invalid-id-token' }, { reason: 'Testing' });
       expect(error).to.be.instanceOf(GraphQLError);
       expect(error.name).to.be.equal('GraphQLError');
