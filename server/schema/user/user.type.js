@@ -103,7 +103,10 @@ const UserType = new GraphQLObjectType({
     accountType: { type: AccountTypeEnumType },
     nitrMail: { type: GraphQLString },
 
-    pictureId: { type: GraphQLID },
+    pictureId: {
+      type: GraphQLID,
+      resolve: (parent) => parent.picture,
+    },
     // TODO: Resolve to MediaType
     /*
 		picture: {
