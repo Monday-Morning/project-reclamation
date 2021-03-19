@@ -17,6 +17,8 @@ const Winston = require('./winston');
 const logger = new Winston('authorization');
 const S_TO_MS = 1000;
 
+let rolesCacheFile = './roles.json';
+
 const Authorization = {
   /**
    * @description Authenticates a user and returns the uid
@@ -129,8 +131,10 @@ const Authorization = {
    */
   CacheRoles: async (_RoleModel = RoleModel) => {
     try {
-      const _roles = await _RoleModel.find({}, ['name', 'permissions'], { lean: true });
-      return fs.writeFileSync('./roles.json', _roles.toString());
+      const _roles = await _RoleModel.find({}, 'name permissions section', { lean: true });
+      fs.writeFileSync('./roles.json', JSON.stringify(_roles));
+      rolesCacheFile = fs.realpathSync('./roles.json');
+      return rolesCacheFile;
     } catch (e) {
       logger.error('Could not update roles cache.', e);
       return APIError(null, e, { message: 'Could not update roles cache.' });
@@ -145,7 +149,10 @@ const Authorization = {
    */
   GetRoles: () => {
     try {
-      return fs.readFileSync('./roles.json');
+      if (rolesCacheFile === './roles.json') {
+        rolesCacheFile = fs.realpathSync('./server/roles.json');
+      }
+      return JSON.parse(fs.readFileSync(rolesCacheFile));
     } catch (e) {
       logger.error('Could not read roles cache.', e);
       return APIError(null, e, { message: 'Could not read roles cache' });
@@ -178,11 +185,23 @@ const Authorization = {
   HasPermmission: (context, permission) => {
     const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
-      return _roles;
+      throw _roles;
     }
-    const UserPermissions = context.decodedToken.customClaims.roles.map((x) => _roles.find((y) => y.name === x));
-    if (!UserPermissions.contains(permission)) {
-      return APIError('FORBIDDEN');
+    if (
+      !context ||
+      !context.decodedToken ||
+      !context.decodedToken.customClaims ||
+      !context.decodedToken.customClaims.roles ||
+      !(context.decodedToken.customClaims.roles instanceof Array) ||
+      context.decodedToken.customClaims.roles.length <= 0
+    ) {
+      return false;
+    }
+    const [UserPermissions] = context.decodedToken.customClaims.roles.map(
+      (x) => _roles.find((y) => y.name === x).permissions
+    );
+    if (!UserPermissions.includes(permission)) {
+      return false;
     }
     return true;
   },
