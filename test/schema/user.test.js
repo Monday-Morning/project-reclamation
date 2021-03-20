@@ -16,38 +16,75 @@ const {
 } = require('../../server/schema/user/user.resolver');
 
 const UserModelMock = {
-  someUser: {
-    id: 'some-user',
-    firstName: 'John',
-    lastName: 'Doe',
-    picture: 'some-pic-id',
-    accountType: 0,
-    contributions: null,
+  staticData: {
+    someUser: {
+      id: 'some-user',
+      firstName: 'John',
+      lastName: 'Doe',
+      picture: 'some-pic-id',
+      accountType: 0,
+      contributions: null,
+    },
+    someAuthor: {
+      id: 'some-author',
+      firstName: 'Jane',
+      lastName: 'Doe',
+      picture: 'some-author-pic-id',
+      accountType: 2,
+      contributions: [
+        { model: 'Article', reference: 'some-article-id' },
+        { model: 'Media', reference: 'some-media-id' },
+      ],
+    },
+    someOtherAuthor: {
+      id: 'some-other-author',
+      firstName: 'Jack',
+      lastName: 'Doe',
+      picture: 'some-other-author-pic-id',
+      accountType: 2,
+      contributions: [
+        { model: 'Article', reference: 'some-article-id' },
+        { model: 'Media', reference: 'some-media-id' },
+      ],
+    },
   },
-  someAuthor: {
-    id: 'some-author',
-    firstName: 'Jane',
-    lastName: 'Doe',
-    picture: 'some-author-pic-id',
-    accountType: 2,
-    contributions: [
-      { model: 'Article', reference: 'some-article-id' },
-      { model: 'Media', reference: 'some-media-id' },
-    ],
-  },
-  find: (params, fields, options) => {
+  findOne: (params, fields, options) => {
     if (params.id === 'some-user') {
-      return UserModelMock.someUser;
+      return UserModelMock.staticData.someUser;
     } else if (params.id === 'some-author') {
-      return UserModelMock.someAuthor;
+      return UserModelMock.staticData.someAuthor;
+    } else if (params.id === 'some-other-author') {
+      return UserModelMock.staticData.someOtherAuthor;
     } else {
       return null;
+    }
+  },
+  findMany: (params, fields, options) => {
+    if (params.id instanceof Array) {
+      let _users = [];
+      if (params.ids.include('some-author')) _users.push(UserModelMock.staticData.someAuthor);
+      if (params.ids.include('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+      return _users;
     }
   },
 };
 
 describe('User Resolver Module', async () => {
   describe('getUser Function', async () => {
+    // case: does not provide required arguments
+    it('Returns BAD_REQUEST error if the user does not provide required arguments', async () => {
+      const _response = await getUser(
+        null,
+        {},
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture'] },
+        UserModelMock
+      );
+
+      expect(_response.name).to.be.equal('GraphQLError');
+      expect(_response.message).to.be.equal('BAD_REQUEST');
+    });
+
     // case: does not have permission to read
     it('Returns FORBIDDEN error if the user does not have permission to read', async () => {
       const _response = await getUser(
@@ -101,7 +138,7 @@ describe('User Resolver Module', async () => {
         UserModelMock
       );
 
-      let expectedData = UserModelMock.someUser;
+      let expectedData = UserModelMock.staticData.someUser;
       delete expectedData.contributions;
 
       expect(_response).to.deep.equal(expectedData);
@@ -116,7 +153,7 @@ describe('User Resolver Module', async () => {
         UserModelMock
       );
 
-      expect(_response).to.deep.equal(UserModelMock.someUser);
+      expect(_response).to.deep.equal(UserModelMock.staticData.someUser);
     });
 
     it('Returns User object if account type is > 0', async () => {
@@ -128,7 +165,7 @@ describe('User Resolver Module', async () => {
         UserModelMock
       );
 
-      expect(_response).to.deep.equal(UserModelMock.someAuthor);
+      expect(_response).to.deep.equal(UserModelMock.staticData.someAuthor);
     });
   });
 
