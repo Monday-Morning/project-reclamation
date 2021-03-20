@@ -169,11 +169,50 @@ describe('User Resolver Module', async () => {
     });
   });
 
-  describe('listUsers Function', () => {
-    // case: does not have permission to list - only MM
-    // case: does not have permission for particular field -> use info.fieldNodes
+  describe('listUsers Function', async () => {
+    // case: does not have required arguments
+    it('Returns BAD_REQUEST error if the arguments list is empty', async () => {
+      const _response = await listUsers(
+        null,
+        { ids: [], email: [] },
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+
+      expect(_response.name).to.be.equal('GraphQLError');
+      expect(_response.message).to.be.equal('BAD_REQUEST');
+    });
+
     // case: empty set
+    it('Returns NOT_FOUND error if no users found', async () => {
+      const _response = await listUsers(
+        null,
+        { ids: ['some-user', 'some-non-existant-author'], email: [] },
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+
+      expect(_response.name).to.be.equal('GraphQLError');
+      expect(_response.message).to.be.equal('NOT_FOUND');
+    });
+
     // case: all works
+    it('Returns user details if users found', async () => {
+      const _response = await listUsers(
+        null,
+        { ids: ['some-user', 'some-author', 'some-other-author'], email: [] },
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+
+      expect(_response).to.deep.equal([
+        { ...UserModelMock.staticData.someAuthor },
+        { ...UserModelMock.staticData.someOtherAuthor },
+      ]);
+    });
   });
 
   describe('searchUsers Function', () => {
