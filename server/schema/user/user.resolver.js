@@ -27,15 +27,15 @@ const PUBLIC_FIELDS = [
 ];
 
 module.exports = {
-  getUser: async (parent, args, context, info, _UserModel = UserModel) => {
+  getUser: async (_, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
     try {
-      if (!args || (!args.id && !args.email)) {
+      if (!id && !email) {
         return APIError('BAD_REQUEST');
       }
 
-      const _user = !args.id
-        ? await _UserModel.find({ email: args.email }, { lean: true })
-        : await _UserModel.find({ id: args.id }, { lean: true });
+      const _user = !id
+        ? await _UserModel.findOne({ email }, { lean: true })
+        : await _UserModel.findOne({ id }, { lean: true });
 
       if (!_user) {
         return APIError('NOT_FOUND');
@@ -49,10 +49,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (
-        info.fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !HasPermmission(context, 'user.read.private')
-      ) {
+      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.private')) {
         return APIError('FORBIDDEN');
       }
 
