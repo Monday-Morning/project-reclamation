@@ -62,9 +62,18 @@ const UserModelMock = {
   findMany: (params, fields, options) => {
     if (params.id instanceof Array) {
       let _users = [];
-      if (params.ids.include('some-author')) _users.push(UserModelMock.staticData.someAuthor);
-      if (params.ids.include('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+      if (params.id.includes('some-user') && UserModelMock.staticData.someUser.accountType > params.accountType.$gt)
+        _users.push(UserModelMock.staticData.someUser);
+      if (params.id.includes('some-author') && UserModelMock.staticData.someAuthor.accountType > params.accountType.$gt)
+        _users.push(UserModelMock.staticData.someAuthor);
+      if (
+        params.id.includes('some-other-author') &&
+        UserModelMock.staticData.someOtherAuthor.accountType > params.accountType.$gt
+      )
+        _users.push(UserModelMock.staticData.someOtherAuthor);
       return _users;
+    } else {
+      throw 400;
     }
   },
 };
