@@ -27,7 +27,7 @@ const PUBLIC_FIELDS = [
 ];
 
 module.exports = {
-  getUser: async (_, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
+  getUser: async (_parent, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
     try {
       if (!id && !email) {
         return APIError('BAD_REQUEST');
@@ -61,7 +61,29 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  listUsers: async (parent, args, context, info, _UserModel = UserModel) => {},
+  listUsers: async (_parent, { ids, emails }, _context, _info, _UserModel = UserModel) => {
+    try {
+      if (
+        (!ids || !(ids instanceof Array) || ids.length <= 0) &&
+        (!emails || !(emails instanceof Array) || emails.length <= 0)
+      ) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _users = _UserModel.findMany({ id: ids, email: emails, accountType: { $gt: 0 } }, { lean: true });
+
+      if (!_users || !(_users instanceof Array) || _users.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _users;
+    } catch (e) {
+      if (e instanceof GraphQLError) {
+        return e;
+      }
+      return APIError(null, e);
+    }
+  },
   searchUsers: async (parent, args, context, info, _UserModel = UserModel) => {},
 
   createUser: async (parent, args, context, info, _UserModel = UserModel) => {},
