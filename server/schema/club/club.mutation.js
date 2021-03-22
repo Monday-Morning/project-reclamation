@@ -1,3 +1,13 @@
+/**
+ * @module app.schema.ClubMutation
+ * @description Club Mutation
+ *
+ * @requires module:app.schema.scalars
+ *
+ * @version v1
+ * @since 0.1.0
+ */
+
 const {
   GraphQLObjectType,
   GraphQLString,

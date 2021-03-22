@@ -1,3 +1,15 @@
+/**
+ * @module app.schema.ClubResolver
+ * @description Club Resolver
+ *
+ * @requires module:app.schema.ClubType
+ * @requires module:app.schema.ClubModel
+ * @requires module:app.authorization
+ *
+ * @version v1
+ * @since 0.1.0
+ */
+
 const { HasPermission } = require('../../helpers/authorization');
 const ClubModel = require('./club.model');
 
