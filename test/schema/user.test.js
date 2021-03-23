@@ -193,12 +193,26 @@ describe('User Resolver Module', async () => {
       expect(_response.message).to.be.equal('BAD_REQUEST');
     });
 
+    // case: does not have list all permission
+    it('Returns FORBIDDEN error if user does not have permission', async () => {
+      const _response = await listUsers(
+        null,
+        { ids: ['some-user', 'some-non-existant-author'], email: [] },
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+
+      expect(_response.name).to.be.equal('GraphQLError');
+      expect(_response.message).to.be.equal('FORBIDDEN');
+    });
+
     // case: empty set
     it('Returns NOT_FOUND error if no users found', async () => {
       const _response = await listUsers(
         null,
         { ids: ['some-user', 'some-non-existant-author'], email: [] },
-        {},
+        { decodedToken: { customClaims: { roles: ['user.admin'] } } },
         { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
         UserModelMock
       );
@@ -212,7 +226,7 @@ describe('User Resolver Module', async () => {
       const _response = await listUsers(
         null,
         { ids: ['some-user', 'some-author', 'some-other-author'], email: [] },
-        {},
+        { decodedToken: { customClaims: { roles: ['user.admin'] } } },
         { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
         UserModelMock
       );
