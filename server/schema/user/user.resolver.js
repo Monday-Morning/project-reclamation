@@ -49,7 +49,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.private')) {
+      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -61,13 +61,17 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  listUsers: async (_parent, { ids, emails }, _context, _info, _UserModel = UserModel) => {
+  listUsers: async (_parent, { ids, emails }, context, _info, _UserModel = UserModel) => {
     try {
       if (
         (!ids || !(ids instanceof Array) || ids.length <= 0) &&
         (!emails || !(emails instanceof Array) || emails.length <= 0)
       ) {
         return APIError('BAD_REQUEST');
+      }
+
+      if (!HasPermmission(context, 'user.list.all')) {
+        return APIError('FORBIDDEN');
       }
 
       const _users = _UserModel.findMany({ id: ids, email: emails, accountType: { $gt: 0 } }, { lean: true });
