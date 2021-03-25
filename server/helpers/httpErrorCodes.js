@@ -55,7 +55,7 @@ module.exports = {
    */
   METHOD_NOT_ALLOWED: {
     code: 405,
-    message: 'The request method is known by the server but has been disabled and cannot be used.',
+    message: 'The request method is known by the server but has been disabled for the user and cannot be used.',
   },
   /**
    * @constant TOO_MANY_REQUESTS
