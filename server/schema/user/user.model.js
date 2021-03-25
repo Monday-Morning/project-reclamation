@@ -56,7 +56,7 @@ const UserSchema = new Schema(
     picture: {
       type: Schema.Types.ObjectId,
       ref: 'Media',
-      required: true,
+      required: false,
     },
     interestedTopics: [
       {
@@ -148,7 +148,7 @@ const UserSchema = new Schema(
     ],
     isBanned: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false,
     },
     /** @see module:app.models.poll */
