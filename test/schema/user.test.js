@@ -38,8 +38,8 @@ const UserModelMock = {
     },
     someOtherAuthor: {
       id: 'some-other-author',
-      firstName: 'Jack',
-      lastName: 'Doe',
+      firstName: 'Andrew',
+      lastName: 'Murphy',
       picture: 'some-other-author-pic-id',
       accountType: 2,
       contributions: [
@@ -57,23 +57,6 @@ const UserModelMock = {
       return UserModelMock.staticData.someOtherAuthor;
     } else {
       return null;
-    }
-  },
-  findMany: (params, fields, options) => {
-    if (params.id instanceof Array) {
-      let _users = [];
-      if (params.id.includes('some-user') && UserModelMock.staticData.someUser.accountType > params.accountType.$gt)
-        _users.push(UserModelMock.staticData.someUser);
-      if (params.id.includes('some-author') && UserModelMock.staticData.someAuthor.accountType > params.accountType.$gt)
-        _users.push(UserModelMock.staticData.someAuthor);
-      if (
-        params.id.includes('some-other-author') &&
-        UserModelMock.staticData.someOtherAuthor.accountType > params.accountType.$gt
-      )
-        _users.push(UserModelMock.staticData.someOtherAuthor);
-      return _users;
-    } else {
-      throw 400;
     }
   },
 };
@@ -211,10 +194,30 @@ describe('User Resolver Module', async () => {
     it('Returns NOT_FOUND error if no users found', async () => {
       const _response = await listUsers(
         null,
-        { ids: ['some-user', 'some-non-existant-author'], email: [] },
+        { ids: ['some-non-existant-user', 'some-non-existant-author'], email: [] },
         { decodedToken: { customClaims: { roles: ['user.admin'] } } },
         { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
-        UserModelMock
+        {
+          ...UserModelMock,
+          findMany: (params, fields, options) => {
+            if (params.id instanceof Array) {
+              let _users = [];
+              if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
+              if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
+              if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+              let _res = {
+                skip: (_) => {
+                  return {
+                    limit: (_) => _users,
+                  };
+                },
+              };
+              return _res;
+            } else {
+              throw 400;
+            }
+          },
+        }
       );
 
       expect(_response.name).to.be.equal('GraphQLError');
@@ -228,19 +231,64 @@ describe('User Resolver Module', async () => {
         { ids: ['some-user', 'some-author', 'some-other-author'], email: [] },
         { decodedToken: { customClaims: { roles: ['user.admin'] } } },
         { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
-        UserModelMock
+        {
+          ...UserModelMock,
+          findMany: (params, fields, options) => {
+            if (params.id instanceof Array) {
+              let _users = [];
+              if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
+              if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
+              if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+              let _res = {
+                skip: (_) => {
+                  return {
+                    limit: (_) => _users,
+                  };
+                },
+              };
+              return _res;
+            } else {
+              throw 400;
+            }
+          },
+        }
       );
 
       expect(_response).to.deep.equal([
+        { ...UserModelMock.staticData.someUser },
         { ...UserModelMock.staticData.someAuthor },
         { ...UserModelMock.staticData.someOtherAuthor },
       ]);
     });
   });
 
-  describe('searchUsers Function', () => {
-    // case: does not have permission to search - only show accType > 0
+  describe('searchUsers Function', async () => {
+    // case: does not have required arguments
+    it('Returns BAD_REQUEST error if arguments are empty', async () => {
+      const _response = await searchUsers(
+        null,
+        {},
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+
+      expect(_response.name).to.be.equal('GraphQLError');
+      expect(_response.message).to.be.equal('BAD_REQUEST');
+    });
+    // case: does not have permission to search
+    it('Returns FORBIDDEN error if user does not have permission to search', async () => {
+      const _response = await searchUsers(
+        null,
+        { keywords: 'j doe' },
+        {},
+        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+        UserModelMock
+      );
+    });
+
     // case: does not have permission for particular field -> use info.fieldNodes
+    // case: does not have permission for all users - only show accType > 0
     // case: empty set
     // case: all works
   });
