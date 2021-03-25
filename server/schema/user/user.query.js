@@ -22,7 +22,7 @@ const {
   GraphQLString,
   GraphQLID,
   // GraphQLBoolean,
-  // GraphQLInt,
+  GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
   // GraphQLTime,
@@ -66,6 +66,14 @@ module.exports = new GraphQLObjectType({
           description: 'The list of user email IDs',
           type: new GraphQLList(GraphQLString),
         },
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The paginatiion point',
+          type: GraphQLInt,
+        },
       },
       resolve: listUsers,
     },
@@ -80,6 +88,14 @@ module.exports = new GraphQLObjectType({
         accountType: {
           description: "The user's account type or verification status",
           type: AccountTypeEnumType,
+        },
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The paginatiion point',
+          type: GraphQLInt,
         },
       },
       resolve: searchUsers,
