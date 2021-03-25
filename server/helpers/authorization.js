@@ -183,12 +183,17 @@ const Authorization = {
    * @returns {Boolean | GraphQLError}
    */
   HasPermmission: (context, permission) => {
+    if (!context || !context.authToken || !context.session) {
+      return false;
+    }
+    if (!Authorization.CheckSession(context.session, context.authToken)) {
+      return false;
+    }
     const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
       throw _roles;
     }
     if (
-      !context ||
       !context.decodedToken ||
       !context.decodedToken.customClaims ||
       !context.decodedToken.customClaims.roles ||
@@ -224,7 +229,7 @@ const Authorization = {
     if (decodedToken instanceof GraphQLError) {
       throw decodedToken;
     }
-    return decodedToken.customClaims.roles;
+    return decodedToken;
   },
 };
 
