@@ -27,7 +27,8 @@ const ClubSchema = new Schema(
     logo: {
       type: Schema.Types.ObjectId,
       ref: 'Media',
-      required: true,
+      // TODO: set it to true in future.
+      required: false,
     },
     bio: {
       type: String,

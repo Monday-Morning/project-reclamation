@@ -23,13 +23,29 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-const { updateClub, updateClubExecutive } = require('./club.resolver');
+const { addClub, updateClub, updateClubExecutive } = require('./club.resolver');
 const ClubType = require('./club.type');
 const ExecutiveType = require('./executive.type');
 
 module.exports = new GraphQLObjectType({
   name: 'ClubMutation',
   fields: {
+    addClub: {
+      description: 'Adds a single club',
+      type: ClubType,
+      args: {
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        website: { type: GraphQLString },
+        instagram: { type: GraphQLString },
+        facebook: { type: GraphQLString },
+        twitter: { type: GraphQLString },
+        logo: { type: GraphQLID },
+        description: { type: GraphQLString },
+        facAd: { type: GraphQLString },
+      },
+      resolve: addClub,
+    },
     updateClub: {
       description: 'Updates a single club',
       type: ClubType,
@@ -41,8 +57,6 @@ module.exports = new GraphQLObjectType({
         facebook: { type: GraphQLString },
         twitter: { type: GraphQLString },
         logo: { type: GraphQLString },
-
-        society: { type: GraphQLString },
         description: { type: GraphQLString },
         facAd: { type: GraphQLString },
       },

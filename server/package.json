@@ -59,7 +59,7 @@
     "graphql-type-json": "^0.3.2",
     "https": "^1.0.0",
     "mongoose": "^5.10.13",
-    "pm2": "^4.5.0",
+    "pm2": "^4.5.5",
     "winston": "^3.3.3"
   },
   "devDependencies": {

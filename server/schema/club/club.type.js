@@ -34,7 +34,7 @@ const ClubType = new GraphQLObjectType({
     instagram: { type: GraphQLString },
     facebook: { type: GraphQLString },
     twitter: { type: GraphQLString },
-    logo: { type: GraphQLString },
+    logo: { type: GraphQLID},
     executive: { type: GraphQLList(ExecutiveType) },
     society: { type: GraphQLString },
     description: { type: GraphQLString },
