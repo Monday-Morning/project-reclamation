@@ -41,6 +41,7 @@ module.exports = new GraphQLObjectType({
       resolve: getClub,
     },
     listClubs: {
+      description: 'Retrieves a list of specified clubs',
       type: GraphQLList(ClubType),
       args: {
         ids: {

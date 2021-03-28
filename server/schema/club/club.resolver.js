@@ -5,18 +5,23 @@
  * @requires module:app.schema.ClubType
  * @requires module:app.schema.ClubModel
  * @requires module:app.authorization
- *
+
  * @version v1
  * @since 0.1.0
  */
 
 const { GraphQLError, APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
 const { Model } = require('mongoose');
+const mongoose = require('mongoose');
+/**
+ * @type {Model}
+ */
 const { HasPermission } = require('../../helpers/authorization');
 const ClubModel = require('./club.model');
+const { GraphQLExtension } = require('graphql-extensions');
 
 module.exports = {
-  getClub: async (parent, {id}, context, info, _ClubModel = ClubModel, _HasPermission = HasPermission) => {
+  getClub: async (parent, { id }, context, info, _ClubModel = ClubModel) => {
     try {
       if (!id) {
         return APIError('BAD_REQUEST');
@@ -24,7 +29,7 @@ module.exports = {
       const _club = await _ClubModel.findById(id);
 
       if (!_club) {
-          return APIError('NOT_FOUND');
+        return APIError('NOT_FOUND');
       }
       return _club;
     } catch (e) {
@@ -36,17 +41,17 @@ module.exports = {
   },
   addClub: async (
     parent,
-    {name, website, instagram, facebook, description, facAd},
+    { name, website, instagram, facebook, description, facAd, society, executive },
     context,
     info,
-    _ClubModel = ClubModel,
+    _ClubModel = ClubModel
   ) => {
     try {
-      if(!name){
+      if (!name) {
         return APIError('BAD_REQUEST');
       }
-      if(!_HasPermission(context, 'club.write.all')){
-        return APIError('FORBIDDEN'); 
+      if (!HasPermission(context, 'club.write.all')) {
+        return APIError('FORBIDDEN');
       }
       const _club = await _ClubModel.create({
         name: name,
@@ -57,7 +62,9 @@ module.exports = {
         // TODO: create an object in the media collection and use ID
         // logo: args.logo,
         description: description,
+        society: society,
         facAd: facAd,
+        executive: executive,
       });
       return _club;
     } catch (error) {
@@ -67,17 +74,92 @@ module.exports = {
       return APIError(null, error);
     }
   },
-  listClubs: async (parent, args, context, info, _ClubModel = ClubModel, _HasPermission = HasPermission) => {
-    
+  listClubs: async (parent, { ids }, context, info, _ClubModel = ClubModel) => {
+    try {
+      // TODO: if length == 0, APIError doesn.t work
+      if (!ids || !(ids instanceof Array || ids.length <= 0)) {
+        return APIError('BAD_REQUEST');
+      }
+      //TODO: set permission and error handling
+      // if (!HasPermmission(context, 'club.list.all') || !HasPermmission(context, 'club.read.public')) {
+      //   return APIError('FORBIDDEN');
+      // }
+
+      const _clubs = await _ClubModel.find().where('_id').in(ids).exec();
+
+      return _clubs;
+    } catch (error) {
+      if (error instanceof GraphQLError) {
+        return error;
+      }
+      return APIError(null, error);
+    }
   },
-  searchClubs: async (parent, args, context, info, _ClubModel = ClubModel, _HasPermission = HasPermission) => {},
-  updateClub: async (parent, args, context, info, _ClubModel = ClubModel, _HasPermission = HasPermission) => {},
-  updateClubExecutive: async (
+  searchClubs: async (parent, { keywords }, context, info, _ClubModel = ClubModel) => {
+    //TODO: non functional and incomplete as of now
+    if (!keywords) {
+      return APIError('BAD_REQUEST');
+    }
+
+    const _clubs = _ClubModel.find({});
+    return _clubs;
+  },
+  updateClub: async (
     parent,
-    args,
+    { id, name, website, instagram, facebook, facAd, description },
     context,
     info,
-    _ClubModel = ClubModel,
-    _HasPermission = HasPermission
-  ) => {},
+    _ClubModel = ClubModel
+  ) => {
+    try {
+      if (!id) {
+        return APIError('BAD_REQUEST');
+      }
+      //TODO: Permission handling and error handling needs to be improved.
+      if (!HasPermission(context, 'club.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      const _clubs = await _ClubModel.findByIdAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            name: name,
+            website: website,
+            facebook: facebook,
+            instagram: instagram,
+            facAd: facAd,
+            description: description,
+          },
+        }
+      );
+
+      return _clubs;
+    } catch (error) {
+      if (error instanceof GraphQLError) {
+        return error;
+      }
+      return APIError(null, error);
+    }
+  },
+  updateClubExecutive: async (
+    parent,
+    { user, name, picture, nitrMail, description },
+    context,
+    info,
+    _ClubModel = ClubModel
+  ) => {
+    const _clubExecutive = await _ClubModel.findByIdAndUpdate(
+      { _id: user },
+      {
+        $set: {
+          name: name,
+          picture: picture,
+          nitrMail: nitrMail,
+          description: description,
+        },
+      }
+    );
+    return _clubExecutive;
+  },
 };

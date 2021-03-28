@@ -8,6 +8,7 @@
  * @since 0.1.0
  */
 
+const { GraphQLList } = require('graphql');
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -43,6 +44,8 @@ module.exports = new GraphQLObjectType({
         logo: { type: GraphQLID },
         description: { type: GraphQLString },
         facAd: { type: GraphQLString },
+        society: { type: GraphQLString },
+        executive: { type: GraphQLList(ExecutiveType) },
       },
       resolve: addClub,
     },
@@ -59,6 +62,7 @@ module.exports = new GraphQLObjectType({
         logo: { type: GraphQLString },
         description: { type: GraphQLString },
         facAd: { type: GraphQLString },
+        society: { type: GraphQLString },
       },
       resolve: updateClub,
     },
