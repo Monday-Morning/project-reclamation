@@ -8,25 +8,23 @@
  * @since 0.1.0
  */
 
-const { GraphQLList } = require('graphql');
 const {
   GraphQLObjectType,
   GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  // GraphQLList,
+  GraphQLList,
   // GraphQLBoolean,
   // GraphQLInt,
   // GraphQLNonNull,
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  // GraphQLJSON,
-  // GraphQLJSONObject,
+  GraphQLJSON,
+  GraphQLJSONObject,
 } = require('../scalars');
-const { addClub, updateClub, updateClubExecutive } = require('./club.resolver');
+const { addClub, updateClub } = require('./club.resolver');
 const ClubType = require('./club.type');
-const ExecutiveType = require('./executive.type');
 
 module.exports = new GraphQLObjectType({
   name: 'ClubMutation',
@@ -45,7 +43,7 @@ module.exports = new GraphQLObjectType({
         description: { type: GraphQLString },
         facAd: { type: GraphQLString },
         society: { type: GraphQLString },
-        executive: { type: GraphQLList(ExecutiveType) },
+        executive: { type: GraphQLList(GraphQLJSONObject) },
       },
       resolve: addClub,
     },
@@ -59,33 +57,13 @@ module.exports = new GraphQLObjectType({
         instagram: { type: GraphQLString },
         facebook: { type: GraphQLString },
         twitter: { type: GraphQLString },
-        logo: { type: GraphQLString },
+        logo: { type: GraphQLID },
         description: { type: GraphQLString },
         facAd: { type: GraphQLString },
         society: { type: GraphQLString },
+        executive: { type: GraphQLList(GraphQLJSONObject) },
       },
       resolve: updateClub,
-    },
-    updateClubExecutive: {
-      type: ExecutiveType,
-      args: {
-        user: {
-          type: GraphQLID,
-        },
-        name: {
-          type: GraphQLString,
-        },
-        picture: {
-          type: GraphQLID,
-        },
-        nitrMail: {
-          type: GraphQLString,
-        },
-        designation: {
-          type: GraphQLString,
-        },
-      },
-      resolve: updateClubExecutive,
     },
   },
 });

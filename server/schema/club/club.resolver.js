@@ -41,7 +41,7 @@ module.exports = {
   },
   addClub: async (
     parent,
-    { name, website, instagram, facebook, description, facAd, society, executive },
+    { name, website, instagram, twitter, facebook, description, facAd, society, executive },
     context,
     info,
     _ClubModel = ClubModel
@@ -50,9 +50,10 @@ module.exports = {
       if (!name) {
         return APIError('BAD_REQUEST');
       }
-      if (!HasPermission(context, 'club.write.all')) {
-        return APIError('FORBIDDEN');
-      }
+      //if (!HasPermission(context, 'club.write.all')) {
+      //  return APIError('FORBIDDEN');
+      //}
+
       const _club = await _ClubModel.create({
         name: name,
         website: website,
@@ -101,12 +102,17 @@ module.exports = {
       return APIError('BAD_REQUEST');
     }
 
-    const _clubs = _ClubModel.find({});
+    const _clubs = _ClubModel.find({
+      $text: {
+        $search: keywords,
+        $caseSensitive: true,
+      },
+    });
     return _clubs;
   },
   updateClub: async (
     parent,
-    { id, name, website, instagram, facebook, facAd, description },
+    { id, name, website, executive, instagram, facebook, facAd, description },
     context,
     info,
     _ClubModel = ClubModel
@@ -116,9 +122,9 @@ module.exports = {
         return APIError('BAD_REQUEST');
       }
       //TODO: Permission handling and error handling needs to be improved.
-      if (!HasPermission(context, 'club.write.all')) {
-        return APIError('FORBIDDEN');
-      }
+      //if (!HasPermission(context, 'club.write.all')) {
+      //  return APIError('FORBIDDEN');
+      //}
 
       const _clubs = await _ClubModel.findByIdAndUpdate(
         { _id: id },
@@ -130,6 +136,7 @@ module.exports = {
             instagram: instagram,
             facAd: facAd,
             description: description,
+            executive: executive,
           },
         }
       );
@@ -141,25 +148,5 @@ module.exports = {
       }
       return APIError(null, error);
     }
-  },
-  updateClubExecutive: async (
-    parent,
-    { user, name, picture, nitrMail, description },
-    context,
-    info,
-    _ClubModel = ClubModel
-  ) => {
-    const _clubExecutive = await _ClubModel.findByIdAndUpdate(
-      { _id: user },
-      {
-        $set: {
-          name: name,
-          picture: picture,
-          nitrMail: nitrMail,
-          description: description,
-        },
-      }
-    );
-    return _clubExecutive;
   },
 };

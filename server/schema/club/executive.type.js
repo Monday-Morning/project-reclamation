@@ -17,6 +17,7 @@ const {
 const ExecutiveType = new GraphQLObjectType({
   name: 'Executive',
   fields: () => ({
+    id: { type: GraphQLID },
     user: {
       type: GraphQLID,
     },
