@@ -153,6 +153,7 @@ module.exports = {
       if (!accountType) {
         let _userGt = 1;
         if (HasPermmission(context, 'user.list.all')) {
+          // eslint-disable-next-line no-magic-numbers
           _userGt = -1;
         }
         const _users = await _UserModel
@@ -232,7 +233,7 @@ module.exports = {
     _auth = auth
   ) => {
     try {
-      if (context.authToken) {
+      if (CheckSession(context.session, context.authToken) && !HasPermmission(context, 'user.write.all')) {
         return APIError('METHOD_NOT_ALLOWED');
       }
 
@@ -240,12 +241,12 @@ module.exports = {
         return APIError('BAD_REQUEST');
       }
       if (await _UserModel.exists({ email })) {
-        return APIError('METHOD_NOT_ALLOWED');
+        return APIError('METHOD_NOT_ALLOWED', null, { reason: 'User already exists' });
       }
 
       const fbUser = await _auth.getUserByEmail(email);
       if (fbUser.displayName !== fullName) {
-        return APIError('BAD_REQUEST');
+        return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
       const mdbUser = await _UserModel.create({ fullName, email });
