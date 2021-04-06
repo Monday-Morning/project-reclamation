@@ -42,7 +42,7 @@ const {
   addNITRMail,
   verifyNITRMail,
   newsletterSubscription,
-  setUserVerfiedStatus,
+  setUserAccountType,
 } = require('./user.resolver');
 
 module.exports = new GraphQLObjectType({
