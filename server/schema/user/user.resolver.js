@@ -376,9 +376,25 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  updateUserTopics: async (_parent, { id, interestedTopics }, context, { fieldNodes }, _UserModel = UserModel) => {
+    try {
+      if (!id || !topics) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _user = await _UserModel.findByIdAndUpdate(id, { interestedTopics });
+      return _user;
     } catch (e) {
       if (e instanceof GraphQLError) {
         return e;
+      return APIError(null, e);
+    }
+  },
       }
       return FirebaseAuthError(e);
     }
