@@ -159,6 +159,10 @@ const apolloServer = new ApolloServer({
     authToken: req.headers.authorization,
     // csrfToken: req.csrfToken(), // Disabled CSURF
     decodedToken: await GetUserAuthScope(req.session, req.headers.authorization),
+    mid: async () => {
+      const decodedToken = await GetUserAuthScope(req.session, req.headers.authorization);
+      return decodedToken ? decodedToken.customClaims.mid : null;
+    },
     session: req.session,
   }),
   cors: CORS_OPTIONS,
