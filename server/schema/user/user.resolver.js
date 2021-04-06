@@ -517,13 +517,7 @@ module.exports = {
     }
   },
 
-  updateUserName: async (parent, args, context, info, _UserModel = UserModel) => {},
-  updateUserPicture: async (parent, args, context, info, _UserModel = UserModel) => {},
-  updateUserTopics: async (parent, args, context, info, _UserModel = UserModel) => {},
-  updateUserBio: async (parent, args, context, info, _UserModel = UserModel) => {},
 
-  addNITRMail: async (parent, args, context, info, _UserModel = UserModel) => {},
-  verifyNITRMail: async (parent, args, context, info, _UserModel = UserModel) => {},
 
   newsletterSubscription: async (parent, args, context, info, _UserModel = UserModel) => {},
 
