@@ -571,8 +571,41 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  setUserBan: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel, _auth = auth) => {
+    try {
+      if (!id || flag === null || flag === undefined) {
+        return APIError('BAD_REQUEST');
+      }
+
+      if (!HasPermmission(context, 'user.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      const _user = await _UserModel.findById(id);
+      if (!_user) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _fbUser = await _auth.getUserByEmail(_user.email);
+
+      const _updatedUser = _UserModel.findByIdAndUpdate(id, { isBanned: flag });
+      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { disabled: falg });
+
+      await Promise.all([_updatedUser, _updatedFbUser]);
+      return _user;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
+    }
+  },
 
 
 
-  setUserBan: async (parent, args, context, info, _UserModel = UserModel) => {},
 };
