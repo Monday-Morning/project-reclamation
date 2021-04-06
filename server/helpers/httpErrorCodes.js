@@ -21,7 +21,7 @@ module.exports = {
    */
   BAD_REQUEST: {
     code: 400,
-    message: 'The server could not process the request due to missing query fields.',
+    message: 'The server could not process the request due to missing or invalid query fields.',
   },
   /**
    * @constant UNAUTHORIZED
