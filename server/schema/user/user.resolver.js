@@ -43,6 +43,29 @@ const PUBLIC_FIELDS = [
 const DEF_LIMIT = 10;
 const DEF_OFFSET = 0;
 
+const canUserUpdate = (id, context, fieldNodes) => {
+  if (!CheckSession(context.session, context.authToken)) {
+    return APIError('UNAUTHORIZED');
+  }
+
+  if (
+    (context.mid === id && !HasPermmission(context, 'user.write.self') && !HasPermmission('user.write.all')) ||
+    (context.mid !== id && !HasPermmission(context, 'user.write.all'))
+  ) {
+    return APIError('FORBIDDEN');
+  }
+
+  if (
+    context.mid !== id &&
+    fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    !HasPermmission(context, 'user.read.all')
+  ) {
+    return APIError('FORBIDDEN');
+  }
+
+  return true;
+};
+
 module.exports = {
   getUser: async (_parent, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
     try {
