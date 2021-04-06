@@ -249,13 +249,31 @@ module.exports = {
         return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
-      const mdbUser = await _UserModel.create({ fullName, email });
+      const mdbUser = await _UserModel.create({
+        fullName,
+        email,
+        interestedTopics,
+        createdBy: CheckSession(context.session, context.authToken) ? context.decodedToken.customClaims.mid : null,
+      });
 
-      _auth.setCustomUserClaims(fbUser.uid, {
-        mid: mdbUser.toJson().id,
+      await _auth.setCustomUserClaims(fbUser.uid, {
+        mid: mdbUser.id,
         // TODO: add all standard roles here
         roles: ['user.basic'],
       });
+
+      // TODO: send welcome mail if required
+
+      return mdbUser;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
+    }
+  },
+
     } catch (e) {
       if (e instanceof GraphQLError) {
         return e;
