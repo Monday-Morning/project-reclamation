@@ -10,16 +10,24 @@
  * @since 0.1.0
  */
 
+const fetch = require('node-fetch');
+const { v5: UUID, validate: validateUUID } = require('uuid');
 const { Model } = require('mongoose');
 const { auth } = require('../../config/firebase');
-const { HasPermmission } = require('../../helpers/authorization');
-const { APIError, GraphQLError, FirebaseAuthError } = require('../../helpers/errorHandler');
+const { transporter } = require('../../config/nodemailer');
+const { HasPermmission, CheckSession } = require('../../helpers/authorization');
+const { APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
 
 /**
  * @constant
  * @type {Model}
  */
 const UserModel = require('./user.model');
+/**
+ * @constant
+ * @type {Model}
+ */
+const MediaModel = require('../media/media.model');
 
 const PUBLIC_FIELDS = [
   'id',
