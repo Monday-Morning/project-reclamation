@@ -126,13 +126,14 @@ module.exports = new GraphQLObjectType({
       resolve: newsletterSubscription,
     },
 
-    setUserVerifiedStatus: {
+    /** Admin APIs */
+    setUserAccountType: {
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        status: { type: new GraphQLNonNull(GraphQLID) },
+        accountType: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve: setUserVerfiedStatus,
+      resolve: setUserAccountType,
     },
     setUserBan: {
       type: UserType,
