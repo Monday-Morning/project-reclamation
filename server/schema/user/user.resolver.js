@@ -317,6 +317,65 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  updateUserPicture: async (
+    _parent,
+    { id, url, blurhash },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel,
+    _MediaModel = MediaModel,
+    _auth = auth,
+    _fetch = fetch
+  ) => {
+    try {
+      if (!id || !url || !blurhash) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      if (!HasPermmission(context, 'media.read.public') || !HasPermmission(context, 'media.write.self')) {
+        return APIError('FORBIDDEN');
+      }
+
+      const _res = await _fetch(url);
+      if (!_res.ok) {
+        return APIError('BAD_REQUEST', { reason: 'The provided image resource was not found on the media server.' });
+      }
+
+      const _user = await _UserModel.findById(id);
+      if (!_user) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _fbUser = await _auth.getUserByEmail(_user.email);
+
+      const _media = await _MediaModel.create({
+        storePath: url,
+        blurhash,
+        author: [
+          {
+            name: _user.name,
+            reference: id,
+          },
+        ],
+      });
+      const _updatedUser = _UserModel.findByIdAndUpdate(id, { picture: _media.id });
+      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
+
+      await Promise.all([_updatedUser, _updatedFbUser]);
+      return _updatedUser;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
+    }
+  },
     } catch (e) {
       if (e instanceof GraphQLError) {
         return e;
