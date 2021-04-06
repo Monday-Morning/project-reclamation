@@ -25,11 +25,15 @@ module.exports = {
    * @param {Object} additional Custom Error Data
    * @returns {GraphQLError}
    */
-  APIError: (code = 'INTERNAL_SERVER_ERROR', error = null, additional = null) =>
-    new GraphQLError(code, null, null, null, null, error, {
+  APIError: (code = 'INTERNAL_SERVER_ERROR', error = null, additional = null) => {
+    if (error instanceof GraphQLError) {
+      return error;
+    }
+    return new GraphQLError(code, null, null, null, null, error, {
       ...HttpErrorCodes[code],
       additional,
-    }),
+    });
+  },
 
   /**
    * @description Handles Firebase Auth Errors and return a GraphQLError Object
