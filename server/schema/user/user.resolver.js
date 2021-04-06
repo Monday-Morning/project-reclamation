@@ -119,7 +119,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      const _users = await _UserModel.findMany({ id: ids, email: emails }, { lean: true }).skip(offset).limit(limit);
+      const _users = await _UserModel.find({ id: ids, email: emails }).skip(offset).limit(limit);
 
       if (!_users || !(_users instanceof Array) || _users.length <= 0) {
         return APIError('NOT_FOUND');
@@ -156,7 +156,7 @@ module.exports = {
           _userGt = -1;
         }
         const _users = await _UserModel
-          .findMany(
+          .find(
             {
               $and: [
                 {
@@ -194,7 +194,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      const _users = await _UserModel.findMany(
+      const _users = await _UserModel.find(
         {
           $and: [
             {
