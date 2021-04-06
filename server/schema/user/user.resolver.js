@@ -73,20 +73,18 @@ module.exports = {
         return APIError('BAD_REQUEST');
       }
 
-      const _user = !id
-        ? await _UserModel.findOne({ email }, { lean: true })
-        : await _UserModel.findOne({ id }, { lean: true });
+      const _user = !id ? await _UserModel.findOne({ email }) : await _UserModel.findOne({ id });
 
       if (!_user) {
         return APIError('NOT_FOUND');
       }
 
-      if (_user.accountType > 0) {
+      if (_user.accountType > 1) {
         return _user;
       }
 
-      if (!HasPermmission(context, 'user.read.public')) {
-        return APIError('FORBIDDEN');
+      if (context.mid === _user.id) {
+        return _user;
       }
 
       if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
