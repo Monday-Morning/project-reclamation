@@ -71,7 +71,8 @@ module.exports = new GraphQLObjectType({
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        picture: { type: new GraphQLNonNull(GraphQLString) },
+        url: { type: new GraphQLNonNull(GraphQLString) },
+        blurhash: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: updateUserPicture,
     },
