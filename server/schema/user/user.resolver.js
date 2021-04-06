@@ -274,6 +274,49 @@ module.exports = {
     }
   },
 
+  updateUserName: async (
+    _parent,
+    { id, firstName, lastName },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel,
+    _auth = auth
+  ) => {
+    try {
+      if (!id || !firstName || !lastName) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _user = await _UserModel.findById(id, 'firstName lastName isNameChanged');
+
+      if (_user.firstName === firstName && _user.lastName === lastName) {
+        return APIError('BAD_REQUEST', null, { reason: 'The current and new name matches' });
+      }
+      if (_user.isNameChanged && !HasPermmission('user.write.all')) {
+        return APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user has already changed their name once.' });
+      }
+
+      const _fbUser = await _auth.getUserByEmail(_user.email);
+
+      const _updatedUser = _UserModel.findByIdAndUpdate(id, { firstName, lastName });
+      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
+
+      await Promise.all([_updatedUser, _updatedFbUser]);
+
+      return _updatedUser;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
+    }
+  },
     } catch (e) {
       if (e instanceof GraphQLError) {
         return e;
