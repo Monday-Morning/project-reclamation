@@ -517,9 +517,31 @@ module.exports = {
     }
   },
 
+  newsletterSubscription: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel) => {
+    try {
+      if (!id || flag === null || flag === undefined) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _user = await _UserModel.findByIdAndUpdate(id, { newsletterSubscription: flag });
+
+      if (!_user) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _user;
+    } catch (e) {
+      return APIError(null, e);
+    }
+  },
 
 
-  newsletterSubscription: async (parent, args, context, info, _UserModel = UserModel) => {},
+
 
   setUserVerfiedStatus: async (parent, args, context, info, _UserModel = UserModel) => {},
   setUserBan: async (parent, args, context, info, _UserModel = UserModel) => {},
