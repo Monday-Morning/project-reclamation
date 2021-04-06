@@ -390,8 +390,6 @@ module.exports = {
       const _user = await _UserModel.findByIdAndUpdate(id, { interestedTopics });
       return _user;
     } catch (e) {
-      if (e instanceof GraphQLError) {
-        return e;
       return APIError(null, e);
     }
   },
