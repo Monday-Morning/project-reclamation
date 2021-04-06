@@ -605,7 +605,38 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  setUserRoles: async (_parent, { id, roles }, context, { fieldNodes }, _UserModel = UserModel, _auth = auth) => {
+    try {
+      if (!id || !roles || roles instanceof Array) {
+        return APIError('BAD_REQUEST');
+      }
 
+      if (!HasPermmission(context, 'user.write.all')) {
+        return APIError('FORBIDDEN');
+      }
 
+      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+        return APIError('FORBIDDEN');
+      }
 
+      const _user = await _UserModel.findById(id);
+      if (!_user) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _fbUser = await _auth.getUserByEmail(_user.email);
+      await _auth.setCustomUserClaims(_fbUser.uid, {
+        ..._fbUser.customClaims,
+        roles,
+      });
+
+      return _user;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
+    }
+  },
 };
