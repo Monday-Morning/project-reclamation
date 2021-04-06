@@ -393,6 +393,40 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  updateUserBio: async (
+    _parent,
+    { id, bio, facebook, twitter, instagram, linkedin, website, github },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel
+  ) => {
+    try {
+      if (!id || (!bio && !facebook && !twitter && !instagram && !linkedin && !website && !github)) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _updateData = {
+        bio: !bio ? undefined : bio,
+        facebook: !facebook ? undefined : facebook,
+        twitter: !twitter ? undefined : twitter,
+        instagram: !instagram ? undefined : instagram,
+        linkedin: !linkedin ? undefined : linkedin,
+        website: !website ? undefined : website,
+        github: !github ? undefined : github,
+      };
+
+      const _user = await _UserModel.findByIdAndUpdate(id, _updateData);
+      return _user;
+    } catch (e) {
+      return APIError(null, e);
+    }
+  },
+
       }
       return FirebaseAuthError(e);
     }
