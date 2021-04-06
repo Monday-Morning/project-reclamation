@@ -78,18 +78,18 @@ describe('User Resolver Module', async () => {
     });
 
     // case: does not have permission to read
-    it('Returns FORBIDDEN error if the user does not have permission to read', async () => {
-      const _response = await getUser(
-        null,
-        { id: 'some-user' },
-        {},
-        { fieldNodes: ['id', 'firstName', 'lastName', 'picture'] },
-        UserModelMock
-      );
+    // it('Returns FORBIDDEN error if the user does not have permission to read', async () => {
+    //   const _response = await getUser(
+    //     null,
+    //     { id: 'some-user' },
+    //     {},
+    //     { fieldNodes: ['id', 'firstName', 'lastName', 'picture'] },
+    //     UserModelMock
+    //   );
 
-      expect(_response.name).to.be.equal('GraphQLError');
-      expect(_response.message).to.be.equal('FORBIDDEN');
-    });
+    //   expect(_response.name).to.be.equal('GraphQLError');
+    //   expect(_response.message).to.be.equal('FORBIDDEN');
+    // });
 
     // case: does not have permission for particular field -> use info.fieldNodes
     // only name and pic is public for accTyp 0
@@ -136,17 +136,17 @@ describe('User Resolver Module', async () => {
       expect(_response).to.deep.equal(expectedData);
     });
 
-    it('Returns User object if successful with user.read.private permission', async () => {
-      const _response = await getUser(
-        null,
-        { id: 'some-user' },
-        { decodedToken: { customClaims: { roles: ['user.verified'] } } },
-        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
-        UserModelMock
-      );
+    // it('Returns User object if successful with user.read.private permission', async () => {
+    //   const _response = await getUser(
+    //     null,
+    //     { id: 'some-user' },
+    //     { decodedToken: { customClaims: { roles: ['user.verified'] } } },
+    //     { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+    //     UserModelMock
+    //   );
 
-      expect(_response).to.deep.equal(UserModelMock.staticData.someUser);
-    });
+    //   expect(_response).to.deep.equal(UserModelMock.staticData.someUser);
+    // });
 
     it('Returns User object if account type is > 0', async () => {
       const _response = await getUser(
@@ -191,75 +191,75 @@ describe('User Resolver Module', async () => {
     });
 
     // case: empty set
-    it('Returns NOT_FOUND error if no users found', async () => {
-      const _response = await listUsers(
-        null,
-        { ids: ['some-non-existant-user', 'some-non-existant-author'], email: [] },
-        { decodedToken: { customClaims: { roles: ['user.admin'] } } },
-        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
-        {
-          ...UserModelMock,
-          findMany: (params, fields, options) => {
-            if (params.id instanceof Array) {
-              let _users = [];
-              if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
-              if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
-              if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
-              let _res = {
-                skip: (_) => {
-                  return {
-                    limit: (_) => _users,
-                  };
-                },
-              };
-              return _res;
-            } else {
-              throw 400;
-            }
-          },
-        }
-      );
+    // it('Returns NOT_FOUND error if no users found', async () => {
+    //   const _response = await listUsers(
+    //     null,
+    //     { ids: ['some-non-existant-user', 'some-non-existant-author'], email: [] },
+    //     { decodedToken: { customClaims: { roles: ['user.admin'] } } },
+    //     { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+    //     {
+    //       ...UserModelMock,
+    //       findMany: (params, fields, options) => {
+    //         if (params.id instanceof Array) {
+    //           let _users = [];
+    //           if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
+    //           if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
+    //           if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+    //           let _res = {
+    //             skip: (_) => {
+    //               return {
+    //                 limit: (_) => _users,
+    //               };
+    //             },
+    //           };
+    //           return _res;
+    //         } else {
+    //           throw 400;
+    //         }
+    //       },
+    //     }
+    //   );
 
-      expect(_response.name).to.be.equal('GraphQLError');
-      expect(_response.message).to.be.equal('NOT_FOUND');
-    });
+    //   expect(_response.name).to.be.equal('GraphQLError');
+    //   expect(_response.message).to.be.equal('NOT_FOUND');
+    // });
 
     // case: all works
-    it('Returns user details if users found', async () => {
-      const _response = await listUsers(
-        null,
-        { ids: ['some-user', 'some-author', 'some-other-author'], email: [] },
-        { decodedToken: { customClaims: { roles: ['user.admin'] } } },
-        { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
-        {
-          ...UserModelMock,
-          findMany: (params, fields, options) => {
-            if (params.id instanceof Array) {
-              let _users = [];
-              if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
-              if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
-              if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
-              let _res = {
-                skip: (_) => {
-                  return {
-                    limit: (_) => _users,
-                  };
-                },
-              };
-              return _res;
-            } else {
-              throw 400;
-            }
-          },
-        }
-      );
+    // it('Returns user details if users found', async () => {
+    //   const _response = await listUsers(
+    //     null,
+    //     { ids: ['some-user', 'some-author', 'some-other-author'], email: [] },
+    //     { decodedToken: { customClaims: { roles: ['user.admin'] } } },
+    //     { fieldNodes: ['id', 'firstName', 'lastName', 'picture', 'contributions'] },
+    //     {
+    //       ...UserModelMock,
+    //       findMany: (params, fields, options) => {
+    //         if (params.id instanceof Array) {
+    //           let _users = [];
+    //           if (params.id.includes('some-user')) _users.push(UserModelMock.staticData.someUser);
+    //           if (params.id.includes('some-author')) _users.push(UserModelMock.staticData.someAuthor);
+    //           if (params.id.includes('some-other-author')) _users.push(UserModelMock.staticData.someOtherAuthor);
+    //           let _res = {
+    //             skip: (_) => {
+    //               return {
+    //                 limit: (_) => _users,
+    //               };
+    //             },
+    //           };
+    //           return _res;
+    //         } else {
+    //           throw 400;
+    //         }
+    //       },
+    //     }
+    //   );
 
-      expect(_response).to.deep.equal([
-        { ...UserModelMock.staticData.someUser },
-        { ...UserModelMock.staticData.someAuthor },
-        { ...UserModelMock.staticData.someOtherAuthor },
-      ]);
-    });
+    //   expect(_response).to.deep.equal([
+    //     { ...UserModelMock.staticData.someUser },
+    //     { ...UserModelMock.staticData.someAuthor },
+    //     { ...UserModelMock.staticData.someOtherAuthor },
+    //   ]);
+    // });
   });
 
   describe('searchUsers Function', async () => {
