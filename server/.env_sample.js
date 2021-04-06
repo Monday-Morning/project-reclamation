@@ -65,54 +65,6 @@ module.exports = {
      * @type {String}
      */
     TEST_AUTH_KEY: 'some-sample-jwt-token',
-
-    /**
-     * @const UUID_NAMESPACE
-     * @description Application Secret Namespace for UUID v5 Generation
-     * @global
-     * @type {String}
-     */
-    UUID_NAMESPACE: 'some-generated-v4-uuid',
-
-    /**
-     * @const SMTP_HOST
-     * @description SMTP Host for NodeMailer
-     * @global
-     * @type {String}
-     */
-    SMTP_HOST: 'smtp.example.com',
-
-    /**
-     * @const SMTP_POST
-     * @description SMTP Port for NodeMailer
-     * @global
-     * @type {Number}
-     */
-    SMTP_POST: 000,
-
-    /**
-     * @const SMTP_SECURE_FLAG
-     * @description SMTP SSH Flag for NodeMailer
-     * @global
-     * @type {Boolean}
-     */
-    SMTP_SECURE_FLAG: false,
-
-    /**
-     * @const SMTP_USERNAME
-     * @description SMTP Username/Email for NodeMailer
-     * @global
-     * @type {String}
-     */
-    SMTP_USERNAME: 'some-user@example.com',
-
-    /**
-     * @const SMTP_PASSWORD
-     * @description SMTP Password for NodeMailer
-     * @global
-     * @type {String}
-     */
-    SMTP_PASSWORD: 'some-password',
   },
   env_staging: {
     NODE_ENV: 'staging',
@@ -124,12 +76,6 @@ module.exports = {
     MONGO_APP_URL:
       'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
     GCP_STORAGE_BUCKET: 'staging.PROJECT-ID.appspot.com',
-    UUID_NAMESPACE: 'some-generated-v4-uuid',
-    SMTP_HOST: 'smtp.example.com',
-    SMTP_POST: 000,
-    SMTP_SECURE_FLAG: false,
-    SMTP_USERNAME: 'some-user@example.com',
-    SMTP_PASSWORD: 'some-password',
   },
   env_production: {
     NODE_ENV: 'production',
@@ -141,11 +87,5 @@ module.exports = {
     MONGO_APP_URL:
       'mongodb+srv://USERNAME:PASSWORD@PROJECT-ID.CLOUD-PROVIDER.mongodb.net/DATABASE?retryWrites=true&w=majority',
     GCP_STORAGE_BUCKET: 'PROJECT-ID.appspot.com',
-    UUID_NAMESPACE: 'some-generated-v4-uuid',
-    SMTP_HOST: 'smtp.example.com',
-    SMTP_POST: 000,
-    SMTP_SECURE_FLAG: false,
-    SMTP_USERNAME: 'some-user@example.com',
-    SMTP_PASSWORD: 'some-password',
   },
 };
