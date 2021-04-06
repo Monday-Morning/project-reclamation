@@ -93,9 +93,6 @@ module.exports = {
 
       return _user;
     } catch (e) {
-      if (e instanceof GraphQLError) {
-        return e;
-      }
       return APIError(null, e);
     }
   },
@@ -130,9 +127,6 @@ module.exports = {
 
       return _users;
     } catch (e) {
-      if (e instanceof GraphQLError) {
-        return e;
-      }
       return APIError(null, e);
     }
   },
@@ -225,9 +219,6 @@ module.exports = {
 
       return _users;
     } catch (e) {
-      if (e instanceof GraphQLError) {
-        return e;
-      }
       return APIError(null, e);
     }
   },
