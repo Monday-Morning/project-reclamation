@@ -43,6 +43,7 @@ const {
   verifyNITRMail,
   newsletterSubscription,
   setUserAccountType,
+  setUserRoles,
 } = require('./user.resolver');
 
 module.exports = new GraphQLObjectType({
@@ -142,6 +143,14 @@ module.exports = new GraphQLObjectType({
         flag: { type: new GraphQLNonNull(GraphQLBoolean) },
       },
       resolve: setUserBan,
+    },
+    setUserRoles: {
+      type: UserType,
+      args: {
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+      },
+      resolve: setUserRoles,
     },
 
     // TODO: update contributions from other schemas
