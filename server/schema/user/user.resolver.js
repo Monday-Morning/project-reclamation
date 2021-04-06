@@ -427,8 +427,93 @@ module.exports = {
     }
   },
 
+  addNITRMail: async (
+    _parent,
+    { id, email },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel,
+    _transporter = transporter,
+    _namespace = process.env.UUID_NAMESPACE,
+    _fromAddress = process.env.SMTP_FROM_ADDRESS
+  ) => {
+    try {
+      if (!id || !email) {
+        return APIError('BAD_REQUEST');
       }
-      return FirebaseAuthError(e);
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _uuid = UUID(JSON.stringify({ id, email }), _namespace).toString();
+
+      // TODO: Configure proper html template
+      await _transporter.sendMail({
+        to: email,
+        from: _fromAddress,
+        html: `<a href="https://mondaymorning.nitrkl.ac.in/user/verify/${email}?token=${_uuid}">Click here to verify!</a>`,
+      });
+
+      const _user = await _UserModel.findByIdAndUpdate(id, {
+        nitrMail: email,
+        verifyEmailToken: _uuid,
+      });
+      return _user;
+    } catch (e) {
+      return APIError(null, e);
+    }
+  },
+  verifyNITRMail: async (
+    _parent,
+    { id, email, token },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel,
+    _auth = auth
+  ) => {
+    try {
+      if (!id || !email || !token || !validateUUID(token)) {
+        return APIError('BAD_REQUEST');
+      }
+
+      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      if (_writePermission !== true) {
+        return _writePermission;
+      }
+
+      const _user = await _UserModel.findOneAndUpdate(
+        { $and: [{ id }, { nitrMail: email }, { verfiyEmailToken: token }] },
+        { accountType: 1, verfiyEmailToken: null }
+      );
+
+      if (!_user) {
+        return APIError('NOT_FOUND', null, {
+          reason: 'Either the verification token is invalid or the user does not exist.',
+        });
+      }
+
+      const _fbUser = await _auth.getUserByEmail(_user.email);
+      const roles = _fbUser.customClaims.roles.map((item) => {
+        if (item.toString() !== 'user.basic') {
+          return item;
+        }
+        return 'user.verified';
+      });
+
+      await _auth.setCustomUserClaims(_fbUser.uid, {
+        ..._fbUser.customClaims,
+        roles,
+      });
+
+      return _user;
+    } catch (e) {
+      // eslint-disable-next-line no-magic-numbers
+      if (e.code.toString().substring(0, 4) === 'auth') {
+        return FirebaseAuthError(e);
+      }
+      return APIError(null, e);
     }
   },
 
