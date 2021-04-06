@@ -28,6 +28,7 @@ const { ApolloServer } = require('apollo-server-express');
 const CORS = require('cors');
 const { init: firebaseInit } = require('./config/firebase');
 const { init: mongooseInit } = require('./config/mongoose');
+const { init: nodemailerInit } = require('./config/nodemailer');
 const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 const Winston = require('./helpers/winston');
 const logger = new Winston('app');
@@ -47,6 +48,7 @@ const router = require('./router');
 firebaseInit();
 mongooseInit();
 CacheRoles();
+nodemailerInit();
 
 /**
  * @summary Main Express Application
