@@ -540,9 +540,39 @@ module.exports = {
     }
   },
 
+  /** Admin APIs */
+  setUserAccountType: async (_parent, { id, accountType }, context, { fieldNodes }, _UserModel = UserModel) => {
+    try {
+      if (!id || !accountType) {
+        return APIError('BAD_REQUEST');
+      }
+
+      // eslint-disable-next-line no-magic-numbers
+      if (![0, 1, 2, 3].includes(accountType)) {
+        return APIError('BAD_REQUEST');
+      }
+
+      if (!HasPermmission(context, 'user.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      const _user = await _UserModel.findByIdAndUpdate(id, { accountType });
+
+      if (!_user) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _user;
+    } catch (e) {
+      return APIError(null, e);
+    }
+  },
 
 
 
-  setUserVerfiedStatus: async (parent, args, context, info, _UserModel = UserModel) => {},
   setUserBan: async (parent, args, context, info, _UserModel = UserModel) => {},
 };
