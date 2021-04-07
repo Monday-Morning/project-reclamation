@@ -13,7 +13,7 @@
 const fetch = require('node-fetch');
 const { v5: UUID, validate: validateUUID } = require('uuid');
 const { Model } = require('mongoose');
-const { auth } = require('../../config/firebase');
+const { admin } = require('../../config/firebase');
 const { transporter } = require('../../config/nodemailer');
 const { HasPermmission, CheckSession } = require('../../helpers/authorization');
 const { APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
@@ -43,7 +43,7 @@ const PUBLIC_FIELDS = [
 const DEF_LIMIT = 10;
 const DEF_OFFSET = 0;
 
-const canUserUpdate = (id, context, fieldNodes) => {
+const canUserUpdate = (id, context, fields) => {
   if (!CheckSession(context.session, context.authToken)) {
     return APIError('UNAUTHORIZED');
   }
@@ -57,7 +57,7 @@ const canUserUpdate = (id, context, fieldNodes) => {
 
   if (
     context.mid !== id &&
-    fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
     !HasPermmission(context, 'user.read.all')
   ) {
     return APIError('FORBIDDEN');
@@ -68,6 +68,7 @@ const canUserUpdate = (id, context, fieldNodes) => {
 
 module.exports = {
   getUser: async (_parent, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id && !email) {
         return APIError('BAD_REQUEST');
@@ -87,7 +88,7 @@ module.exports = {
         return _user;
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -103,6 +104,7 @@ module.exports = {
     { fieldNodes },
     _UserModel = UserModel
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (
         (!ids || !(ids instanceof Array) || ids.length <= 0) &&
@@ -115,7 +117,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -137,6 +139,7 @@ module.exports = {
     { fieldNodes },
     _UserModel = UserModel
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!keywords) {
         return APIError('BAD_REQUEST');
@@ -146,7 +149,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -230,7 +233,7 @@ module.exports = {
     context,
     _info,
     _UserModel = UserModel,
-    _auth = auth
+    _auth = admin.auth()
   ) => {
     try {
       if (CheckSession(context.session, context.authToken) && !HasPermmission(context, 'user.write.all')) {
@@ -253,7 +256,7 @@ module.exports = {
         fullName,
         email,
         interestedTopics,
-        createdBy: CheckSession(context.session, context.authToken) ? context.decodedToken.customClaims.mid : null,
+        createdBy: CheckSession(context.session, context.authToken) ? context.decodedToken.mid : null,
       });
 
       await _auth.setCustomUserClaims(fbUser.uid, {
@@ -267,7 +270,7 @@ module.exports = {
       return mdbUser;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
@@ -280,14 +283,15 @@ module.exports = {
     context,
     { fieldNodes },
     _UserModel = UserModel,
-    _auth = auth
+    _auth = admin.auth()
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !firstName || !lastName) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -311,7 +315,7 @@ module.exports = {
       return _updatedUser;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
@@ -324,15 +328,16 @@ module.exports = {
     { fieldNodes },
     _UserModel = UserModel,
     _MediaModel = MediaModel,
-    _auth = auth,
+    _auth = admin.auth(),
     _fetch = fetch
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !url || !blurhash) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -370,19 +375,20 @@ module.exports = {
       return _updatedUser;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
     }
   },
   updateUserTopics: async (_parent, { id, interestedTopics }, context, { fieldNodes }, _UserModel = UserModel) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !topics) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -400,12 +406,13 @@ module.exports = {
     { fieldNodes },
     _UserModel = UserModel
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || (!bio && !facebook && !twitter && !instagram && !linkedin && !website && !github)) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -437,12 +444,13 @@ module.exports = {
     _namespace = process.env.UUID_NAMESPACE,
     _fromAddress = process.env.SMTP_FROM_ADDRESS
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !email) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -471,14 +479,15 @@ module.exports = {
     context,
     { fieldNodes },
     _UserModel = UserModel,
-    _auth = auth
+    _auth = admin.auth()
   ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !email || !token || !validateUUID(token)) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -510,7 +519,7 @@ module.exports = {
       return _user;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
@@ -518,12 +527,13 @@ module.exports = {
   },
 
   newsletterSubscription: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || flag === null || flag === undefined) {
         return APIError('BAD_REQUEST');
       }
 
-      const _writePermission = canUserUpdate(id, context, fieldNodes);
+      const _writePermission = canUserUpdate(id, context, fields);
       if (_writePermission !== true) {
         return _writePermission;
       }
@@ -542,6 +552,7 @@ module.exports = {
 
   /** Admin APIs */
   setUserAccountType: async (_parent, { id, accountType }, context, { fieldNodes }, _UserModel = UserModel) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !accountType) {
         return APIError('BAD_REQUEST');
@@ -556,7 +567,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -571,7 +582,8 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  setUserBan: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel, _auth = auth) => {
+  setUserBan: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel, _auth = admin.auth()) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || flag === null || flag === undefined) {
         return APIError('BAD_REQUEST');
@@ -581,7 +593,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -599,13 +611,21 @@ module.exports = {
       return _user;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
     }
   },
-  setUserRoles: async (_parent, { id, roles }, context, { fieldNodes }, _UserModel = UserModel, _auth = auth) => {
+  setUserRoles: async (
+    _parent,
+    { id, roles },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel,
+    _auth = admin.auth()
+  ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id || !roles || roles instanceof Array) {
         return APIError('BAD_REQUEST');
@@ -615,7 +635,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      if (fieldNodes.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
@@ -633,7 +653,7 @@ module.exports = {
       return _user;
     } catch (e) {
       // eslint-disable-next-line no-magic-numbers
-      if (e.code.toString().substring(0, 4) === 'auth') {
+      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
       return APIError(null, e);
