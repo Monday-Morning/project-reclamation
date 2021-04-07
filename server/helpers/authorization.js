@@ -10,7 +10,7 @@
  */
 
 const RoleModel = require('../schema/role/role.model');
-const { auth } = require('../config/firebase');
+const { admin } = require('../config/firebase');
 const { APIError, FirebaseAuthError, GraphQLError } = require('./errorHandler');
 const fs = require('fs');
 const Winston = require('./winston');
@@ -29,16 +29,14 @@ const Authorization = {
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  AuthenticateUser: async (jwt, _auth = auth) => {
+  AuthenticateUser: async (jwt, _auth = admin.auth()) => {
     try {
       const decodedToken = await _auth.verifyIdToken(jwt, true);
-
       if (!decodedToken.email_verified) {
         return APIError('UNAUTHORIZED', null, {
           message: 'The users email id is not verified.',
         });
       }
-
       return decodedToken;
     } catch (e) {
       return FirebaseAuthError(e);
@@ -74,17 +72,13 @@ const Authorization = {
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  StartSession: async (session, jwt, _auth = auth) => {
+  StartSession: async (session, jwt, _auth = admin.auth()) => {
     try {
       const decodedToken = await Authorization.AuthenticateUser(jwt, _auth);
       if (decodedToken instanceof GraphQLError) {
         return decodedToken;
       }
-      const {
-        uid,
-        exp,
-        customClaims: { roles, mid },
-      } = decodedToken;
+      const { uid, exp, roles, mid } = decodedToken;
       session.auth = {
         uid,
         mid,
@@ -195,16 +189,13 @@ const Authorization = {
     }
     if (
       !context.decodedToken ||
-      !context.decodedToken.customClaims ||
-      !context.decodedToken.customClaims.roles ||
-      !(context.decodedToken.customClaims.roles instanceof Array) ||
-      context.decodedToken.customClaims.roles.length <= 0
+      !context.decodedToken.roles ||
+      !(context.decodedToken.roles instanceof Array) ||
+      context.decodedToken.roles.length <= 0
     ) {
       return false;
     }
-    const [UserPermissions] = context.decodedToken.customClaims.roles.map(
-      (x) => _roles.find((y) => y.name === x).permissions
-    );
+    const [UserPermissions] = context.decodedToken.roles.map((x) => _roles.find((y) => y.name === x).permissions);
     if (!UserPermissions.includes(permission)) {
       return false;
     }
@@ -218,7 +209,7 @@ const Authorization = {
    * @param {String} jwt
    * @returns {NULL | Object | GraphQLError}
    */
-  GetUserAuthScope: async (session, jwt, _auth = auth) => {
+  GetUserAuthScope: async (session, jwt, _auth = admin.auth()) => {
     if (!jwt) {
       return null;
     }
