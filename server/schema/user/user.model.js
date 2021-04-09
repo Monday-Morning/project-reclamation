@@ -68,7 +68,6 @@ const UserSchema = new Schema(
     isNewsletterSubscribed: {
       type: Boolean,
       required: false,
-      default: false,
     },
     /** Only For MM & NITR Faculty */
     profile: {
@@ -149,7 +148,6 @@ const UserSchema = new Schema(
     isBanned: {
       type: Boolean,
       required: false,
-      default: false,
     },
     /** @see module:app.models.poll */
     lastPoll: {
@@ -160,7 +158,6 @@ const UserSchema = new Schema(
     isNameChanged: {
       type: Boolean,
       required: false,
-      default: false,
     },
     verfiyEmailToken: {
       type: String,
