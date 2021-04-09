@@ -74,7 +74,7 @@ module.exports = {
         return APIError('BAD_REQUEST');
       }
 
-      const _user = !id ? await _UserModel.findOne({ email }) : await _UserModel.findOne({ id });
+      const _user = !id ? await _UserModel.findOne({ email }) : await _UserModel.findById(id);
 
       if (!_user) {
         return APIError('NOT_FOUND');
@@ -121,6 +121,7 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
+      // TODO: This is a cost operation. Need to rethink.
       const _users = await _UserModel.find({ id: ids, email: emails }).skip(offset).limit(limit);
 
       if (!_users || !(_users instanceof Array) || _users.length <= 0) {
