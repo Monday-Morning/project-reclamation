@@ -44,3 +44,5 @@ const EventType = new GraphQLObjectType({
     schemaVersion: { type: GraphQLInt },
   }),
 });
+
+module.exports = EventType;
