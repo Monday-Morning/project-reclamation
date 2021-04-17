@@ -13,7 +13,8 @@
 
 const { mergeSchemas } = require('graphql-tools');
 const UserSchema = require('./user/user.schema');
+const EventSchema = require('./event/event.schema');
 
 module.exports = mergeSchemas({
-  schemas: [UserSchema],
+  schemas: [UserSchema, EventSchema],
 });
