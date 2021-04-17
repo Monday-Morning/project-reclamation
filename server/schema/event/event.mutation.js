@@ -13,7 +13,7 @@ const {
   GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  GraphQLList,
+  //GraphQLList,
   // GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
@@ -21,7 +21,7 @@ const {
   // GraphQLTime,
   GraphQLDateTime,
   //GraphQLJSON,
-  GraphQLJSONObject,
+  //GraphQLJSONObject,
 } = require('../scalars');
 const { createEvent, updateEvent } = require('./event.resolver');
 const EventType = require('./event.type');

@@ -11,17 +11,17 @@
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLSchema,
+  //GraphQLSchema,
   GraphQLID,
-  GraphQLList,
-  GraphQLBoolean,
+  //GraphQLList,
+  // GraphQLBoolean,
   GraphQLInt,
-  GraphQLNonNull,
-  GraphQLDate,
-  GraphQLTime,
+  // GraphQLNonNull,
+  // GraphQLDate,
+  // GraphQLTime,
   GraphQLDateTime,
-  GraphQLJSON,
-  GraphQLJSONObject,
+  // GraphQLJSON,
+  // GraphQLJSONObject,
 } = require('../scalars');
 
 const EventType = new GraphQLObjectType({

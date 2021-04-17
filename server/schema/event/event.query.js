@@ -1,5 +1,5 @@
 /**
- * @module app.schema.EventQuery
+ * @module app.schema.EventQuery 
  * @description Event Query
  *
  * @requires module:app.schema.scalars
