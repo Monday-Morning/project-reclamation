@@ -12,7 +12,7 @@
 
 const { GraphQLError, APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
 const { Model } = require('mongoose');
-const mongoose = require('mongoose');
+
 /**
  * @type {Model}
  */
@@ -21,11 +21,8 @@ const ClubModel = require('./club.model');
 const { GraphQLExtension } = require('graphql-extensions');
 
 module.exports = {
-  getClub: async (parent, { id }, context, info, _ClubModel = ClubModel) => {
+  getClubByID: async (parent, { id }, context, info, _ClubModel = ClubModel) => {
     try {
-      if (!id) {
-        return APIError('BAD_REQUEST');
-      }
       const _club = await _ClubModel.findById(id);
 
       if (!_club) {
@@ -47,25 +44,22 @@ module.exports = {
     _ClubModel = ClubModel
   ) => {
     try {
-      if (!name) {
-        return APIError('BAD_REQUEST');
-      }
       //if (!HasPermission(context, 'club.write.all')) {
       //  return APIError('FORBIDDEN');
       //}
 
       const _club = await _ClubModel.create({
-        name: name,
-        website: website,
-        instagram: instagram,
-        facebook: facebook,
-        twitter: twitter,
+        name,
+        website,
+        instagram,
+        facebook,
+        twitter,
         // TODO: create an object in the media collection and use ID
         // logo: args.logo,
-        description: description,
-        society: society,
-        facAd: facAd,
-        executive: executive,
+        description,
+        society,
+        facAd,
+        executive,
       });
       return _club;
     } catch (error) {
@@ -118,30 +112,50 @@ module.exports = {
     _ClubModel = ClubModel
   ) => {
     try {
-      if (!id) {
-        return APIError('BAD_REQUEST');
+      if (!(await _ClubModel.exists({ id }))) {
+        return APIError('NOT_FOUND');
       }
-      //TODO: Permission handling and error handling needs to be improved.
-      //if (!HasPermission(context, 'club.write.all')) {
-      //  return APIError('FORBIDDEN');
-      //}
 
-      const _clubs = await _ClubModel.findByIdAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            name: name,
-            website: website,
-            facebook: facebook,
-            instagram: instagram,
-            facAd: facAd,
-            description: description,
-            executive: executive,
-          },
+      /**
+       * The getUpdateObject function returns an object that contains the
+       * key-value pairs of the club fields that are needed to be updated.
+       */
+      const getUpdateObject = (propertiesObject) => {
+        /**propertiesObject
+         * Initialises an empty object that stores the updated fields.
+         */
+        const updateObject = {};
+        /**
+         * The propertiesObject(an object which contains the club fields that
+         * can be updated) is looped through and only the fields that are
+         * required to be updated are added to updateObject.
+         */
+        for (key in propertiesObject) {
+          if (propertiesObject[key]) {
+            updateObject[key] = propertiesObject[key];
+          }
         }
-      );
 
-      return _clubs;
+        return updateObject;
+      };
+
+      const updateClub = getUpdateObject({ name, website, executive, instagram, facebook, facAd, description });
+      const _club = await _ClubModel.findByIdAndUpdate(id, updateClub);
+      return _club;
+    } catch (error) {
+      if (error instanceof GraphQLError) {
+        return error;
+      }
+      return APIError(null, error);
+    }
+  },
+  deleteClub: async (parent, { id }, context, info, _ClubModel = ClubModel) => {
+    try {
+      if (!(await _ClubModel.exists({ id }))) {
+        return APIError('NOT_FOUND');
+      }
+      const _club = await _ClubModel.findByIdAndDelete(id);
+      return _club;
     } catch (error) {
       if (error instanceof GraphQLError) {
         return error;

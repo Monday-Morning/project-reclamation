@@ -24,12 +24,12 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const ClubType = require('./club.type');
-const { getClub, listClubs, searchClubs } = require('./club.resolver');
+const { getClubByID, listClubs, searchClubs } = require('./club.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'ClubQuery',
   fields: {
-    getClub: {
+    getClubByID: {
       description: 'Retrieves a single club',
       type: ClubType,
       args: {
@@ -38,7 +38,7 @@ module.exports = new GraphQLObjectType({
           description: "The club's mongo ID.",
         },
       },
-      resolve: getClub,
+      resolve: getClubByID,
     },
     listClubs: {
       description: 'Retrieves a list of specified clubs',

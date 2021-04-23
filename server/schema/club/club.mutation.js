@@ -23,7 +23,7 @@ const {
   //GraphQLJSON,
   GraphQLJSONObject,
 } = require('../scalars');
-const { addClub, updateClub } = require('./club.resolver');
+const { addClub, updateClub, deleteClub } = require('./club.resolver');
 const ClubType = require('./club.type');
 
 module.exports = new GraphQLObjectType({
@@ -64,6 +64,14 @@ module.exports = new GraphQLObjectType({
         executive: { type: GraphQLList(GraphQLJSONObject) },
       },
       resolve: updateClub,
+    },
+    deleteClub: {
+      description: 'Deletes a single club',
+      type: ClubType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: deleteClub,
     },
   },
 });
