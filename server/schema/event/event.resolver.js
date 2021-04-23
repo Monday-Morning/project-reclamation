@@ -78,7 +78,7 @@ module.exports = {
     _EventModel = EventModel
   ) => {
     try {
-      if (!_EventModel.exists(id)) {
+      if (!(await _EventModel.exists({ id }))) {
         return APIError('NOT_FOUND');
       }
 
@@ -139,7 +139,7 @@ module.exports = {
   },
   deleteEvent: async (parent, { id }, context, info, _EventModel = EventModel) => {
     try {
-      if (!_EventModel.exists(id)) {
+      if (!(await _EventModel.exists({ id }))) {
         return APIError('NOT_FOUND');
       }
       const _event = await _EventModel.findByIdAndDelete(id);
