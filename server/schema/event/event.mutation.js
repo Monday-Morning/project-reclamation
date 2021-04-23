@@ -23,7 +23,7 @@ const {
   //GraphQLJSON,
   //GraphQLJSONObject,
 } = require('../scalars');
-const { createEvent, updateEvent } = require('./event.resolver');
+const { createEvent, updateEvent, deleteEvent } = require('./event.resolver');
 const EventType = require('./event.type');
 
 module.exports = new GraphQLObjectType({
@@ -48,7 +48,7 @@ module.exports = new GraphQLObjectType({
       description: 'Updates a pre-existing event',
       type: EventType,
       args: {
-        id:{type: GraphQLID},
+        id: { type: GraphQLID },
         name: { type: GraphQLString },
         startTS: { type: GraphQLDateTime },
         endTS: { type: GraphQLDateTime },
@@ -59,6 +59,14 @@ module.exports = new GraphQLObjectType({
         venue: { type: GraphQLString },
       },
       resolve: updateEvent,
+    },
+    deleteEvent: {
+      description: 'Deletes a pre-existing event using mongo ID',
+      type: EventType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: deleteEvent,
     },
   },
 });

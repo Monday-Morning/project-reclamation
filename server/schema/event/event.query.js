@@ -1,5 +1,5 @@
 /**
- * @module app.schema.EventQuery 
+ * @module app.schema.EventQuery
  * @description Event Query
  *
  * @requires module:app.schema.scalars
@@ -24,12 +24,12 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const EventType = require('./event.type');
-const { getEvent, listEvents, searchEvents } = require('./event.resolver');
+const { getEventByID, listEvents, searchEvents } = require('./event.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'EventQuery',
   fields: {
-    getEvent: {
+    getEventByID: {
       description: 'Retrieves a single event',
       type: EventType,
       args: {
@@ -38,14 +38,15 @@ module.exports = new GraphQLObjectType({
           description: "The event's mongo ID.",
         },
       },
-      resolve: getEvent,
+      resolve: getEventByID,
     },
     listEvents: {
       type: GraphQLList(EventType),
+      description: 'Retrieves a list of all the Events sorted from the lastest to the oldest.',
       resolve: listEvents,
     },
     searchEvents: {
-      description: 'Searches a event for keywords',
+      description: 'Searches a event by keywords',
       type: GraphQLList(EventType),
       args: {
         keywords: {
