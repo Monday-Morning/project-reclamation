@@ -12,21 +12,12 @@
 
 const fetch = require('node-fetch');
 const { v5: UUID, validate: validateUUID } = require('uuid');
-const { Model } = require('mongoose');
 const { admin } = require('../../config/firebase');
 const { transporter } = require('../../config/nodemailer');
 const { HasPermmission, CheckSession } = require('../../helpers/authorization');
 const { APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
 
-/**
- * @constant
- * @type {Model}
- */
 const UserModel = require('./user.model');
-/**
- * @constant
- * @type {Model}
- */
 const MediaModel = require('../media/media.model');
 
 const PUBLIC_FIELDS = [
@@ -40,8 +31,8 @@ const PUBLIC_FIELDS = [
   'accountType',
   'email',
 ];
-const DEF_LIMIT = 10;
-const DEF_OFFSET = 0;
+const DEF_LIMIT = 10,
+  DEF_OFFSET = 0;
 
 const canUserUpdate = (id, context, fields) => {
   if (!CheckSession(context.session, context.authToken)) {
@@ -80,6 +71,7 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
+      // eslint-disable-next-line no-magic-numbers
       if ([2, 3].includes(_user.accountType)) {
         return _user;
       }
