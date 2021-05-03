@@ -32,7 +32,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { readUserById } = require('./user.resolver');
+const { getUser } = require('./user.resolver');
 
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
 
@@ -116,14 +116,9 @@ const UserType = new GraphQLObjectType({
 		*/
 
     interestedTopics: { type: new GraphQLList(GraphQLInt) },
-    newsletter: { type: GraphQLBoolean },
+    isNewsletterSubscribed: { type: GraphQLBoolean },
 
-    profile: {
-      type: UserProfileType,
-      resolve: async (parent, args, context, info) => {
-        // TODO: Check permission and return data from parent
-      },
-    },
+    profile: { type: UserProfileType },
 
     /*
     contributions: {
@@ -152,13 +147,13 @@ const UserType = new GraphQLObjectType({
     createdBy: { type: GraphQLID },
     createdByUser: {
       type: UserType,
-      resolve: (parent, _, context) => readUserById(null, { id: parent.id }, context, null),
+      resolve: (parent, _, context, info) => getUser(null, { id: parent.id }, context, info),
     },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
     updatedByUser: {
       type: UserType,
-      resolve: (parent, _, context) => readUserById(null, { id: parent.id }, context, null),
+      resolve: (parent, _, context, info) => getUser(null, { id: parent.id }, context, info),
     },
     schemaVersion: { type: GraphQLInt },
   }),
