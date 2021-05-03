@@ -80,7 +80,7 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      if (_user.accountType > 1) {
+      if ([2, 3].includes(_user.accountType)) {
         return _user;
       }
 
