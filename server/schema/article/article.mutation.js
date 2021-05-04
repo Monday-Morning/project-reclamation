@@ -12,7 +12,7 @@ const {
   GraphQLString,
   GraphQLID,
   GraphQLBoolean,
-  GraphQLInt,
+  // GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
   // GraphQLTime,
@@ -21,7 +21,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
-const { createArticle } = require('./article.resolver');
+const { createArticle, updateArticleProps } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
 
@@ -56,9 +56,10 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: GraphQLString },
         inshort: { type: GraphQLString },
-        category: { type: new GraphQLList(GraphQLID) },
+        categories: { type: new GraphQLList(GraphQLID) },
         tags: { type: new GraphQLList(GraphQLID) },
       },
+      resolve: updateArticleProps,
     },
     updateArticleContent: {
       type: ArticleType,

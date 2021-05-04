@@ -12,6 +12,10 @@ const CategoryMapModel = require('../categoryMap/categoryMap.model');
 /**
  * @type {Model}
  */
+const TagModel = require('../tag/tag.model');
+/**
+ * @type {Model}
+ */
 const ArticleModel = require('./article.model');
 
 module.exports = {
@@ -51,9 +55,10 @@ module.exports = {
 
       await Promise.all([...authors, ...tech, ...categories]);
 
-      if ([...authors, ...tech, ...categories].some((user) => !user)) {
+      if ([...authors, ...tech, ...categories].some((item) => !item)) {
         return APIError('BAD_REQUEST', null, {
-          reason: 'At least one of the user IDs supplied (author/tech) is invalid, i.e. that user does not exist',
+          reason:
+            'At least one of the user IDs supplied (author/tech) or categories supplied is invalid, i.e. that user/category does not exist',
         });
       }
 
@@ -77,6 +82,59 @@ module.exports = {
       });
 
       return _article;
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  updateArticleProps: async (_parent, { id, title, inshort, categories, tags }, context, _) => {
+    try {
+      const _article = await ArticleModel.findById(id);
+
+      if (!_article) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _users = [..._article.authors, _article.tech].map((user) => user.details);
+
+      if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
+        return APIError('FORBIDDEN');
+      } else if (!HasPermmission(context, 'article.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      categories = !categories ? [] : categories.map((catid) => CategoryMapModel.findById(catid));
+      tags = !tags ? [] : tags.map((tagid) => TagModel.findById(tagid));
+
+      await Promise.all([...categories, ...tags]);
+
+      if ([...categories, ...tags].some((item) => !item)) {
+        return APIError('BAD_REQUEST', null, {
+          reason: 'At least one of the categories or tags supplied is invalid, i.e. it does not exist',
+        });
+      }
+
+      const _updateObj = {
+        title: !title ? undefined : title,
+        inshort: !inshort ? undefined : inshort,
+        categories:
+          categories.length < 1
+            ? undefined
+            : categories.map((category) => ({
+                number: category.number,
+                subcategory: category.parent.reference ? true : false,
+                reference: category.id,
+              })),
+        tags:
+          tags.length < 1
+            ? undefined
+            : tags.map((tag) => ({
+                name: tag.name,
+                admin: tag.isAdmin,
+                reference: tag.id,
+              })),
+      };
+
+      return ArticleModel.findByIdAndUpdate(id, _updateObj);
     } catch (error) {
       return APIError(null, error);
     }
