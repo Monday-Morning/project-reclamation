@@ -10,12 +10,14 @@
  */
 
 const RoleModel = require('../schema/role/role.model');
-const { auth } = require('../config/firebase');
+const { admin } = require('../config/firebase');
 const { APIError, FirebaseAuthError, GraphQLError } = require('./errorHandler');
 const fs = require('fs');
 const Winston = require('./winston');
 const logger = new Winston('authorization');
 const S_TO_MS = 1000;
+
+let rolesCacheFile = './roles.json';
 
 const Authorization = {
   /**
@@ -27,16 +29,14 @@ const Authorization = {
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  AuthenticateUser: async (jwt, _auth = auth) => {
+  AuthenticateUser: async (jwt, _auth = admin.auth()) => {
     try {
       const decodedToken = await _auth.verifyIdToken(jwt, true);
-
       if (!decodedToken.email_verified) {
         return APIError('UNAUTHORIZED', null, {
           message: 'The users email id is not verified.',
         });
       }
-
       return decodedToken;
     } catch (e) {
       return FirebaseAuthError(e);
@@ -72,23 +72,20 @@ const Authorization = {
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  StartSession: async (session, jwt, _auth = auth) => {
+  StartSession: async (session, jwt, _auth = admin.auth()) => {
     try {
       const decodedToken = await Authorization.AuthenticateUser(jwt, _auth);
       if (decodedToken instanceof GraphQLError) {
         return decodedToken;
       }
-      const {
-        uid,
-        exp,
-        customClaims: { roles, mid },
-      } = decodedToken;
+      const { uid, exp, roles, mid } = decodedToken;
       session.auth = {
         uid,
         mid,
         jwt,
         exp,
         roles,
+        decodedToken,
       };
       await session.save();
       return decodedToken;
@@ -128,8 +125,10 @@ const Authorization = {
    */
   CacheRoles: async (_RoleModel = RoleModel) => {
     try {
-      const _roles = await _RoleModel.find({}, ['name', 'permissions'], { lean: true });
-      return fs.writeFileSync('./roles.json', _roles.toString());
+      const _roles = await _RoleModel.find({}, 'name permissions section', { lean: true });
+      fs.writeFileSync('./roles.json', JSON.stringify(_roles));
+      rolesCacheFile = fs.realpathSync('./roles.json');
+      return rolesCacheFile;
     } catch (e) {
       logger.error('Could not update roles cache.', e);
       return APIError(null, e, { message: 'Could not update roles cache.' });
@@ -144,7 +143,10 @@ const Authorization = {
    */
   GetRoles: () => {
     try {
-      return fs.readFileSync('./roles.json');
+      if (rolesCacheFile === './roles.json') {
+        rolesCacheFile = fs.realpathSync('./server/roles.json');
+      }
+      return JSON.parse(fs.readFileSync(rolesCacheFile));
     } catch (e) {
       logger.error('Could not read roles cache.', e);
       return APIError(null, e, { message: 'Could not read roles cache' });
@@ -174,19 +176,27 @@ const Authorization = {
    * @param {String} permission
    * @returns {Boolean | GraphQLError}
    */
-  HasPermmission: (session, jwt, permission) => {
-    if (!Authorization.CheckSession(session, jwt)) {
-      session.destroy();
-      return APIError('UNAUTHORIZED', null, {
-        message: 'The users session has either expired or is invaid. Please regenerate the session.',
-      });
+  HasPermmission: (context, permission) => {
+    if (!context || !context.authToken || !context.session) {
+      return false;
+    }
+    if (!Authorization.CheckSession(context.session, context.authToken)) {
+      return false;
     }
     const _roles = Authorization.GetRoles();
     if (_roles instanceof GraphQLError) {
-      return _roles;
+      throw _roles;
     }
-    const UserPermissions = session.roles.map((x) => _roles.find((y) => y.name === x));
-    if (!UserPermissions.contains(permission)) {
+    if (
+      !context.decodedToken ||
+      !context.decodedToken.roles ||
+      !(context.decodedToken.roles instanceof Array) ||
+      context.decodedToken.roles.length <= 0
+    ) {
+      return false;
+    }
+    const [UserPermissions] = context.decodedToken.roles.map((x) => _roles.find((y) => y.name === x).permissions);
+    if (!UserPermissions.includes(permission)) {
       return false;
     }
     return true;
@@ -199,14 +209,18 @@ const Authorization = {
    * @param {String} jwt
    * @returns {NULL | Object | GraphQLError}
    */
-  GetUserAuthScope: (session, jwt, _auth = auth) => {
+  GetUserAuthScope: async (session, jwt, _auth = admin.auth()) => {
     if (!jwt) {
       return null;
     }
     if (Authorization.CheckSession(session, jwt)) {
-      return session.auth.roles;
+      return session.auth.decodedToken;
     }
-    return Authorization.StartSession(session, jwt, _auth);
+    const decodedToken = await Authorization.StartSession(session, jwt, _auth);
+    if (decodedToken instanceof GraphQLError) {
+      throw decodedToken;
+    }
+    return decodedToken;
   },
 };
 

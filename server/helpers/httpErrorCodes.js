@@ -17,11 +17,11 @@ module.exports = {
   },
   /**
    * @constant BAD_REQUEST
-   * @description The server could not understand the request due to invalid syntax.
+   * @description The server could not understand the request due to invalid syntax || The server could not process the request due to missing query fields
    */
   BAD_REQUEST: {
     code: 400,
-    message: 'The server could not understand the request due to invalid syntax.',
+    message: 'The server could not process the request due to missing or invalid query fields.',
   },
   /**
    * @constant UNAUTHORIZED
@@ -55,7 +55,7 @@ module.exports = {
    */
   METHOD_NOT_ALLOWED: {
     code: 405,
-    message: 'The request method is known by the server but has been disabled and cannot be used.',
+    message: 'The request method is known by the server but has been disabled for the user and cannot be used.',
   },
   /**
    * @constant TOO_MANY_REQUESTS

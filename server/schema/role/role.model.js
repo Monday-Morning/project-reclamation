@@ -32,6 +32,11 @@ const RoleSchema = new Schema(
         trim: true,
       },
     ],
+    section: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       required: false,

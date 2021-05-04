@@ -33,18 +33,10 @@ module.exports = {
   },
 
   /**
-   * @description Firebase Authentication Library
+   * @description Firebase Admin API
    * @constant
    *
-   * @type {Admin.auth.Auth}
+   * @type {Admin}
    */
-  auth: Admin.apps.length > 0 ? Admin.auth() : null,
-
-  /**
-   * @description Firebase Storage Library
-   * @constant
-   *
-   * @type {Admin.storage}
-   */
-  bucket: Admin.apps.length > 0 ? Admin.storage().bucket() : null,
+  admin: Admin,
 };

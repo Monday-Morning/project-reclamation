@@ -38,7 +38,7 @@ const UserSchema = new Schema(
       unique: true,
     },
     /** [0 - Normal, 1 - NITR Student, 2 - MM, 3 - NITR Faculty] */
-    verifiedType: {
+    accountType: {
       type: Number,
       required: false,
       min: 0,
@@ -56,7 +56,7 @@ const UserSchema = new Schema(
     picture: {
       type: Schema.Types.ObjectId,
       ref: 'Media',
-      required: true,
+      required: false,
     },
     interestedTopics: [
       {
@@ -65,10 +65,9 @@ const UserSchema = new Schema(
         min: 0,
       },
     ],
-    newsletter: {
+    isNewsletterSubscribed: {
       type: Boolean,
       required: false,
-      default: false,
     },
     /** Only For MM & NITR Faculty */
     profile: {
@@ -127,7 +126,7 @@ const UserSchema = new Schema(
     positions: [
       {
         /** [0 - Member, 1 - Coordinator, 2 - Mentor] */
-        positionType: {
+        position: {
           type: Number,
           required: false,
           min: 0,
@@ -148,13 +147,20 @@ const UserSchema = new Schema(
     ],
     isBanned: {
       type: Boolean,
-      required: true,
-      default: false,
+      required: false,
     },
     /** @see module:app.models.poll */
     lastPoll: {
       type: Schema.Types.ObjectId,
       ref: 'Poll',
+      required: false,
+    },
+    isNameChanged: {
+      type: Boolean,
+      required: false,
+    },
+    verfiyEmailToken: {
+      type: String,
       required: false,
     },
     createdBy: {

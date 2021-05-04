@@ -13,6 +13,7 @@
 const express = require('express');
 // const authController = require('../controllers/auth_controller');
 const { auth } = require('../config/firebase');
+const { CacheRoles } = require('../helpers/authorization');
 
 /**
  * @method checkUserAuth
@@ -91,6 +92,8 @@ const router = express.Router();
 
 // router.post('/v1/auth/session', authController.start);
 // router.delete('/v1/auth/session', checkUserAuth, authController.end);
+
+router.use('/admin/roles/sync', async (req, res) => res.send(await CacheRoles()));
 
 /** 404 Not Found - Default Response for Invalid Path */
 router.use((req, res) => {

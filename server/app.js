@@ -28,6 +28,7 @@ const { ApolloServer } = require('apollo-server-express');
 const CORS = require('cors');
 const { init: firebaseInit } = require('./config/firebase');
 const { init: mongooseInit } = require('./config/mongoose');
+const { init: nodemailerInit } = require('./config/nodemailer');
 const { GetUserAuthScope, CacheRoles } = require('./helpers/authorization');
 const Winston = require('./helpers/winston');
 const logger = new Winston('app');
@@ -47,6 +48,7 @@ const router = require('./router');
 firebaseInit();
 mongooseInit();
 CacheRoles();
+nodemailerInit();
 
 /**
  * @summary Main Express Application
@@ -154,9 +156,14 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 const apolloServer = new ApolloServer({
   schema: require('./schema'),
   context: async ({ req }) => ({
-    authToken: req.headers.authorization,
+    authToken: decodeURI(req.headers.authorization),
     // csrfToken: req.csrfToken(), // Disabled CSURF
-    decodedToken: await GetUserAuthScope(req.session, req.header.authorization),
+    decodedToken: await GetUserAuthScope(req.session, decodeURI(req.headers.authorization)),
+    mid: async () => {
+      const decodedToken = await GetUserAuthScope(req.session, decodeURI(req.headers.authorization));
+      return decodedToken ? decodedToken.customClaims.mid : null;
+    },
+    session: req.session,
   }),
   cors: CORS_OPTIONS,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
