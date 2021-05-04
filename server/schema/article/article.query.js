@@ -20,6 +20,7 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const { getArticle } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
 
@@ -35,7 +36,7 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      // resolve:
+      resolve: getArticle,
     },
     listArticles: {
       description: 'Retrives a list of articles',
