@@ -171,7 +171,7 @@ const ArticleSchema = new Schema(
         },
       },
     ],
-    category: [
+    categories: [
       {
         subcategory: {
           type: Boolean,
@@ -266,13 +266,13 @@ const ArticleSchema = new Schema(
         default: 0,
       },
     },
-    /** In Minutes */
+    /** In Seconds */
     readTime: {
       type: Number,
       required: true,
       min: 0,
     },
-    /** In Minutes */
+    /** In Seconds */
     timeSpent: {
       type: Number,
       required: false,

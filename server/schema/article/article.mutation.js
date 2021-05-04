@@ -21,6 +21,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
+const { createArticle } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
 
@@ -47,6 +48,7 @@ module.exports = new GraphQLObjectType({
         tech: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
         categories: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
+      resolve: createArticle,
     },
     updateArticleProps: {
       type: ArticleType,
