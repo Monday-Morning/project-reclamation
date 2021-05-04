@@ -45,6 +45,7 @@ const {
   setUserAccountType,
   setUserRoles,
 } = require('./user.resolver');
+const { AccountTypeEnumType } = require('./user.enum.types');
 
 module.exports = new GraphQLObjectType({
   name: 'UserMutation',
@@ -132,7 +133,7 @@ module.exports = new GraphQLObjectType({
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        accountType: { type: new GraphQLNonNull(GraphQLID) },
+        accountType: { type: new GraphQLNonNull(AccountTypeEnumType) },
       },
       resolve: setUserAccountType,
     },
