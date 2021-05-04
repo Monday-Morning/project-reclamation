@@ -32,7 +32,7 @@ module.exports = {
       host: 'server1.dashnet.in',
       ref: 'origin/development',
       repo: 'git@github.com:Monday-Morning/project-reclamation.git',
-      path: '~/www',
+      path: '/home/mm/www',
       'post-deploy':
         'git secret reveal -f; cd server; rm -rf node_modules; npm install; npm run start:stage; pm2 dump;',
     },
