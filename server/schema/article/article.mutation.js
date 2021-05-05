@@ -27,6 +27,7 @@ const {
   updateArticleProps,
   updateArticleContent,
   updateArticleCoverMedia,
+  updateArticleStatus,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
@@ -90,6 +91,7 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
         status: { type: new GraphQLNonNull(StatusEnumType) },
       },
+      resolve: updateArticleStatus,
     },
     updateArticleRestriction: {
       type: ArticleType,

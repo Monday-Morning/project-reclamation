@@ -198,4 +198,27 @@ module.exports = {
       return APIError(null, error);
     }
   },
+  updateArticleStatus: async (_parent, { id, status }, context, _) => {
+    try {
+      const _article = await ArticleModel.findById(id);
+
+      if (!_article) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _users = [..._article.authors, ..._article.tech].map((user) => user.details);
+
+      if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
+        return APIError('FORBIDDEN');
+      } else if (!HasPermmission(context, 'article.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      // TODO: if trashed or archived, remove from issue
+
+      return ArticleModel.findByIdAndUpdate(id, { status });
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
 };
