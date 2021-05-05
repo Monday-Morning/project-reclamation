@@ -1,3 +1,4 @@
+const ContentType = require('../common/content.type');
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
@@ -21,7 +22,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
-const { createArticle, updateArticleProps } = require('./article.resolver');
+const { createArticle, updateArticleProps, updateArticleContent } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
 
@@ -65,7 +66,9 @@ module.exports = new GraphQLObjectType({
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
+        content: { type: new GraphQLNonNull(ContentType) },
       },
+      resolve: updateArticleContent,
     },
     updateArticleCoverMedia: {
       type: ArticleType,
