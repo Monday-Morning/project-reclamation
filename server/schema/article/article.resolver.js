@@ -1,25 +1,9 @@
-const { Model } = require('mongoose');
 const { HasPermmission } = require('../../helpers/authorization');
 const { APIError } = require('../../helpers/errorHandler');
-/**
- * @type {Model}
- */
 const UserModel = require('../user/user.model');
-/**
- * @type {Model}
- */
 const CategoryMapModel = require('../categoryMap/categoryMap.model');
-/**
- * @type {Model}
- */
 const TagModel = require('../tag/tag.model');
-/**
- * @type {Model}
- */
 const ArticleModel = require('./article.model');
-/**
- * @type {Model}
- */
 const MediaModel = require('../media/media.model');
 
 module.exports = {
