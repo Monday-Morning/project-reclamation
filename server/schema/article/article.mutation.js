@@ -28,6 +28,7 @@ const {
   updateArticleContent,
   updateArticleCoverMedia,
   updateArticleStatus,
+  updateArticleRestriction,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
@@ -99,6 +100,7 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
         flag: { type: new GraphQLNonNull(GraphQLBoolean) },
       },
+      resolve: updateArticleRestriction,
     },
     incrementEngagementCount: {
       type: ArticleType,

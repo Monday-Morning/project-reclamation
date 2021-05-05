@@ -221,4 +221,25 @@ module.exports = {
       return APIError(null, error);
     }
   },
+  updateArticleRestriction: async (_parent, { id, flag }, context, _) => {
+    try {
+      const _article = await ArticleModel.findById(id);
+
+      if (!_article) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _users = [..._article.authors, ..._article.tech].map((user) => user.details);
+
+      if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
+        return APIError('FORBIDDEN');
+      } else if (!HasPermmission(context, 'article.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      return ArticleModel.findByIdAndUpdate(id, { isInstituteRestricted: flag });
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
 };
