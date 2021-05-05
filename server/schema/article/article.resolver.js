@@ -143,7 +143,7 @@ module.exports = {
       return APIError(null, error);
     }
   },
-  updateArticleContent: async (_parent, { id, content }, context, _info) => {
+  updateArticleContent: async (_parent, { id, content }, context, _) => {
     try {
       const _article = await ArticleModel.findById(id);
 
@@ -238,6 +238,32 @@ module.exports = {
       }
 
       return ArticleModel.findByIdAndUpdate(id, { isInstituteRestricted: flag });
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  incrementEngagementCount: async (_parent, { id, engagement }, _) => {
+    try {
+      const _article = await ArticleModel.findById(id);
+
+      if (!_article) {
+        return APIError('NOT_FOUND');
+      }
+
+      // eslint-disable-next-line no-magic-numbers
+      if ([0, 1, 2].includes(engagement)) {
+        // TOD0: Sort out after others schemas
+        return APIError('METHOD_NOT_ALLOWED');
+      }
+
+      const _updateObj = {
+        // eslint-disable-next-line no-magic-numbers
+        views: engagement === 3 ? _article.views++ : undefined,
+        // eslint-disable-next-line no-magic-numbers
+        hits: engagement === 4 ? _article.hits++ : undefined,
+      };
+
+      return ArticleModel.findByIdAndUpdate(id, _updateObj);
     } catch (error) {
       return APIError(null, error);
     }

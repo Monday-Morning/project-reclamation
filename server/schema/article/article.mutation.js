@@ -29,6 +29,7 @@ const {
   updateArticleCoverMedia,
   updateArticleStatus,
   updateArticleRestriction,
+  incrementEngagementCount,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
@@ -108,6 +109,7 @@ module.exports = new GraphQLObjectType({
         id: { type: GraphQLNonNull(GraphQLID) },
         engagement: { type: GraphQLNonNull(EngagementEnumType) },
       },
+      resolve: incrementEngagementCount,
     },
   },
 });
