@@ -22,7 +22,12 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
-const { createArticle, updateArticleProps, updateArticleContent } = require('./article.resolver');
+const {
+  createArticle,
+  updateArticleProps,
+  updateArticleContent,
+  updateArticleCoverMedia,
+} = require('./article.resolver');
 
 const ArticleType = require('./article.type');
 
@@ -74,9 +79,10 @@ module.exports = new GraphQLObjectType({
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        url: { type: new GraphQLNonNull(GraphQLString) },
-        blurhash: { type: new GraphQLNonNull(GraphQLString) },
+        squareRef: { type: new GraphQLNonNull(GraphQLID) },
+        rectangleRef: { type: new GraphQLNonNull(GraphQLID) },
       },
+      resolve: updateArticleCoverMedia,
     },
     updateArticleStatus: {
       type: ArticleType,

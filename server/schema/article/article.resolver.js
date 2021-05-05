@@ -17,6 +17,10 @@ const TagModel = require('../tag/tag.model');
  * @type {Model}
  */
 const ArticleModel = require('./article.model');
+/**
+ * @type {Model}
+ */
+const MediaModel = require('../media/media.model');
 
 module.exports = {
   getArticle: async (_parent, { id }, context, _) => {
@@ -94,7 +98,7 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      const _users = [..._article.authors, _article.tech].map((user) => user.details);
+      const _users = [..._article.authors, ..._article.tech].map((user) => user.details);
 
       if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
         return APIError('FORBIDDEN');
@@ -147,7 +151,7 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      const _users = [..._article.authors, _article.tech].map((user) => user.details);
+      const _users = [..._article.authors, ..._article.tech].map((user) => user.details);
 
       if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
         return APIError('FORBIDDEN');
@@ -156,6 +160,40 @@ module.exports = {
       }
 
       return ArticleModel.findByIdAndUpdate(id, { content });
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  updateArticleCoverMedia: async (_parent, { id, squareRef, rectangleRef }, context, _) => {
+    try {
+      const _article = await ArticleModel.findById(id);
+
+      if (!_article) {
+        return APIError('NOT_FOUND');
+      }
+
+      const _users = [..._article.authors, ..._article.tech].map((user) => user.details);
+
+      if (_users.includes(context.mid) && !HasPermmission(context, 'article.write.self')) {
+        return APIError('FORBIDDEN');
+      } else if (!HasPermmission(context, 'article.write.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      const [_squareExists, _rectangleExists] = [squareRef, rectangleRef].map((id) => MediaModel.exists({ id }));
+      await Promise.all([_squareExists, _rectangleExists]);
+      if (!squareExists || !rectangleExists) {
+        return APIError('BAD_REQUEST', null, {
+          reason: 'The media reference(s) provided was not valid i.e. it does not exist',
+        });
+      }
+
+      return ArticleModel.findByIdAndUpdate(id, {
+        coverMedia: {
+          square: squareRef,
+          rectangle: rectangleRef,
+        },
+      });
     } catch (error) {
       return APIError(null, error);
     }
