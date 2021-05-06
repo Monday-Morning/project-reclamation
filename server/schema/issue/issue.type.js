@@ -24,8 +24,10 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const UserType = require('../user/user.type');
-const { getUser } = require('../user/user.resolver');
+// const UserType = require('../user/user.type');
+// const { getUser } = require('../user/user.resolver');
+const MediaType = require('../media/media.type');
+const { getMedia } = require('../media/media.resolver');
 const ArticleType = require('../article/article.type');
 const { getArticle } = require('../article/article.resolver');
 
@@ -52,20 +54,27 @@ const IssueType = new GraphQLObjectType({
       resolve: (parent, _args, context) => getArticle(null, { id: parent.featured }, context),
     },
     // polls: { type: GraphQLList(PollType) },
-    thumbnail: { type: MediaType },
+    thumbnailID: {
+      type: GraphQLID,
+      resolve: (parent) => parent.thumbnail,
+    },
+    thumbnail: {
+      type: MediaType,
+      resolve: (parent) => getMedia(null, { id: parent.thumbnail }),
+    },
     description: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    createdByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    },
+    // createdByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
+    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    updatedByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    },
+    // updatedByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
+    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

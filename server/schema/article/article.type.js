@@ -1,6 +1,6 @@
 const UserDetailType = require('../common/userDetail.type');
-const UserType = require('../user/user.type');
-const { getUser } = require('../user/user.resolver');
+// const UserType = require('../user/user.type');
+// const { getUser } = require('../user/user.resolver');
 const ContentType = require('../common/content.type');
 const {
   GraphQLObjectType,
@@ -33,7 +33,7 @@ const MediaType = require('../media/media.type');
 const { getMedia } = require('../media/media.resolver');
 
 const ArticleCategoryType = new GraphQLObjectType({
-  name: 'Category',
+  name: 'ArticleCategory',
   fields: () => ({
     category: { type: new GraphQLNonNull(GraphQLInt) },
     subcategory: { type: GraphQLBoolean },
@@ -49,7 +49,7 @@ const ArticleCategoryType = new GraphQLObjectType({
 });
 
 const ArticleTagType = new GraphQLObjectType({
-  name: 'Tag',
+  name: 'ArticleTag',
   fields: () => ({
     name: { type: GraphQLString },
     admin: { type: GraphQLBoolean },
@@ -109,16 +109,16 @@ const ArticleType = new GraphQLObjectType({
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    createdByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    },
+    // createdByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
+    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    updatedByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    },
+    // updatedByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
+    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

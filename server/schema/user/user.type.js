@@ -12,7 +12,7 @@
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
-  // GraphQLUnionType,
+  GraphQLUnionType,
   // GraphQLInputObjectType,
   // GraphQLEnumType,
   // GraphQLInterfaceType,
@@ -34,7 +34,7 @@ const {
 
 const ArticleType = require('../article/article.type');
 const MediaType = require('../media/media.type');
-const { getUser } = require('./user.resolver');
+// const { getUser } = require('./user.resolver');
 const { getMedia } = require('../media/media.resolver');
 
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
@@ -140,16 +140,16 @@ const UserType = new GraphQLObjectType({
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    createdByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    },
+    // createdByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
+    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    updatedByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    },
+    // updatedByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
+    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

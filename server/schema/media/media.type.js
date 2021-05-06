@@ -21,8 +21,8 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-const { getUser } = require('../user/user.resolver');
-const UserType = require('../user/user.type');
+// const { getUser } = require('../user/user.resolver');
+// const UserType = require('../user/user.type');
 const MediaEnumType = require('./media.enum.type');
 
 const MediaType = new GraphQLObjectType({
@@ -36,16 +36,16 @@ const MediaType = new GraphQLObjectType({
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    createdByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    },
+    // createdByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
+    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    updatedByUser: {
-      type: UserType,
-      resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    },
+    // updatedByUser: {
+    //   type: UserType,
+    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
+    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });
