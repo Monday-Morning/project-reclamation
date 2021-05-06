@@ -25,36 +25,39 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
+const CategoryMapType = require('../categoryMap/categoryMap.type');
+const { getCategory } = require('../categoryMap/categoryMap.resolver');
+const TagType = require('../tag/tag.type');
+const { getTag } = require('../tag/tag.resolver');
+const MediaType = require('../media/media.type');
+const { getMedia } = require('../media/media.resolver');
 
-const CategoryType = new GraphQLObjectType({
+const ArticleCategoryType = new GraphQLObjectType({
   name: 'Category',
   fields: () => ({
     category: { type: new GraphQLNonNull(GraphQLInt) },
     subcategory: { type: GraphQLBoolean },
-    referenceID: { type: GraphQLID },
-    // TODO: Resolve to CategoryMapType
-    /*
+    referenceID: {
+      type: GraphQLID,
+      resolve: (parent) => parent.reference,
+    },
     reference: {
       type: CategoryMapType,
-      resolve: async (parent, args, context, info) => {},
+      resolve: (parent) => getCategory(null, { id: parent.reference }),
     },
-		*/
   }),
 });
 
-const TagType = new GraphQLObjectType({
+const ArticleTagType = new GraphQLObjectType({
   name: 'Tag',
   fields: () => ({
     name: { type: GraphQLString },
     admin: { type: GraphQLBoolean },
     referenceID: { type: GraphQLID },
-    // TODO: Resolve to TagType
-    /*
     reference: {
       type: TagType,
-      resolve: async (parent, args, context, info) => {},
+      resolve: (parent) => getTag(null, { id: parent.reference }),
     },
-		*/
   }),
 });
 
@@ -62,21 +65,15 @@ const CoverMediaType = new GraphQLObjectType({
   name: 'CoverMedia',
   fields: () => ({
     squareID: { type: GraphQLID },
-    // TODO: Resolve to MediaType
-    /*
-		square: {
-			type: MediaType,
-			resolve: async (parent, args, context, info) => {},
-		}
-		*/
+    square: {
+      type: MediaType,
+      resolve: (parent) => getMedia(null, parent.square),
+    },
     rectangleID: { type: GraphQLID },
-    // TODO: Resolve to MediaType
-    /*
-		rectangle: {
-			type: MediaType,
-			resolve: async (parent, args, context, info) => {},
-		}
-		*/
+    rectangle: {
+      type: MediaType,
+      resolve: (parent) => getMedia(null, parent.rectangle),
+    },
   }),
 });
 
@@ -101,8 +98,8 @@ const ArticleType = new GraphQLObjectType({
     inshort: { type: GraphQLString },
     authors: { type: new GraphQLList(UserDetailType) },
     tech: { type: new GraphQLList(UserDetailType) },
-    category: { type: new GraphQLList(CategoryType) },
-    tags: { type: GraphQLList(TagType) },
+    category: { type: new GraphQLList(ArticleCategoryType) },
+    tags: { type: GraphQLList(ArticleTagType) },
     coverMedia: { type: CoverMediaType },
     status: { type: StatusEnumType },
     isInstituteRestricted: { type: GraphQLBoolean },
