@@ -33,12 +33,12 @@ module.exports = new GraphQLObjectType({
       description: 'Adds a single issue',
       type: IssueType,
       args: {
-        name: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         // articles: { type: GraphQLList(GraphQLID) },
         // featured: { type: GraphQLList(GraphQLID) },
         // polls: { type: GraphQLList(PollType) },
         // thumbnail: { type: MediaType },
-        publishedAt: { type: GraphQLDateTime },
+        publishedAt: { type: new GraphQLNonNull(GraphQLDateTime) },
         description: { type: GraphQLString },
       },
       resolve: addIssue,
@@ -47,7 +47,7 @@ module.exports = new GraphQLObjectType({
       description: 'Updates a single issue',
       type: IssueType,
       args: {
-        id: { type: GraphQLNonNull(GraphQLID) },
+        id: { type: new GraphQLNonNull(GraphQLID) },
         name: { type: GraphQLString },
         // articles: { type: GraphQLList(GraphQLID) },
         // featured: { type: GraphQLList(GraphQLID) },
@@ -62,7 +62,7 @@ module.exports = new GraphQLObjectType({
       description: 'Deletes a single issue by id',
       type: IssueType,
       args: {
-        id: { type: GraphQLNonNull(GraphQLID) },
+        id: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: deleteIssue,
     },
