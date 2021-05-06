@@ -32,7 +32,10 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
+const ArticleType = require('../article/article.type');
+const MediaType = require('../media/media.type');
 const { getUser } = require('./user.resolver');
+const { getMedia } = require('../media/media.resolver');
 
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
 
@@ -55,21 +58,18 @@ const UserProfileType = new GraphQLObjectType({
   }),
 });
 
-// TODO: Resolve to ArticleType or MediaType
-/*
 const ContributionUnionType = new GraphQLUnionType({
-	name: 'ContributionUnion',
-	types: [ArticleType, MediaType],
-})
+  name: 'ContributionUnion',
+  types: [ArticleType, MediaType],
+});
 
 const ContributionType = new GraphQLObjectType({
-	name: 'Contribution',
+  name: 'Contribution',
   fields: () => ({
-		model: { type: GraphQLString },
+    model: { type: GraphQLString },
     reference: { type: ContributionUnionType },
   }),
 });
-*/
 
 /**
  * @description User Position Type
@@ -107,24 +107,19 @@ const UserType = new GraphQLObjectType({
       type: GraphQLID,
       resolve: (parent) => parent.picture,
     },
-    // TODO: Resolve to MediaType
-    /*
-		picture: {
-			type: MediaType,
-			resolve: async (parent, args, context, info) => {},
-		}
-		*/
+    picture: {
+      type: MediaType,
+      resolve: (parent) => getMedia(null, { id: parent.picture }),
+    },
 
     interestedTopics: { type: new GraphQLList(GraphQLInt) },
     isNewsletterSubscribed: { type: GraphQLBoolean },
 
     profile: { type: UserProfileType },
 
-    /*
     contributions: {
       type: new GraphQLList(ContributionType),
-		},
-		*/
+    },
     positions: {
       type: new GraphQLList(PositionType),
     },
