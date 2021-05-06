@@ -30,7 +30,7 @@ module.exports = {
     },
   }),
   ListStyleEnumType: new GraphQLEnumType({
-    name: 'OrderedListStyleEnum',
+    name: 'ListStyleEnum',
     values: {
       UPPER_ALPHA: { value: 0 },
       LOWER_ALPHA: { value: 1 },
