@@ -13,7 +13,7 @@ const {
   GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  GraphQLList,
+  //GraphQLList,
   // GraphQLBoolean,
   GraphQLInt,
   // GraphQLNonNull,
@@ -23,8 +23,8 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-const ArticleType = require('../article/article.type');
-const { getArticle } = require('../article/article.resolver');
+//const ArticleType = require('../article/article.type');
+//const { getArticle } = require('../article/article.resolver');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
@@ -46,8 +46,16 @@ const IssueType = new GraphQLObjectType({
     description: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
+    createdByUser: {
+      type: UserType,
+      resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
+    },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
+    updatedByUser: {
+      type: UserType,
+      resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
+    },
     schemaVersion: { type: GraphQLInt },
   }),
 });
