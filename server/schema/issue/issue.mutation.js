@@ -19,7 +19,7 @@ const {
   GraphQLNonNull,
   // GraphQLDate,
   // GraphQLTime,
-  // GraphQLDateTime,
+  GraphQLDateTime,
   //GraphQLJSON,
   GraphQLJSONObject,
 } = require('../scalars');
@@ -38,6 +38,7 @@ module.exports = new GraphQLObjectType({
         // featured: { type: GraphQLList(GraphQLID) },
         // polls: { type: GraphQLList(PollType) },
         // thumbnail: { type: MediaType },
+        publishedAt: { type: GraphQLDateTime },
         description: { type: GraphQLString },
       },
       resolve: addIssue,
@@ -53,6 +54,7 @@ module.exports = new GraphQLObjectType({
         // polls: { type: GraphQLList(PollType) },
         // thumbnail: { type: MediaType },
         description: { type: GraphQLString },
+        publishedAt: { type: GraphQLDateTime },
       },
       resolve: updateIssue,
     },
@@ -62,7 +64,7 @@ module.exports = new GraphQLObjectType({
       args: {
         id: { type: GraphQLNonNull(GraphQLID) },
       },
+      resolve: deleteIssue,
     },
-    resolve: deleteIssue,
   },
 });
