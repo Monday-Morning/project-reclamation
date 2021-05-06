@@ -39,7 +39,7 @@ const MediaSchema = new Schema(
       trim: true,
     },
     /** [0 - Image, 1 - Video] */
-    type: {
+    mediaType: {
       type: Number,
       required: false,
       min: 0,
