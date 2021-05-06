@@ -35,7 +35,7 @@ module.exports = new GraphQLObjectType({
       type: IssueType,
       args: {
         id: {
-          type: GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLID),
           description: "The issue's mongo ID",
         },
       },
@@ -43,7 +43,7 @@ module.exports = new GraphQLObjectType({
     },
     listIssues: {
       description: 'Retrieves a list of all the Issues',
-      type: GraphQLList(IssueType),
+      type: new GraphQLNonNull(new GraphQLList(IssueType)),
       args: {},
       resolve: listIssues,
     },

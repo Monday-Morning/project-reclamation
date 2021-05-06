@@ -10,11 +10,7 @@
  */
 
 const { GraphQLError, APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
-const { Model } = require('mongoose');
 const { HasPermmission } = require('../../helpers/authorization');
-/**
- * @type {Model}
- */
 
 const IssueModel = require('./issue.model');
 
@@ -29,7 +25,7 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      if (_issue.publishedAt < Date.now() && !HasPermmission(context, 'issue.read.unpublished')) {
+      if (new Date(_issue.publishedAt) > Date.now() && !HasPermmission(context, 'issue.read.unpublished')) {
         return APIError('NOT_FOUND');
       }
 
@@ -57,9 +53,6 @@ module.exports = {
 
       return _issue;
     } catch (e) {
-      if (e instanceof GraphQLError) {
-        return e;
-      }
       return APIError(null, e);
     }
   },
