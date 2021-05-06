@@ -25,6 +25,7 @@ const {
 } = require('../scalars');
 
 const IssueType = require('./issue.type');
+const { getIssueByID, listIssues } = require('./issue.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'IssueQuery',
@@ -38,7 +39,7 @@ module.exports = new GraphQLObjectType({
           description: "The issue's mongo ID",
         },
       },
-      resolve: GetIssueByID,
+      resolve: getIssueByID,
     },
     listIssues: {
       description: 'Retrieves a list of all the Issues',

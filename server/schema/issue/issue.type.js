@@ -23,6 +23,8 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const ArticleType = require('../article/article.type');
+const { getArticle } = require('../article/article.resolver');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
@@ -31,8 +33,14 @@ const IssueType = new GraphQLObjectType({
     name: { type: GraphQLString },
     publishedAt: { type: GraphQLDateTime },
     //TODO: Resolve to their respective types.
-    // articles: { type: GraphQLList(ArticleType) },
-    // featured: { type: GraphQLList(ArticleType) },
+    //articles: {
+    //  type: GraphQLList(ArticleType),
+    //  resolve: async (parent, _args, context) => getArticle(null, { id: parent.id }, context),
+    //},
+    //featured: {
+    //  type: GraphQLList(ArticleType),
+    //  resolve: async (parent, _args, context) => getArticle(null, { id: parent.id }, context),
+    //},
     // polls: { type: GraphQLList(PollType) },
     // thumbnail: { type: MediaType },
     description: { type: GraphQLString },
