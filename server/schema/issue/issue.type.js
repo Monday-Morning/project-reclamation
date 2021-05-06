@@ -13,7 +13,7 @@ const {
   GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  //GraphQLList,
+  GraphQLList,
   // GraphQLBoolean,
   GraphQLInt,
   // GraphQLNonNull,
@@ -26,6 +26,8 @@ const {
 
 const UserType = require('../user/user.type');
 const { getUser } = require('../user/user.resolver');
+const ArticleType = require('../article/article.type');
+const { getArticle } = require('../article/article.resolver');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
@@ -33,17 +35,24 @@ const IssueType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     publishedAt: { type: GraphQLDateTime },
-    //TODO: Resolve to their respective types.
-    //articles: {
-    //  type: GraphQLList(ArticleType),
-    //  resolve: async (parent, _args, context) => getArticle(null, { id: parent.id }, context),
-    //},
-    //featured: {
-    //  type: GraphQLList(ArticleType),
-    //  resolve: async (parent, _args, context) => getArticle(null, { id: parent.id }, context),
-    //},
+    articleIDs: {
+      type: new GraphQLList(GraphQLID),
+      resolve: (parent) => parent.articles,
+    },
+    articles: {
+      type: new GraphQLList(ArticleType),
+      resolve: (parent, _args, context) => getArticle(null, { id: parent.articles }, context),
+    },
+    featuredIDs: {
+      type: new GraphQLList(GraphQLID),
+      resolve: (parent) => parent.featured,
+    },
+    featured: {
+      type: new GraphQLList(ArticleType),
+      resolve: (parent, _args, context) => getArticle(null, { id: parent.featured }, context),
+    },
     // polls: { type: GraphQLList(PollType) },
-    // thumbnail: { type: MediaType },
+    thumbnail: { type: MediaType },
     description: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
