@@ -21,7 +21,7 @@ const {
   // GraphQLTime,
   GraphQLDateTime,
   //GraphQLJSON,
-  GraphQLJSONObject,
+  //GraphQLJSONObject,
 } = require('../scalars');
 const { addIssue, updateIssue, deleteIssue } = require('./issue.resolver');
 const IssueType = require('./issue.type');

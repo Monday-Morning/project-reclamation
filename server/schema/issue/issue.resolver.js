@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { GraphQLError, APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
+const { APIError } = require('../../helpers/errorHandler');
 const { HasPermmission } = require('../../helpers/authorization');
 
 const IssueModel = require('./issue.model');
@@ -17,7 +17,7 @@ const IssueModel = require('./issue.model');
 const DEF_LIMIT = 10;
 const DEF_OFFSET = 0;
 module.exports = {
-  getIssueByID: async (parent, { id }, context, info, _IssueModel = IssueModel) => {
+  getIssueByID: async (_parent, { id }, context, _info, _IssueModel = IssueModel) => {
     try {
       const _issue = await _IssueModel.findById(id);
 
@@ -34,7 +34,7 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  listIssues: async (parent, { limit = DEF_LIMIT, offset = DEF_OFFSET }, context, info, _IssueModel = IssueModel) => {
+  listIssues: async (_parent, { limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _info, _IssueModel = IssueModel) => {
     try {
       const issueQuery = HasPermmission(context, 'issue.list.private') ? {} : { publishedAt: { $lt: Date.now() } };
       const _issues = await _IssueModel.find(issueQuery).skip(offset).limit(limit);
@@ -44,25 +44,19 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  addIssue: async (parent, { name, description, publishedAt }, context, info, _IssueModel = IssueModel) => {
+  addIssue: async (_parent, { name, description, publishedAt }, context, _info, _IssueModel = IssueModel) => {
     try {
       if (!HasPermmission(context, 'issue.write.new')) {
         return APIError('FORBIDDEN');
       }
-      const _issue = _IssueModel.create({ name, description, publishedAt: new Date(publishedAt) });
+      const _issue = await _IssueModel.create({ name, description, publishedAt: new Date(publishedAt) });
 
       return _issue;
     } catch (e) {
       return APIError(null, e);
     }
   },
-  updateIssue: async (
-    parent,
-    { id, name, description, publishedAt, createdBy },
-    context,
-    info,
-    _IssueModel = IssueModel
-  ) => {
+  updateIssue: async (_parent, { id, name, description, publishedAt }, context, _info, _IssueModel = IssueModel) => {
     try {
       const _issue = await _IssueModel.findById(id);
 
@@ -76,24 +70,20 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      const getUpdateObject = (propertiesObject) => {
-        const updateObject = {};
-        for (key in propertiesObject) {
-          if (propertiesObject[key]) {
-            updateObject[key] = propertiesObject[key];
-          }
+      const propertiesObject = { name, description, publishedAt: new Date(publishedAt) };
+      let _updateObject = {};
+      for (key in propertiesObject) {
+        if (propertiesObject[key]) {
+          _updateObject[key] = propertiesObject[key];
         }
+      }
 
-        return updateObject;
-      };
-      const updateIssue = getUpdateObject({ name, description, publishedAt: new Date(publishedAt) });
-
-      return _IssueModel.findByIdAndUpdate(id, updateIssue);
+      return _IssueModel.findByIdAndUpdate(id, _updateObject);
     } catch (e) {
       return APIError(null, e);
     }
   },
-  deleteIssue: async (parents, { id }, context, info, _IssueModel = IssueModel) => {
+  deleteIssue: async (_parents, { id }, context, _info, _IssueModel = IssueModel) => {
     try {
       const _issue = await _IssueModel.findById(id);
       if (!_issue) {

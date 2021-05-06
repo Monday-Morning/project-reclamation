@@ -10,7 +10,7 @@
 
 const {
   GraphQLObjectType,
-  GraphQLString,
+  //GraphQLString,
   // GraphQLSchema,
   GraphQLID,
   GraphQLList,
@@ -43,7 +43,7 @@ module.exports = new GraphQLObjectType({
     },
     listIssues: {
       description: 'Retrieves a list of all the Issues',
-      type: new GraphQLNonNull(new GraphQLList(IssueType)),
+      type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
       args: {},
       resolve: listIssues,
     },
