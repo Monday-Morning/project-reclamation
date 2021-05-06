@@ -23,8 +23,9 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-//const ArticleType = require('../article/article.type');
-//const { getArticle } = require('../article/article.resolver');
+
+const UserType = require('../user/user.type');
+const { getUser } = require('../user/user.resolver');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
