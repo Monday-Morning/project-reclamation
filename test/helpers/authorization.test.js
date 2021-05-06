@@ -11,10 +11,8 @@ const authMock = {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0.iKM6vSy5uZ5Vaa4royyeuJaQJN6FVVNNBzGBFyIAWDM',
     name: 'John Doe',
     uid: 'some-random-uid',
-    customClaims: {
-      mid: 'some-random-mid',
-      roles: [],
-    },
+    mid: 'some-random-mid',
+    roles: [],
     exp: 1516239022,
     email_verified: true,
   },
@@ -23,10 +21,8 @@ const authMock = {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyMCwiZW1haWxfdmVyaWZpZWQiOnRydWV9.9KQSvqG4L2OSAK3GCLvsTOC9YZHupb1Vhh5JcqvQY8o',
     name: 'John Doe',
     uid: 'some-random-uid',
-    customClaims: {
-      mid: 'some-random-mid',
-      roles: [],
-    },
+    mid: 'some-random-mid',
+    roles: [],
     exp: 15162390220,
     email_verified: true,
   },
@@ -35,10 +31,8 @@ const authMock = {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyMCwiZW1haWxfdmVyaWZpZWQiOmZhbHNlfQ._bSfc-1bFqOdw_g6nxDSlwo_ae1ro3L8CrfZ5dPV2qI',
     name: 'John Doe',
     uid: 'some-random-uid',
-    customClaims: {
-      mid: 'some-random-mid',
-      roles: [],
-    },
+    mid: 'some-random-mid',
+    roles: [],
     exp: 15162390220,
     email_verified: false,
   },
@@ -169,8 +163,8 @@ describe('Authorization Module', async () => {
       let decodedToken = await StartSession(session, authMock.validToken.jwt, authMock);
       expect(decodedToken.uid).to.be.equal(authMock.validToken.uid);
       expect(decodedToken.exp).to.be.equal(authMock.validToken.exp);
-      expect(decodedToken.customClaims.mid).to.be.equal(authMock.validToken.customClaims.mid);
-      expect(decodedToken.customClaims.roles).to.be.equal(authMock.validToken.customClaims.roles);
+      expect(decodedToken.mid).to.be.equal(authMock.validToken.mid);
+      expect(decodedToken.roles).to.be.equal(authMock.validToken.roles);
     });
 
     it('Returns GraphQLError instance when error is caught', async () => {
