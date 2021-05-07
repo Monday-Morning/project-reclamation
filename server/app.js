@@ -81,10 +81,10 @@ const PORT = process.env.PORT || DEFAULT_PORT;
 const CORS_OPTIONS = {
   origin:
     !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000'
+      ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000']
       : process.env.NODE_ENV === 'staging'
-      ? 'http://mm.server1.dashnet.in'
-      : 'https://mondaymorning.nitrkl.ac.in',
+      ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000', 'https://mm.server1.dashnet.in']
+      : ['https://mondaymorning.nitrkl.ac.in', 'https://mondaymorning.nitrkl.in'],
 };
 app.use(CORS(CORS_OPTIONS));
 
@@ -168,6 +168,7 @@ const apolloServer = new ApolloServer({
   cors: CORS_OPTIONS,
   playground: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
   debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+  tracing: !process.env.NODE_ENV || process.env.NODE_ENV !== 'production',
 });
 
 /** Attach Express Server with Apollo Server */

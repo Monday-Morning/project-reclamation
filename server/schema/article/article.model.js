@@ -89,17 +89,24 @@ const ArticleSchema = new Schema(
           /**
            * Only for list types
            *
-           * For type 6 - ordered list
-           * [0 - Uppercase Alphabets, 1 - Lowercase Alphabaets, 2 - Uppercase Roman Numbers, 3 - Lowercase Roman Numbers, 4 - Standards Numbers]
-           *
-           * For type 7 - unordered list
-           * [0 - Bullet/Filled Circle, 1 - Hollow Circle, 2 - Dash, 3 - Filled Square, 4 - Hollow Square]
+           * [
+           * 0 - Uppercase Alphabets
+           * 1 - Lowercase Alphabaets
+           * 2 - Uppercase Roman Numbers
+           * 3 - Lowercase Roman Numbers
+           * 4 - Standards Numbers
+           * 5 - Bullet/Filled Circle
+           * 6 - Hollow Circle
+           * 7 - Dash
+           * 8 - Filled Square
+           * 9 - Hollow Square
+           * ]
            */
           listStyle: {
             type: Number,
             required: false,
             min: 0,
-            max: 4,
+            max: 9,
           },
         },
         textFormatting: [

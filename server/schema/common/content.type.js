@@ -1,7 +1,7 @@
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
-  GraphQLUnionType,
+  // GraphQLUnionType,
   // GraphQLInputObjectType,
   // GraphQLEnumType,
   // GraphQLInterfaceType,
@@ -20,24 +20,14 @@ const {
   // GraphQLJSON,
   GraphQLJSONObject,
 } = require('../scalars');
-const {
-  ContentTypeEnumType,
-  OrderedListStyleEnumType,
-  UnorderedListStyleEnumType,
-  AlignEnumType,
-} = require('./content.enum.types');
+const { ContentTypeEnumType, ListStyleEnumType, AlignEnumType } = require('./content.enum.types');
 
 const BlockFormattingType = new GraphQLObjectType({
   name: 'BlockFormatting',
   fields: () => ({
     align: { type: AlignEnumType },
     hasHeaderRow: { type: GraphQLBoolean },
-    listStyle: {
-      type: new GraphQLUnionType({
-        name: 'ListStyleUnion',
-        types: [OrderedListStyleEnumType, UnorderedListStyleEnumType],
-      }),
-    },
+    listStyle: { type: ListStyleEnumType },
   }),
 });
 

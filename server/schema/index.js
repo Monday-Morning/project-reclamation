@@ -11,10 +11,16 @@
  * @since 0.1.0
  */
 
-const { mergeSchemas } = require('graphql-tools');
+const { stitchSchemas } = require('graphql-tools');
 const UserSchema = require('./user/user.schema');
+const ArticleSchema = require('./article/article.schema');
 const IssueSchema = require('./issue/issue.schema');
+const CategoryMapType = require('./categoryMap/categoryMap.type');
+const TagType = require('./tag/tag.type');
+const MediaType = require('./media/media.type');
 
-module.exports = mergeSchemas({
-  schemas: [UserSchema, IssueSchema],
+module.exports = stitchSchemas({
+  subschemas: [UserSchema, ArticleSchema, IssueSchema],
+  types: [CategoryMapType, TagType, MediaType],
+  mergeTypes: true,
 });

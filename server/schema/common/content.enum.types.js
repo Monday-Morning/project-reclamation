@@ -29,24 +29,19 @@ module.exports = {
       JUSTIFY: { value: 3 },
     },
   }),
-  OrderedListStyleEnumType: new GraphQLEnumType({
-    name: 'OrderedListStyleEnum',
+  ListStyleEnumType: new GraphQLEnumType({
+    name: 'ListStyleEnum',
     values: {
       UPPER_ALPHA: { value: 0 },
       LOWER_ALPHA: { value: 1 },
       UPPER_ROMAN: { value: 2 },
       LOWER_ROMAN: { value: 3 },
       NUMERICAL: { value: 4 },
-    },
-  }),
-  UnorderedListStyleEnumType: new GraphQLEnumType({
-    name: 'UnorderedListStyleEnum',
-    values: {
-      FILLED_CIRCLE: { value: 0 },
-      HOLLOW_CIRCLE: { value: 1 },
-      DASH: { value: 2 },
-      FILLED_SQUARE: { value: 3 },
-      HOLLOW_SQUARE: { value: 4 },
+      FILLED_CIRCLE: { value: 5 },
+      HOLLOW_CIRCLE: { value: 6 },
+      DASH: { value: 7 },
+      FILLED_SQUARE: { value: 8 },
+      HOLLOW_SQUARE: { value: 9 },
     },
   }),
 };
