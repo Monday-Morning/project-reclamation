@@ -79,12 +79,32 @@ const PORT = process.env.PORT || DEFAULT_PORT;
  * @default http://localhost:3000
  */
 const CORS_OPTIONS = {
-  origin:
-    !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-      ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000']
-      : process.env.NODE_ENV === 'staging'
-      ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000', 'https://mm.server1.dashnet.in']
-      : ['https://mondaymorning.nitrkl.ac.in', 'https://mondaymorning.nitrkl.in'],
+  // origin:
+  //   !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  //     ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000']
+  //     : process.env.NODE_ENV === 'staging'
+  //     ? ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5000', 'https://mm.server1.dashnet.in']
+  //     : ['https://mondaymorning.nitrkl.ac.in', 'https://mondaymorning.nitrkl.in'],
+  origin(origin, callback) {
+    if (
+      (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') &&
+      (!origin || origin.includes('http://localhost'))
+    ) {
+      callback(null, true);
+    } else if (
+      process.env.NODE_ENV === 'staging' &&
+      (!origin ||
+        origin.includes('http://localhost') ||
+        origin.includes('https://project-infinity-98561') ||
+        origin.includes('https://mm.server1.dashnet.in'))
+    ) {
+      callback(null, true);
+    } else if (['https://mondaymorning.nitrkl.ac.in', 'https://mondaymorning.nitrkl.in'].includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Request blocked by CORS. Invalid source!'));
+    }
+  },
 };
 app.use(CORS(CORS_OPTIONS));
 
