@@ -24,12 +24,10 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-// const UserType = require('../user/user.type');
-// const { getUser } = require('../user/user.resolver');
 const MediaType = require('../media/media.type');
 const { getMedia } = require('../media/media.resolver');
 const ArticleType = require('../article/article.type');
-const { getArticle } = require('../article/article.resolver');
+const { listArticle } = require('../article/article.resolver');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
@@ -43,7 +41,8 @@ const IssueType = new GraphQLObjectType({
     },
     articles: {
       type: new GraphQLList(ArticleType),
-      resolve: (parent, _args, context) => getArticle(null, { id: parent.articles }, context),
+      resolve: (parent, _args, context) =>
+        parent.articles ? listArticle(null, { ids: parent.articles }, context) : null,
     },
     featuredIDs: {
       type: new GraphQLList(GraphQLID),
@@ -51,7 +50,8 @@ const IssueType = new GraphQLObjectType({
     },
     featured: {
       type: new GraphQLList(ArticleType),
-      resolve: (parent, _args, context) => getArticle(null, { id: parent.featured }, context),
+      resolve: (parent, _args, context) =>
+        parent.articles ? listArticle(null, { ids: parent.featured }, context) : null,
     },
     // polls: { type: GraphQLList(PollType) },
     thumbnailID: {
@@ -60,21 +60,14 @@ const IssueType = new GraphQLObjectType({
     },
     thumbnail: {
       type: MediaType,
-      resolve: (parent) => getMedia(null, { id: parent.thumbnail }),
+      resolve: (parent, _args, context) =>
+        parent.thumbnail ? getMedia(null, { id: parent.thumbnail }, context) : null,
     },
     description: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    // createdByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    // updatedByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

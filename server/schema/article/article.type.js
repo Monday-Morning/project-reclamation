@@ -1,7 +1,3 @@
-const UserDetailType = require('../common/userDetail.type');
-// const UserType = require('../user/user.type');
-// const { getUser } = require('../user/user.resolver');
-const ContentType = require('../common/content.type');
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
@@ -24,6 +20,8 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const UserDetailType = require('../common/userDetail.type');
+const ContentType = require('../common/content.type');
 const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
 const CategoryMapType = require('../categoryMap/categoryMap.type');
 const { getCategory } = require('../categoryMap/categoryMap.resolver');
@@ -35,7 +33,7 @@ const { getMedia } = require('../media/media.resolver');
 const ArticleCategoryType = new GraphQLObjectType({
   name: 'ArticleCategory',
   fields: () => ({
-    category: { type: new GraphQLNonNull(GraphQLInt) },
+    number: { type: new GraphQLNonNull(GraphQLInt) },
     subcategory: { type: GraphQLBoolean },
     referenceID: {
       type: GraphQLID,
@@ -43,7 +41,8 @@ const ArticleCategoryType = new GraphQLObjectType({
     },
     reference: {
       type: CategoryMapType,
-      resolve: (parent) => getCategory(null, { id: parent.reference }),
+      resolve: (parent, _args, context) =>
+        parent.reference ? getCategory(null, { id: parent.reference }, context) : null,
     },
   }),
 });
@@ -56,7 +55,7 @@ const ArticleTagType = new GraphQLObjectType({
     referenceID: { type: GraphQLID },
     reference: {
       type: TagType,
-      resolve: (parent) => getTag(null, { id: parent.reference }),
+      resolve: (parent, _args, context) => (parent.reference ? getTag(null, { id: parent.reference }, context) : null),
     },
   }),
 });
@@ -67,12 +66,13 @@ const CoverMediaType = new GraphQLObjectType({
     squareID: { type: GraphQLID },
     square: {
       type: MediaType,
-      resolve: (parent) => getMedia(null, parent.square),
+      resolve: (parent, _args, context) => (parent.square ? getMedia(null, { id: parent.square }, context) : null),
     },
     rectangleID: { type: GraphQLID },
     rectangle: {
       type: MediaType,
-      resolve: (parent) => getMedia(null, parent.rectangle),
+      resolve: (parent, _args, context) =>
+        parent.rectangle ? getMedia(null, { id: parent.rectangle }, context) : null,
     },
   }),
 });
@@ -98,7 +98,7 @@ const ArticleType = new GraphQLObjectType({
     inshort: { type: GraphQLString },
     authors: { type: new GraphQLList(UserDetailType) },
     tech: { type: new GraphQLList(UserDetailType) },
-    category: { type: new GraphQLList(ArticleCategoryType) },
+    categories: { type: new GraphQLList(ArticleCategoryType) },
     tags: { type: GraphQLList(ArticleTagType) },
     coverMedia: { type: CoverMediaType },
     status: { type: StatusEnumType },
@@ -109,16 +109,8 @@ const ArticleType = new GraphQLObjectType({
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    // createdByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    // updatedByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

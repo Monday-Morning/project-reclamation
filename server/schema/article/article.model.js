@@ -127,6 +127,14 @@ const ArticleSchema = new Schema(
               type: Boolean,
               required: false,
             },
+            subscript: {
+              type: Boolean,
+              required: false,
+            },
+            superscript: {
+              type: Boolean,
+              required: false,
+            },
             size: {
               type: Number,
               required: false,
@@ -139,6 +147,22 @@ const ArticleSchema = new Schema(
               required: false,
             },
             /** Zero based index of ending character (inclusive) */
+            end: {
+              type: Number,
+              required: false,
+            },
+          },
+        ],
+        links: [
+          {
+            href: {
+              type: String,
+              required: false,
+            },
+            start: {
+              type: Number,
+              required: false,
+            },
             end: {
               type: Number,
               required: false,
@@ -219,18 +243,19 @@ const ArticleSchema = new Schema(
       square: {
         type: Schema.Types.ObjectId,
         ref: 'Media',
-        required: true,
+        required: false,
       },
       rectangle: {
         type: Schema.Types.ObjectId,
         ref: 'Media',
-        required: true,
+        required: false,
       },
     },
     /** [0 - Unpublished, 1 - Published, 2 - Archive, 3 - Trash] */
     status: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
       min: 0,
       max: 3,
     },
@@ -276,7 +301,8 @@ const ArticleSchema = new Schema(
     /** In Seconds */
     readTime: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
       min: 0,
     },
     /** In Seconds */

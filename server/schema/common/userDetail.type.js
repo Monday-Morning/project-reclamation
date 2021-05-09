@@ -6,11 +6,11 @@ const {
   // GraphQLEnumType,
   // GraphQLInterfaceType,
   // GraphQLSchema,
-  GraphQLNonNull,
+  // GraphQLNonNull,
   // GraphQLError,
   // GraphQLList,
   GraphQLString,
-  GraphQLID,
+  // GraphQLID,
   // GraphQLBoolean,
   // GraphQLInt,
   // GraphQLFloat,
@@ -21,11 +21,17 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
+const UserType = require('../user/user.type');
+const { getUser } = require('../user/user.resolver');
+
 const UserDetailType = new GraphQLObjectType({
   name: 'UserDetail',
   fields: () => ({
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    details: { type: new GraphQLNonNull(GraphQLID) },
+    name: { type: GraphQLString },
+    details: {
+      type: UserType,
+      resolve: (parent, _args, context) => (parent.details ? getUser(null, { id: parent.details }, context) : null),
+    },
   }),
 });
 
