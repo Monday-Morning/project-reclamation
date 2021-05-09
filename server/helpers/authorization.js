@@ -26,12 +26,15 @@ const Authorization = {
    * @async
    *
    * @param {String} jwt JSON Web Token
-   * @param {auth} _auth Firebase Authentication Library
+   * @param {admin.Auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
   AuthenticateUser: async (jwt, _auth = admin.auth()) => {
     try {
-      const decodedToken = await _auth.verifyIdToken(jwt, true);
+      const decodedToken =
+        process.env.NODE_ENV === 'development' && process.env.TEST_AUTH_KEY === jwt
+          ? process.env.TEST_AUTH_USER
+          : await _auth.verifyIdToken(jwt, true);
       if (!decodedToken.email_verified) {
         return APIError('UNAUTHORIZED', null, {
           message: 'The users email id is not verified.',
