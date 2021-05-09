@@ -176,11 +176,17 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 const apolloServer = new ApolloServer({
   schema: require('./schema'),
   context: async ({ req }) => ({
-    authToken: decodeURI(req.headers.authorization),
+    authToken: req.headers && req.headers.authorization ? decodeURI(req.headers.authorization) : null,
     // csrfToken: req.csrfToken(), // Disabled CSURF
-    decodedToken: await GetUserAuthScope(req.session, decodeURI(req.headers.authorization)),
+    decodedToken:
+      req.headers && req.headers.authorization
+        ? await GetUserAuthScope(req.session, decodeURI(req.headers.authorization))
+        : null,
     mid: async () => {
-      const decodedToken = await GetUserAuthScope(req.session, decodeURI(req.headers.authorization));
+      const decodedToken =
+        req.headers && req.headers.authorization
+          ? await GetUserAuthScope(req.session, decodeURI(req.headers.authorization))
+          : null;
       return decodedToken ? decodedToken.customClaims.mid : null;
     },
     session: req.session,
