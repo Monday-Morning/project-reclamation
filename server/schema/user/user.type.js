@@ -12,7 +12,7 @@
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
-  GraphQLUnionType,
+  // GraphQLUnionType,
   // GraphQLInputObjectType,
   // GraphQLEnumType,
   // GraphQLInterfaceType,
@@ -32,12 +32,15 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const ArticleType = require('../article/article.type');
-const MediaType = require('../media/media.type');
-// const { getUser } = require('./user.resolver');
-const { getMedia } = require('../media/media.resolver');
-
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
+
+const ProfilePictureType = new GraphQLObjectType({
+  name: 'ProfilePicture',
+  fields: () => ({
+    storePath: { type: GraphQLString },
+    blurhash: { type: GraphQLString },
+  }),
+});
 
 /**
  * @description User Profile Type
@@ -58,16 +61,11 @@ const UserProfileType = new GraphQLObjectType({
   }),
 });
 
-const ContributionUnionType = new GraphQLUnionType({
-  name: 'ContributionUnion',
-  types: [ArticleType, MediaType],
-});
-
 const ContributionType = new GraphQLObjectType({
   name: 'Contribution',
   fields: () => ({
     model: { type: GraphQLString },
-    reference: { type: ContributionUnionType },
+    reference: { type: GraphQLID },
   }),
 });
 
@@ -102,15 +100,7 @@ const UserType = new GraphQLObjectType({
     email: { type: GraphQLString },
     accountType: { type: AccountTypeEnumType },
     nitrMail: { type: GraphQLString },
-
-    pictureId: {
-      type: GraphQLID,
-      resolve: (parent) => parent.picture,
-    },
-    picture: {
-      type: MediaType,
-      resolve: (parent) => getMedia(null, { id: parent.picture }),
-    },
+    picture: { type: ProfilePictureType },
 
     interestedTopics: { type: new GraphQLList(GraphQLInt) },
     isNewsletterSubscribed: { type: GraphQLBoolean },
@@ -140,16 +130,8 @@ const UserType = new GraphQLObjectType({
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
-    // createdByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.createdBy }, context, info),
-    // },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
-    // updatedByUser: {
-    //   type: UserType,
-    //   resolve: (parent, _, context, info) => getUser(null, { id: parent.updatedBy }, context, info),
-    // },
     schemaVersion: { type: GraphQLInt },
   }),
 });

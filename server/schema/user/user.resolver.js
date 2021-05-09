@@ -59,7 +59,7 @@ const canUserUpdate = (id, context, fields) => {
 
 module.exports = {
   getUser: async (_parent, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+    const _fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
       if (!id && !email) {
         return APIError('BAD_REQUEST');
@@ -80,7 +80,7 @@ module.exports = {
         return _user;
       }
 
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+      if (_fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
         return APIError('FORBIDDEN');
       }
 
