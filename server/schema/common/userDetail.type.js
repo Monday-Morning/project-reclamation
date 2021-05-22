@@ -30,7 +30,8 @@ const UserDetailType = new GraphQLObjectType({
     name: { type: GraphQLString },
     details: {
       type: UserType,
-      resolve: (parent, _args, context) => (parent.details ? getUser(null, { id: parent.details }, context) : null),
+      resolve: (parent, _args, context, info) =>
+        parent.details ? getUser(null, { id: parent.details }, context, info) : null,
     },
   }),
 });
