@@ -34,7 +34,6 @@ const CategoryMapSchema = new Schema(
         type: Number,
         required: false,
         min: 0,
-        default: null,
       },
       reference: {
         type: Schema.Types.ObjectId,
