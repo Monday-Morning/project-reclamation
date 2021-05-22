@@ -25,7 +25,7 @@ const {
 } = require('../scalars');
 
 const ArticleType = require('../article/article.type');
-const { getArticlesByID } = require('../article/article.resolver');
+const { getArticlesByIds } = require('../article/article.resolver');
 
 const ThumbnailType = new GraphQLObjectType({
   name: 'Thumbnail',
@@ -48,7 +48,7 @@ const IssueType = new GraphQLObjectType({
     articles: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context) =>
-        parent.articles ? getArticlesByID(null, { ids: parent.articles }, context) : null,
+        parent.articles ? getArticlesByIds(null, { ids: parent.articles }, context) : null,
     },
     featuredIDs: {
       type: new GraphQLList(GraphQLID),
@@ -57,7 +57,7 @@ const IssueType = new GraphQLObjectType({
     featured: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context) =>
-        parent.articles ? getArticlesByID(null, { ids: parent.featured }, context) : null,
+        parent.articles ? getArticlesByIds(null, { ids: parent.featured }, context) : null,
     },
     // polls: { type: GraphQLList(PollType) },
     thumbnail: { type: ThumbnailType },
