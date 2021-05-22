@@ -52,6 +52,7 @@ const UserSchema = new Schema(
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@nitrkl\.ac\.in$/i,
       lowercase: true,
       unique: true,
+      sparse: true,
     },
     picture: {
       storePath: {
