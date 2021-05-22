@@ -45,11 +45,7 @@ rules:
   no-iterator: error
   no-labels: error
   no-lone-blocks: error
-  no-magic-numbers:
-    - error
-    - ignore:
-        - 0
-        - 1
+  no-magic-numbers: allow
   no-multi-spaces:
     - error
     - ignoreEOLComments: true
