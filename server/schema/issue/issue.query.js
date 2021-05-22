@@ -15,7 +15,7 @@ const {
   GraphQLID,
   GraphQLList,
   // GraphQLBoolean,
-  // GraphQLInt,
+  GraphQLInt,
   GraphQLNonNull,
   // GraphQLDate,
   // GraphQLTime,
