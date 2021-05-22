@@ -71,7 +71,6 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if ([2, 3].includes(_user.accountType)) {
         return _user;
       }
@@ -89,7 +88,8 @@ module.exports = {
       return APIError(null, e);
     }
   },
-  listUsers: async (
+  // TODO: rework permission system - can list public users without auth
+  getUserList: async (
     _parent,
     { ids, emails, limit = DEF_LIMIT, offset = DEF_OFFSET },
     context,
@@ -114,7 +114,10 @@ module.exports = {
       }
 
       // TODO: This is a cost operation. Need to rethink.
-      const _users = await _UserModel.find({ id: ids, email: emails }).skip(offset).limit(limit);
+      const _users = await _UserModel
+        .find({ $or: [{ _id: ids }, { email: emails }] })
+        .skip(offset)
+        .limit(limit);
 
       if (!_users || !(_users instanceof Array) || _users.length <= 0) {
         return APIError('NOT_FOUND');
@@ -125,6 +128,47 @@ module.exports = {
       return APIError(null, e);
     }
   },
+  // TODO: rework permission system - listing users for admin panel
+  listUsers: async (
+    _parent,
+    { limit = DEF_LIMIT, offset = DEF_OFFSET },
+    context,
+    { fieldNodes },
+    _UserModel = UserModel
+  ) => {
+    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+    try {
+      if (
+        (!ids || !(ids instanceof Array) || ids.length <= 0) &&
+        (!emails || !(emails instanceof Array) || emails.length <= 0)
+      ) {
+        return APIError('BAD_REQUEST');
+      }
+
+      if (!HasPermmission(context, 'user.list.all') || !HasPermmission(context, 'user.read.public')) {
+        return APIError('FORBIDDEN');
+      }
+
+      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
+        return APIError('FORBIDDEN');
+      }
+
+      // TODO: This is a cost operation. Need to rethink.
+      const _users = await _UserModel
+        .find({ $or: [{ _id: ids }, { email: emails }] })
+        .skip(offset)
+        .limit(limit);
+
+      if (!_users || !(_users instanceof Array) || _users.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _users;
+    } catch (e) {
+      return APIError(null, e);
+    }
+  },
+  // TODO: rework permission system - can search public users without auth
   searchUsers: async (
     _parent,
     { keywords, accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
@@ -149,7 +193,6 @@ module.exports = {
       if (!accountType) {
         let _userGt = 1;
         if (HasPermmission(context, 'user.list.all')) {
-          // eslint-disable-next-line no-magic-numbers
           _userGt = -1;
         }
         const _users = await _UserModel
@@ -181,12 +224,10 @@ module.exports = {
         return _users;
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if (![0, 1, 2, 3].includes(accountType)) {
         return APIError('BAD_REQUEST');
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if (accountType < 2 && !HasPermmission(context, 'user.list.all')) {
         return APIError('FORBIDDEN');
       }
@@ -262,7 +303,6 @@ module.exports = {
 
       return mdbUser;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
@@ -307,7 +347,6 @@ module.exports = {
 
       return _updatedUser;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
@@ -367,7 +406,6 @@ module.exports = {
       await Promise.all([_updatedUser, _updatedFbUser]);
       return _updatedUser;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
@@ -486,7 +524,7 @@ module.exports = {
       }
 
       const _user = await _UserModel.findOneAndUpdate(
-        { $and: [{ id }, { nitrMail: email }, { verfiyEmailToken: token }] },
+        { $and: [{ _id: id }, { nitrMail: email }, { verfiyEmailToken: token }] },
         { accountType: 1, verfiyEmailToken: null }
       );
 
@@ -511,7 +549,6 @@ module.exports = {
 
       return _user;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
@@ -551,7 +588,6 @@ module.exports = {
         return APIError('BAD_REQUEST');
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if (![0, 1, 2, 3].includes(accountType)) {
         return APIError('BAD_REQUEST');
       }
@@ -603,7 +639,6 @@ module.exports = {
       await Promise.all([_updatedUser, _updatedFbUser]);
       return _user;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
@@ -645,7 +680,6 @@ module.exports = {
 
       return _user;
     } catch (e) {
-      // eslint-disable-next-line no-magic-numbers
       if (e.code && e.code.toString().substring(0, 4) === 'auth') {
         return FirebaseAuthError(e);
       }
