@@ -94,6 +94,7 @@ const ArticleType = new GraphQLObjectType({
     id: { type: GraphQLID },
     articleType: { type: ArticleTypeEnumType },
     title: { type: GraphQLString },
+    // TODO: switch from detailed content type to json object
     content: { type: new GraphQLList(ContentType) },
     inshort: { type: GraphQLString },
     authors: { type: new GraphQLList(UserDetailType) },

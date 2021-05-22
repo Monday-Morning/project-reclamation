@@ -31,146 +31,6 @@ const ArticleSchema = new Schema(
       required: true,
       trim: true,
     },
-    // TODO: update content with final structure
-    content: [
-      {
-        plaintext: {
-          type: String,
-          required: true,
-        },
-        /** Only for types 5-12 */
-        data: {
-          type: Object,
-          required: false,
-        },
-        /** Only for image type */
-        media: {
-          type: Schema.Types.ObjectId,
-          required: false,
-        },
-        /**
-         * [
-         * 0 - Paragraph
-         * 1 - H1
-         * 2 - H2
-         * 3 - H3
-         * 4 - Image
-         * 5 - Quote
-         * 6 - Ordered List
-         * 7 - Unordered List
-         * 8 - Table
-         * 9 - Bar Graph
-         * 10 - Column Graph
-         * 11 - Line Chart
-         * 12 - Pie Chart
-         * 13 - Horizontal Line
-         * ]
-         */
-        contentType: {
-          type: Number,
-          required: true,
-          min: 0,
-          max: 13,
-        },
-        blockFormatting: {
-          /** [0 - Left, 1 - Center, 2 - Right, 3 - Justify] */
-          align: {
-            type: Number,
-            required: false,
-            default: 0,
-            min: 0,
-            max: 3,
-          },
-          /** Only for table type */
-          hasHeaderRow: {
-            type: Boolean,
-            required: false,
-          },
-          /**
-           * Only for list types
-           *
-           * [
-           * 0 - Uppercase Alphabets
-           * 1 - Lowercase Alphabaets
-           * 2 - Uppercase Roman Numbers
-           * 3 - Lowercase Roman Numbers
-           * 4 - Standards Numbers
-           * 5 - Bullet/Filled Circle
-           * 6 - Hollow Circle
-           * 7 - Dash
-           * 8 - Filled Square
-           * 9 - Hollow Square
-           * ]
-           */
-          listStyle: {
-            type: Number,
-            required: false,
-            min: 0,
-            max: 9,
-          },
-        },
-        textFormatting: [
-          {
-            bold: {
-              type: Boolean,
-              required: false,
-            },
-            italic: {
-              type: Boolean,
-              required: false,
-            },
-            underline: {
-              type: Boolean,
-              required: false,
-            },
-            strikethrough: {
-              type: Boolean,
-              required: false,
-            },
-            subscript: {
-              type: Boolean,
-              required: false,
-            },
-            superscript: {
-              type: Boolean,
-              required: false,
-            },
-            size: {
-              type: Number,
-              required: false,
-              min: 1,
-              max: 48,
-            },
-            /** Zero based index of starting character (inclusive) */
-            start: {
-              type: Number,
-              required: false,
-            },
-            /** Zero based index of ending character (inclusive) */
-            end: {
-              type: Number,
-              required: false,
-            },
-          },
-        ],
-        links: [
-          {
-            href: {
-              type: String,
-              required: false,
-            },
-            start: {
-              type: Number,
-              required: false,
-            },
-            end: {
-              type: Number,
-              required: false,
-            },
-          },
-        ],
-      },
-    ],
     inshort: {
       type: String,
       required: false,
@@ -264,6 +124,163 @@ const ArticleSchema = new Schema(
       required: false,
       default: false,
     },
+    // TODO: update content with final structure
+    content: [
+      {
+        plaintext: {
+          type: String,
+          required: true,
+        },
+        /** Only for types 5-14 */
+        data: {
+          type: Object,
+          required: false,
+        },
+        /** Only for image type */
+        media: {
+          type: Schema.Types.ObjectId,
+          required: false,
+        },
+        /**
+         * [
+         * 0 - Paragraph
+         * 1 - H1
+         * 2 - H2
+         * 3 - H3
+         * 4 - Image
+         * 5 - Quote
+         * 6 - Ordered List
+         * 7 - Unordered List
+         * 8 - Table
+         * 9 - Bar Graph
+         * 10 - Column Graph
+         * 11 - Line Chart
+         * 12 - Pie Chart
+         * 13 - Horizontal Line
+         * 14 - IFrame
+         * ]
+         */
+        contentType: {
+          type: Number,
+          required: true,
+          min: 0,
+          max: 14,
+        },
+        blockFormatting: {
+          /** [0 - Left, 1 - Center, 2 - Right, 3 - Justify] */
+          align: {
+            type: Number,
+            required: false,
+            default: 0,
+            min: 0,
+            max: 3,
+          },
+          /** Only for table type */
+          hasHeaderRow: {
+            type: Boolean,
+            required: false,
+          },
+          hasHeaderColumn: {
+            type: Boolean,
+            required: false,
+          },
+          /**
+           * Only for list types
+           *
+           * [
+           * 0 - Uppercase Alphabets
+           * 1 - Lowercase Alphabaets
+           * 2 - Uppercase Roman Numbers
+           * 3 - Lowercase Roman Numbers
+           * 4 - Standards Numbers
+           * 5 - Bullet/Filled Circle
+           * 6 - Hollow Circle
+           * 7 - Dash
+           * 8 - Filled Square
+           * 9 - Hollow Square
+           * ]
+           */
+          listStyle: {
+            type: Number,
+            required: false,
+            min: 0,
+            max: 9,
+          },
+        },
+        textFormatting: [
+          {
+            bold: {
+              type: Boolean,
+              required: false,
+            },
+            italic: {
+              type: Boolean,
+              required: false,
+            },
+            underline: {
+              type: Boolean,
+              required: false,
+            },
+            strikethrough: {
+              type: Boolean,
+              required: false,
+            },
+            subscript: {
+              type: Boolean,
+              required: false,
+            },
+            superscript: {
+              type: Boolean,
+              required: false,
+            },
+            size: {
+              type: Number,
+              required: false,
+              min: 1,
+              max: 48,
+            },
+            /** Index of list item or table cell */
+            elementIndex: {
+              type: String,
+              required: false,
+            },
+            /** Zero based index of starting character (inclusive) */
+            start: {
+              type: Number,
+              required: false,
+            },
+            /** Zero based index of ending character (inclusive) */
+            end: {
+              type: Number,
+              required: false,
+            },
+          },
+        ],
+        links: [
+          {
+            href: {
+              type: String,
+              required: false,
+            },
+            /** Index of list item or table cell */
+            elementIndex: {
+              type: String,
+              required: false,
+            },
+            /** Zero based index of starting character (inclusive) */
+            start: {
+              type: Number,
+              required: false,
+            },
+            /** Zero based index of ending character (inclusive) */
+            end: {
+              type: Number,
+              required: false,
+            },
+          },
+        ],
+      },
+    ],
     engagementCount: {
       reactions: {
         type: Number,
