@@ -26,7 +26,7 @@ const MediaSchema = new Schema(
           required: true,
           trim: true,
         },
-        reference: {
+        details: {
           type: Schema.Types.ObjectId,
           ref: 'User',
           required: true,
