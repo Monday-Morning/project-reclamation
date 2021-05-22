@@ -18,6 +18,7 @@ module.exports = {
       LINE_CHART: { value: 11 },
       PIE_CHART: { value: 12 },
       HORIZONTAL_LINE: { value: 13 },
+      IFRAME: { value: 14 },
     },
   }),
   AlignEnumType: new GraphQLEnumType({
