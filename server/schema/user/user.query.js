@@ -31,7 +31,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { getUser, listUsers, searchUsers } = require('./user.resolver');
+const { getUser, getUserList, searchUsers } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
@@ -54,7 +54,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: getUser,
     },
-    listUsers: {
+    getUserList: {
       description: 'Retrieves a list of users.',
       type: new GraphQLList(UserType),
       args: {
@@ -75,7 +75,7 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: listUsers,
+      resolve: getUserList,
     },
     searchUsers: {
       description: 'Searches for a user using keywords.',
