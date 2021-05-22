@@ -36,8 +36,8 @@ module.exports = {
   },
   listIssues: async (_parent, { limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _info, _IssueModel = IssueModel) => {
     try {
-      const issueQuery = HasPermmission(context, 'issue.list.private') ? {} : { publishedAt: { $lt: Date.now() } };
-      const _issues = await _IssueModel.find(issueQuery).skip(offset).limit(limit);
+      const _issueQuery = HasPermmission(context, 'issue.list.private') ? {} : { publishedAt: { $lt: Date.now() } };
+      const _issues = await _IssueModel.find(_issueQuery).skip(offset).limit(limit);
 
       return _issues;
     } catch (e) {
@@ -70,11 +70,14 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      const propertiesObject = { name, description, publishedAt: new Date(publishedAt) };
-      let _updateObject = {};
-      for (key in propertiesObject) {
-        if (propertiesObject[key]) {
-          _updateObject[key] = propertiesObject[key];
+      const _propertiesObject = { name, description, publishedAt: new Date(publishedAt) };
+      let _updateObject;
+      // eslint-disable-next-line prefer-const
+      _updateObject = {};
+      let _key;
+      for (_key in _propertiesObject) {
+        if (_propertiesObject[_key]) {
+          _updateObject[_key] = _propertiesObject[_key];
         }
       }
 

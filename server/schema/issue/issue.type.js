@@ -24,10 +24,16 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const MediaType = require('../media/media.type');
-const { getMedia } = require('../media/media.resolver');
 const ArticleType = require('../article/article.type');
-const { listArticle } = require('../article/article.resolver');
+const { getArticlesByID } = require('../article/article.resolver');
+
+const ThumbnailType = new GraphQLObjectType({
+  name: 'Thumbnail',
+  fields: () => ({
+    storePath: { type: GraphQLString },
+    blurhash: { type: GraphQLString },
+  }),
+});
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
@@ -42,7 +48,7 @@ const IssueType = new GraphQLObjectType({
     articles: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context) =>
-        parent.articles ? listArticle(null, { ids: parent.articles }, context) : null,
+        parent.articles ? getArticlesByID(null, { ids: parent.articles }, context) : null,
     },
     featuredIDs: {
       type: new GraphQLList(GraphQLID),
@@ -51,18 +57,10 @@ const IssueType = new GraphQLObjectType({
     featured: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context) =>
-        parent.articles ? listArticle(null, { ids: parent.featured }, context) : null,
+        parent.articles ? getArticlesByID(null, { ids: parent.featured }, context) : null,
     },
     // polls: { type: GraphQLList(PollType) },
-    thumbnailID: {
-      type: GraphQLID,
-      resolve: (parent) => parent.thumbnail,
-    },
-    thumbnail: {
-      type: MediaType,
-      resolve: (parent, _args, context) =>
-        parent.thumbnail ? getMedia(null, { id: parent.thumbnail }, context) : null,
-    },
+    thumbnail: { type: ThumbnailType },
     description: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
