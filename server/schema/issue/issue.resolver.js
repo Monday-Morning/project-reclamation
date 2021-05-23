@@ -71,9 +71,7 @@ module.exports = {
       }
 
       const _propertiesObject = { name, description, publishedAt: new Date(publishedAt) };
-      let _updateObject;
-      // eslint-disable-next-line prefer-const
-      _updateObject = {};
+      const _updateObject = {};
       let _key;
       for (_key in _propertiesObject) {
         if (_propertiesObject[_key]) {
