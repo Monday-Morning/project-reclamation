@@ -55,7 +55,12 @@ module.exports = {
       return APIError(null, error);
     }
   },
-  getArticlesByCategories: async (_parent, { categoryNumbers, limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _) => {
+  getArticlesByCategories: async (
+    _parent,
+    { categoryNumbers, onlyPublished = true, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    context,
+    _
+  ) => {
     try {
       const _query = {
         $and: [],

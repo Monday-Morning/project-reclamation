@@ -63,6 +63,10 @@ module.exports = new GraphQLObjectType({
           description: 'The list of category numbers',
           type: new GraphQLNonNull(new GraphQLList(GraphQLInt)),
         },
+        onlyPublished: {
+          description: 'Whether to only list published articles',
+          type: GraphQLBoolean,
+        },
         limit: {
           description: 'The number of results to return',
           type: GraphQLInt,
