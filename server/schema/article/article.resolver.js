@@ -57,21 +57,23 @@ module.exports = {
   },
   getArticlesByCategories: async (_parent, { categoryNumbers, limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _) => {
     try {
-      let _query = {
+      const _query = {
         $and: [],
       };
-      if (!HasPermmission(context, 'article.list.private'))
+      if (!HasPermmission(context, 'article.list.private')) {
         _query.$and.push({
           isInstituteRestricted: false,
         });
-      if (onlyPublished || !HasPermmission(context, 'article.list.unpublished'))
+      }
+      if (onlyPublished || !HasPermmission(context, 'article.list.unpublished')) {
         _query.$and.push({
           status: 1,
         });
+      }
 
       const _articles = await Promise.all(
         categoryNumbers.map((number) => {
-          let _curQuery = _query;
+          const _curQuery = _query;
           _curQuery.$and.push({ 'categories.number': number });
           return ArticleModel.find(_curQuery).skip(offset).limit(limit);
         })
@@ -88,17 +90,19 @@ module.exports = {
   },
   listArticles: async (_parent, { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _) => {
     try {
-      let _query = {
+      const _query = {
         $and: [],
       };
-      if (!HasPermmission(context, 'article.list.private'))
+      if (!HasPermmission(context, 'article.list.private')) {
         _query.$and.push({
           isInstituteRestricted: false,
         });
-      if (onlyPublished || !HasPermmission(context, 'article.list.unpublished'))
+      }
+      if (onlyPublished || !HasPermmission(context, 'article.list.unpublished')) {
         _query.$and.push({
           status: 1,
         });
+      }
       const _articles = await ArticleModel.find(_query).skip(offset).limit(limit);
 
       if (!_articles || _articles.length <= 0) {
