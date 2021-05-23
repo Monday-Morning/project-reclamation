@@ -6,6 +6,9 @@ const TagModel = require('../tag/tag.model');
 const ArticleModel = require('./article.model');
 const MediaModel = require('../media/media.model');
 
+const DEF_LIMIT = 10,
+  DEF_OFFSET = 0;
+
 module.exports = {
   getArticle: async (_parent, { id }, context, _) => {
     try {
@@ -15,7 +18,6 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if ([0, 2, 3].includes(_article.status) && !HasPermmission(context, 'article.read.unpublished')) {
         return APIError('NOT_FOUND');
       }
@@ -29,33 +31,143 @@ module.exports = {
       return APIError(null, error);
     }
   },
-  // listArticle
-  // searchArticle
+  getArticlesByIds: async (_parent, { ids }, _) => {
+    try {
+      const _articles = await ArticleModel.find({ _id: ids });
+
+      if (!_articles || _articles.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      if (
+        _articles.some((item) => [0, 2, 3].includes(item.status)) &&
+        !HasPermmission(context, 'article.read.unpublished')
+      ) {
+        return APIError('NOT_FOUND');
+      }
+
+      if (_articles.some((item) => item.isInstituteRestricted) && !HasPermmission(context, 'article.read.private')) {
+        return APIError('FORBIDDEN');
+      }
+
+      return _articles;
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  getArticlesByCategories: async (_parent, { categoryNumbers, limit = DEF_LIMIT, offset = DEF_OFFSET }, _) => {
+    try {
+      const _articles = await Promise.all(
+        categoryNumbers.map((number) => ArticleModel.find({ 'categories.number': number }).skip(offset).limit(limit))
+      );
+
+      if (!_articles || _articles.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      if (
+        _articles.some((item) => [0, 2, 3].includes(item.status)) &&
+        !HasPermmission(context, 'article.read.unpublished')
+      ) {
+        return APIError('NOT_FOUND');
+      }
+
+      if (_articles.some((item) => item.isInstituteRestricted) && !HasPermmission(context, 'article.read.private')) {
+        return APIError('FORBIDDEN');
+      }
+
+      return _articles;
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  listArticles: async (_parent, { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _) => {
+    try {
+      let _query = {
+        $and: [],
+      };
+      if (!HasPermmission(context, 'article.list.private'))
+        _query.$and.push({
+          isInstituteRestricted: false,
+        });
+      if (onlyPublished || !HasPermmission(context, 'article.list.unpublished'))
+        _query.$and.push({
+          status: 1,
+        });
+      const _articles = await ArticleModel.find(_query).skip(offset).limit(limit);
+
+      if (!_articles || _articles.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _articles;
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
+  searchArticle: async (_parent, { keywords, limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _) => {
+    try {
+      const _query = HasPermmission(context, 'article.list.private')
+        ? {
+            $text: {
+              $search: keywords,
+              $caseSensitive: false,
+            },
+          }
+        : {
+            $and: [
+              {
+                $text: {
+                  $search: keywords,
+                  $caseSensitive: false,
+                },
+              },
+              {
+                isInstituteRestricted: false,
+              },
+            ],
+          };
+      const _articles = await ArticleModel.find(_query).skip(offset).limit(limit);
+
+      if (!_articles || _articles.length <= 0) {
+        return APIError('NOT_FOUND');
+      }
+
+      return _articles;
+    } catch (error) {
+      return APIError(null, error);
+    }
+  },
   createArticle: async (_parent, { articleType, title, authors, tech, categories }, context, _) => {
     try {
       if (!HasPermmission(context, 'article.write.new')) {
         return APIError('FORBIDDEN');
       }
 
-      authors = authors.map((userid) => UserModel.findById(userid));
-      tech = tech.map((userid) => UserModel.findById(userid));
-      categories = categories.map((catid) => CategoryMapModel.findById(catid));
+      const _count = authors.length + tech.length + categories.length;
 
-      await Promise.all([...authors, ...tech, ...categories]);
+      // TODO: switch to Promise.all (refer getArticlesByCategories)
+      authors = await UserModel.find({ _id: authors });
+      tech = await UserModel.find({ _id: tech });
+      categories = await UserModel.find({ _id: categories });
 
-      if ([...authors, ...tech, ...categories].some((item) => !item)) {
+      if (
+        [...authors, ...tech, ...categories].length < _count ||
+        [...authors, ...tech, ...categories].some((item) => !item)
+      ) {
         return APIError('BAD_REQUEST', null, {
           reason:
             'At least one of the user IDs supplied (author/tech) or categories supplied is invalid, i.e. that user/category does not exist',
         });
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if ([...authors, ...tech].some((user) => user.accountType !== 2)) {
         return APIError('BAD_REQUEST', null, {
           reason: 'At least one of the user IDs supplied (author/tech) is not a MM Team member',
         });
       }
+
+      // TODO: create google doc
 
       const _article = await ArticleModel.create({
         articleType,
@@ -90,12 +202,13 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      categories = !categories ? [] : categories.map((catid) => CategoryMapModel.findById(catid));
-      tags = !tags ? [] : tags.map((tagid) => TagModel.findById(tagid));
+      const _count = (categories.length || 0) + (tags.length || 0);
 
-      await Promise.all([...categories, ...tags]);
+      // TODO: switch to Promise.all (refer getArticlesByCategories)
+      categories = !categories ? [] : await CategoryMapModel.find({ _id: categories });
+      tags = !tags ? [] : await TagModel.find({ _id: tags });
 
-      if ([...categories, ...tags].some((item) => !item)) {
+      if ([...categories, ...tags].length < _count || [...categories, ...tags].some((item) => !item)) {
         return APIError('BAD_REQUEST', null, {
           reason: 'At least one of the categories or tags supplied is invalid, i.e. it does not exist',
         });
@@ -164,9 +277,8 @@ module.exports = {
         return APIError('FORBIDDEN');
       }
 
-      const [_squareExists, _rectangleExists] = [squareRef, rectangleRef].map((id) => MediaModel.exists({ id }));
-      await Promise.all([_squareExists, _rectangleExists]);
-      if (!squareExists || !rectangleExists) {
+      const _exists = await MediaModel.find({ _id: [squareRef, rectangleRef] });
+      if (!_exists || _exists.length < 2) {
         return APIError('BAD_REQUEST', null, {
           reason: 'The media reference(s) provided was not valid i.e. it does not exist',
         });
@@ -234,16 +346,13 @@ module.exports = {
         return APIError('NOT_FOUND');
       }
 
-      // eslint-disable-next-line no-magic-numbers
       if ([0, 1, 2].includes(engagement)) {
-        // TOD0: Sort out after others schemas
+        // TODO: Sort out after others schemas
         return APIError('METHOD_NOT_ALLOWED');
       }
 
       const _updateObj = {
-        // eslint-disable-next-line no-magic-numbers
         views: engagement === 3 ? _article.views++ : undefined,
-        // eslint-disable-next-line no-magic-numbers
         hits: engagement === 4 ? _article.hits++ : undefined,
       };
 

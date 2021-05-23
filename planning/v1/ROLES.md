@@ -33,14 +33,41 @@
 | Permissions Name | Description |
 |--|--|
 | article.read.private | Can read institute restricted articles |
-| article.read.unpublished | Can read unpublished articles |
+| article.read.unpublished | Can read unpublished, archived or trashed articles |
 | article.list.private | Can list/search institue restricted articles |
+| article.list.unpublished | Can list/search unpublished, archived or trashed articles |
 | article.write.new | Can create a new article |
 | article.write.self | Can update/delete own articles |
 | article.write.all | Can update/delete all articles |
 |  |  |
 
 ### Article Roles
+
+| Role Name | article.read.private | article.read.unpublished | article.list.private | article.list.unpublished | article.write.new | article.write.self | user.write.all |
+|--|--|--|--|--|--|--|--|
+| article.basic | N | N | N | N | N | N | N |
+| article.verified | Y | N | Y | N | N | N | N |
+| article.team | Y | Y | Y | Y | N | Y | N |
+| article.author | Y | Y | Y | Y | Y | Y | N |
+| article.admin | Y | Y | Y | Y | Y | Y | Y |
+|  |  |  |  |  |  |  |  |
+---
+
+## Issue Section
+
+### Issue Permissions
+
+| Permissions Name | Description |
+|--|--|
+| issue.read.private | Can read institute restricted articles |
+| issue.read.unpublished | Can read unpublished articles |
+| issue.list.private | Can list/search institue restricted articles |
+| issue.write.new | Can create a new article |
+| issue.write.self | Can update/delete own articles |
+| issue.write.all | Can update/delete all articles |
+|  |  |
+
+### Issue Roles
 
 | Role Name | article.read.private | article.read.unpublished | article.list.private | article.write.new | article.write.self | user.write.all |
 |--|--|--|--|--|--|--|

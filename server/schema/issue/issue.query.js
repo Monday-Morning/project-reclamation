@@ -15,7 +15,7 @@ const {
   GraphQLID,
   GraphQLList,
   // GraphQLBoolean,
-  // GraphQLInt,
+  GraphQLInt,
   GraphQLNonNull,
   // GraphQLDate,
   // GraphQLTime,
@@ -43,8 +43,17 @@ module.exports = new GraphQLObjectType({
     },
     listIssues: {
       description: 'Retrieves a list of all the Issues',
-      type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
-      args: {},
+      type: new GraphQLNonNull(new GraphQLList(IssueType)),
+      args: {
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The paginatiion point',
+          type: GraphQLInt,
+        },
+      },
       resolve: listIssues,
     },
   },

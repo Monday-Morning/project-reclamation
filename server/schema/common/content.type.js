@@ -6,7 +6,7 @@ const {
   // GraphQLEnumType,
   // GraphQLInterfaceType,
   // GraphQLSchema,
-  GraphQLNonNull,
+  // GraphQLNonNull,
   // GraphQLError,
   GraphQLList,
   GraphQLString,
@@ -22,11 +22,15 @@ const {
 } = require('../scalars');
 const { ContentTypeEnumType, ListStyleEnumType, AlignEnumType } = require('./content.enum.types');
 
+const MediaType = require('../media/media.type');
+const { getMedia } = require('../media/media.resolver');
+
 const BlockFormattingType = new GraphQLObjectType({
   name: 'BlockFormatting',
   fields: () => ({
     align: { type: AlignEnumType },
     hasHeaderRow: { type: GraphQLBoolean },
+    hasHeaderColumn: { type: GraphQLBoolean },
     listStyle: { type: ListStyleEnumType },
   }),
 });
@@ -39,6 +43,16 @@ const TextFormattingType = new GraphQLObjectType({
     underline: { type: GraphQLBoolean },
     strikethrough: { type: GraphQLBoolean },
     size: { type: GraphQLInt },
+    elementIndex: { type: GraphQLString },
+    start: { type: GraphQLInt },
+    end: { type: GraphQLInt },
+  }),
+});
+
+const LinkType = new GraphQLObjectType({
+  name: 'Link',
+  fields: () => ({
+    href: { type: GraphQLString },
     start: { type: GraphQLInt },
     end: { type: GraphQLInt },
   }),
@@ -47,19 +61,20 @@ const TextFormattingType = new GraphQLObjectType({
 const ContentType = new GraphQLObjectType({
   name: 'Content',
   fields: () => ({
-    plaintext: { type: new GraphQLNonNull(GraphQLString) },
+    plaintext: { type: GraphQLString },
     data: { type: GraphQLJSONObject },
-    mediaID: { type: GraphQLID },
-    // TODO: Resolve to MediaType
-    /*
+    mediaID: {
+      type: GraphQLID,
+      resolve: (parent) => parent.media,
+    },
     media: {
       type: MediaType,
-      resolve: async (parent, args, context, info) => {},
+      resolve: (parent) => (parent.media ? getMedia(null, { id: parent.media }) : null),
     },
-		*/
-    contentType: { type: new GraphQLNonNull(ContentTypeEnumType) },
+    contentType: { type: ContentTypeEnumType },
     blockFormatting: { type: BlockFormattingType },
     textFormatting: { type: new GraphQLList(TextFormattingType) },
+    links: { type: new GraphQLList(LinkType) },
   }),
 });
 

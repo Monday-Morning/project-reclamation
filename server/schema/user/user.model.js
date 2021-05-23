@@ -52,11 +52,17 @@ const UserSchema = new Schema(
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@nitrkl\.ac\.in$/i,
       lowercase: true,
       unique: true,
+      sparse: true,
     },
     picture: {
-      type: Schema.Types.ObjectId,
-      ref: 'Media',
-      required: false,
+      storePath: {
+        type: String,
+        required: false,
+      },
+      blurhash: {
+        type: String,
+        required: false,
+      },
     },
     interestedTopics: [
       {

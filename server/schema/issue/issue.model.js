@@ -50,9 +50,14 @@ const IssueSchema = new Schema(
       },
     ],
     thumbnail: {
-      type: Schema.Types.ObjectId,
-      ref: 'Media',
-      required: false,
+      storePath: {
+        type: String,
+        required: false,
+      },
+      blurhash: {
+        type: String,
+        required: false,
+      },
     },
     description: {
       type: String,
