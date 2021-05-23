@@ -34,7 +34,7 @@ module.exports = {
     { limit = DEF_LIMIT, offset = DEF_OFFSET },
     context,
     _info,
-    _IssueModel = IssueModel
+    _SquiggleModel = SquiggleModel
   ) => {
     try {
       const _squiggles = await _SquiggleModel.find().skip(offset).limit(limit);
