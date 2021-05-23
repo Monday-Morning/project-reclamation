@@ -15,7 +15,7 @@ const {
   GraphQLID,
   GraphQLList,
   // GraphQLBoolean,
-  // GraphQLInt,
+  GraphQLInt,
   GraphQLNonNull,
   // GraphQLDate,
   // GraphQLTime,
@@ -43,8 +43,11 @@ module.exports = new GraphQLObjectType({
     },
     listSquiggles: {
       description: 'Retrieves a list of all the Squiggles',
-      type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
-      args: {},
+      type: new GraphQLNonNull(new GraphQLList(SquiggleType)),
+      args: {
+        offset: { type: GraphQLInt },
+        limit: { type: GraphQLInt },
+      },
       resolve: listSquiggles,
     },
   },
