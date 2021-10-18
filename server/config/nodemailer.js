@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
-const Winston = require('../helpers/winston');
-const logger = new Winston('nodemailer');
+const logger = require('../utils/logger')('nodemailer');
 
 let transporter = null;
 
