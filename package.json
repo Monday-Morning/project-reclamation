@@ -4,11 +4,14 @@
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
   "scripts": {
-    "eslint": "npx eslint ./server",
-    "prettier": "npx prettier --check .",
-    "lint": "npm run eslint && npm run prettier",
+    "eslint:check": "npx eslint --config ./.eslintrc.yml ./server",
+    "eslint:fix": "npx eslint --config ./.eslintrc.yml --fix ./server",
+    "prettier:check": "npx prettier --config ./.prettierrc.yml --check .",
+    "prettier:fix": "npx prettier --config ./.prettierrc.yml --write .",
+    "lint:check": "yarn eslint:check && yarn prettier:check",
+    "lint:fix": "yarn eslint:fix && yarn prettier:fix",
     "test": "npx mocha --package ./server/package.json --check-leaks --reporter spec --recursive --exit",
-    "checks": "npm run lint && npm test",
+    "checks": "yarn lint:check && yarn test",
     "docs:html": "npx jsdoc -c ./.jsdoc.conf.js --readme ./README.md --package ./server/package.json -r ./server",
     "docs:md": "npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/app.js > ./docs/APP.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/config/*.js > ./docs/CONFIG.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/controllers/*.js > ./docs/CONTROLLERS.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/schema/**/*.js > ./docs/SCHEMA.md && npx jsdoc2md -c ./.jsdoc.conf.js -f ./server/router/*.js > ./docs/ROUTES.md"
   },
