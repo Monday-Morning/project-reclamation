@@ -8,6 +8,7 @@ module.exports = {
     {
       name: 'Reclamation Server',
       script: './app.js',
+      // watch: ['config', 'schema', 'helpers', 'controllers', 'router'],
       watch: false,
       instances: 1, // TODO: change to max for production
       exec_mode: 'cluster',
