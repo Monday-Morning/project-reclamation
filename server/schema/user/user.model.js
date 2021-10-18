@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for User Model
@@ -33,7 +33,8 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@gmail(\.([^<>()[\]\.,;:\s@\"]{2,})){1,}$/i,
+      match:
+        /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@gmail(\.([^<>()[\]\.,;:\s@\"]{2,})){1,}$/i,
       lowercase: true,
       unique: true,
     },
@@ -138,7 +139,7 @@ const UserSchema = new Schema(
           min: 0,
           max: 2,
         },
-        /** [0 - Content, 1 - Photography, 2 - Design, 3 - Technical] */
+        /** [0 - Content, 1 - Photo & Films, 2 - Design, 3 - Technical] */
         team: {
           type: Number,
           required: false,
@@ -210,6 +211,6 @@ UserSchema.virtual('fullName')
  * @description Generated User Model
  * @constant UserModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('User', UserSchema);
