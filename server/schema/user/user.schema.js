@@ -13,8 +13,10 @@
 const { GraphQLSchema } = require('../scalars');
 const UserQuery = require('./user.query');
 const UserMutation = require('./user.mutation');
+const UserType = require('./user.type');
 
 module.exports = new GraphQLSchema({
+  types: [UserType],
   query: UserQuery,
   mutation: UserMutation,
 });
