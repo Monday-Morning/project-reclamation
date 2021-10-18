@@ -1,19 +1,8 @@
-/**
- * @module app.error
- * @description HTTP Response Constants
- *
- * @requires graphql
- * @requires module:app.error.httpsResponseConstants
- *
- * @version 0.1.0
- * @since 0.1.0
- */
-
 const { GraphQLError } = require('graphql');
-const FirebaseAuthErrorCodes = require('./firebaseAuthErrorCodes');
+const AuthErrorCodes = require('./authErrorCodes');
 const HttpErrorCodes = require('./httpErrorCodes');
 
-module.exports = {
+const Exception = {
   GraphQLError,
 
   /**
@@ -42,9 +31,21 @@ module.exports = {
    * @param {Object} additional Custom Error Data
    * @returns {GraphQLError}
    */
-  FirebaseAuthError: (error, additional = null) =>
-    new GraphQLError(error.code, null, null, null, null, error, {
-      ...FirebaseAuthErrorCodes[error.code],
+  FirebaseAuthError: (error, additional = null) => {
+    if (error instanceof GraphQLError) {
+      return error;
+    }
+    if (error && error.code && error.code.toString().substring(0, 4) === 'auth') {
+      return new GraphQLError(error.code, null, null, null, null, error, {
+        ...AuthErrorCodes[error.code],
+        additional,
+      });
+    }
+    return new GraphQLError('INTERNAL_SERVER_ERROR', null, null, null, null, error, {
+      ...HttpErrorCodes.INTERNAL_SERVER_ERROR,
       additional,
-    }),
+    });
+  },
 };
+
+module.exports = Exception;
