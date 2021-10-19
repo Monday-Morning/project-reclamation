@@ -21,11 +21,11 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const {
-  getArticle,
-  getArticlesByIds,
+  getArticleByID,
+  getListOfArticles,
   getArticlesByCategories,
   searchArticle,
-  listArticles,
+  listAllArticles,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
@@ -33,7 +33,7 @@ const ArticleType = require('./article.type');
 module.exports = new GraphQLObjectType({
   name: 'ArticleQuery',
   fields: {
-    getArticle: {
+    getArticleByID: {
       description: 'Retrieves a single article',
       type: ArticleType,
       args: {
@@ -42,9 +42,9 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: getArticle,
+      resolve: getArticleByID,
     },
-    getArticlesByIds: {
+    getListOfArticles: {
       description: 'Retrives multiple articles by ID',
       type: new GraphQLList(ArticleType),
       args: {
@@ -52,8 +52,16 @@ module.exports = new GraphQLObjectType({
           description: 'The list of user mongo IDs',
           type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
         },
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The paginatiion point',
+          type: GraphQLInt,
+        },
       },
-      resolve: getArticlesByIds,
+      resolve: getListOfArticles,
     },
     getArticlesByCategories: {
       description: 'Retrives multiple articles by categories',
@@ -78,7 +86,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: getArticlesByCategories,
     },
-    listArticles: {
+    listAllArticles: {
       description: 'Lists all articles in descending order of creation time',
       type: new GraphQLList(ArticleType),
       args: {
@@ -95,7 +103,7 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: listArticles,
+      resolve: listAllArticles,
     },
     searchArticles: {
       description: 'Searches for articles using keywords',
