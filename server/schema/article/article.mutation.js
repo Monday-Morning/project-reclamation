@@ -3,7 +3,7 @@ const {
   // GraphQLScalarType,
   // GraphQLUnionType,
   // GraphQLInputObjectType,
-  GraphQLEnumType,
+  // GraphQLEnumType,
   // GraphQLInterfaceType,
   // GraphQLSchema,
   GraphQLNonNull,
@@ -18,31 +18,24 @@ const {
   // GraphQLTime,
   // GraphQLDateTime,
   // GraphQLJSON,
-  GraphQLJSONObject,
+  // GraphQLJSONObject,
 } = require('../scalars');
-const { ArticleTypeEnumType, StatusEnumType } = require('./article.enum.types');
+const { ArticleTypeEnumType, PublishStatusEnumType } = require('./article.enum.types');
 const {
   createArticle,
   updateArticleProps,
-  updateArticleContent,
-  updateArticleCoverMedia,
-  updateArticleStatus,
+  // updateArticleContent,
   updateArticleRestriction,
-  incrementEngagementCount,
+  updateArticleUsers,
+  updateArticleCategories,
+  updateArticleTags,
+  // updateArticleCover,
+  updateArticleApprovalStatus,
+  updateArticlePublishStatus,
+  incrementViewCount,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
-
-const EngagementEnumType = new GraphQLEnumType({
-  name: 'EngagementEnum',
-  values: {
-    REACTIONS: { value: 0 },
-    COMMENTS: { value: 1 },
-    BOOKMARKS: { value: 2 },
-    VIEWS: { value: 3 },
-    HITS: { value: 4 },
-  },
-});
 
 module.exports = new GraphQLObjectType({
   name: 'ArticleMutation',
@@ -53,6 +46,8 @@ module.exports = new GraphQLObjectType({
         articleType: { type: new GraphQLNonNull(ArticleTypeEnumType) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         authors: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        photographers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        designers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
         tech: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
         categories: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
@@ -64,51 +59,85 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: GraphQLString },
         inshort: { type: GraphQLString },
-        categories: { type: new GraphQLList(GraphQLID) },
-        tags: { type: new GraphQLList(GraphQLID) },
       },
       resolve: updateArticleProps,
     },
-    updateArticleContent: {
+    updateArticleUsers: {
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        content: { type: new GraphQLNonNull(new GraphQLList(GraphQLJSONObject)) },
+        authors: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        photographers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        designers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        tech: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
-      resolve: updateArticleContent,
+      resolve: updateArticleUsers,
     },
-    updateArticleCoverMedia: {
+    updateArticleCategories: {
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        squareRef: { type: new GraphQLNonNull(GraphQLID) },
-        rectangleRef: { type: new GraphQLNonNull(GraphQLID) },
+        categories: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
-      resolve: updateArticleCoverMedia,
+      resolve: updateArticleCategories,
     },
-    updateArticleStatus: {
+    updateArticleTags: {
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        status: { type: new GraphQLNonNull(StatusEnumType) },
+        tag: { type: new GraphQLNonNull(GraphQLID) },
+        isAdded: { type: new GraphQLNonNull(GraphQLBoolean) },
+        isAdmin: { type: new GraphQLNonNull(GraphQLBoolean) },
       },
-      resolve: updateArticleStatus,
+      resolve: updateArticleTags,
+    },
+    // updateArticleCover: {
+    // 	type: ArticleType,
+    //   args: {
+    // 		id: { type: new GraphQLNonNull(GraphQLID) },
+    //     squareRef: { type: new GraphQLNonNull(GraphQLID) },
+    //     rectangleRef: { type: new GraphQLNonNull(GraphQLID) },
+    //   },
+    //   resolve: updateArticleCover,
+    // },
+    // updateArticleContent: {
+    // 	type: ArticleType,
+    // 	args: {
+    // 		id: { type: new GraphQLNonNull(GraphQLID) },
+    // 		content: { type: new GraphQLNonNull(new GraphQLList(GraphQLJSONObject)) },
+    // 	},
+    // 	resolve: updateArticleContent,
+    // },
+    updateArticleApprovalStatus: {
+      type: ArticleType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        approvalStatus: { type: new GraphQLNonNull(GraphQLBoolean) },
+      },
+      resolve: updateArticleApprovalStatus,
+    },
+    updateArticlePublishStatus: {
+      type: ArticleType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        publishStatus: { type: new GraphQLNonNull(PublishStatusEnumType) },
+      },
+      resolve: updateArticlePublishStatus,
     },
     updateArticleRestriction: {
       type: ArticleType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        flag: { type: new GraphQLNonNull(GraphQLBoolean) },
+        isInstituteRestricted: { type: new GraphQLNonNull(GraphQLBoolean) },
       },
       resolve: updateArticleRestriction,
     },
-    incrementEngagementCount: {
+    incrementViewCount: {
       type: ArticleType,
       args: {
         id: { type: GraphQLNonNull(GraphQLID) },
-        engagement: { type: GraphQLNonNull(EngagementEnumType) },
       },
-      resolve: incrementEngagementCount,
+      resolve: incrementViewCount,
     },
   },
 });
