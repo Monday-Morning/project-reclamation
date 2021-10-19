@@ -26,6 +26,7 @@ const TagType = new GraphQLObjectType({
   fields: () => ({
     name: { type: GraphQLString },
     isAdmin: { type: GraphQLBoolean },
+    adminColor: { type: GraphQLString },
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
