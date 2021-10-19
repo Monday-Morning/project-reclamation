@@ -53,7 +53,7 @@ module.exports = {
     name: 'TeamEnum',
     values: {
       CONTENT: { value: 0 },
-      PHOTOGRAPHY: { value: 1 },
+      PHOTO_FILMS: { value: 1 },
       DESIGN: { value: 2 },
       TECHNICAL: { value: 3 },
     },

@@ -31,7 +31,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { getUser, getUserList, searchUsers } = require('./user.resolver');
+const { getUser, getListOfUsers, listAllUsers, searchUsers } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
@@ -39,22 +39,29 @@ const UserType = require('./user.type');
 module.exports = new GraphQLObjectType({
   name: 'UserQuery',
   fields: {
-    getUser: {
-      description: 'Retrieves a single user.',
+    getUserByID: {
+      description: "Retrieves a single user by the user's mongo ID.",
       type: UserType,
       args: {
         id: {
           description: "The user's mongo ID.",
-          type: GraphQLID,
-        },
-        email: {
-          description: "The user's email ID",
-          type: GraphQLString,
+          type: new GraphQLNonNull(GraphQLID),
         },
       },
       resolve: getUser,
     },
-    getUserList: {
+    getUserByEmail: {
+      description: "Retrieves a single user by the user's email ID.",
+      type: UserType,
+      args: {
+        email: {
+          description: "The user's email ID",
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: getUser,
+    },
+    getListOfUsers: {
       description: 'Retrieves a list of users.',
       type: new GraphQLList(UserType),
       args: {
@@ -75,14 +82,14 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: getUserList,
+      resolve: getListOfUsers,
     },
     searchUsers: {
       description: 'Searches for a user using keywords.',
       type: new GraphQLList(UserType),
       args: {
-        keywords: {
-          description: 'The search keywords.',
+        searchTerm: {
+          description: 'The full search term.',
           type: new GraphQLNonNull(GraphQLString),
         },
         accountType: {
@@ -99,6 +106,23 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: searchUsers,
+    },
+
+    /** Admin APIs */
+    listAllUsers: {
+      description: 'Retrieves a list of all users.',
+      type: new GraphQLList(UserType),
+      args: {
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The pagination point',
+          type: GraphQLInt,
+        },
+      },
+      resolve: listAllUsers,
     },
   },
 });
