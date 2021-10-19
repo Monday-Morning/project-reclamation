@@ -27,8 +27,10 @@ const {
 } = require('../scalars');
 const IssueMutation = require('./issue.mutation');
 const IssueQuery = require('./issue.query');
+const IssueType = require('./issue.type');
 
 module.exports = new GraphQLSchema({
+  types: [IssueType],
   query: IssueQuery,
   mutation: IssueMutation,
 });
