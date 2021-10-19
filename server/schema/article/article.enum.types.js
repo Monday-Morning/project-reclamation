@@ -9,13 +9,13 @@ module.exports = {
       PHOTOSTORY: { value: 2 },
     },
   }),
-  StatusEnumType: new GraphQLEnumType({
-    name: 'StatusEnum',
+  PublishStatusEnumType: new GraphQLEnumType({
+    name: 'PublishStatusEnum',
     values: {
       UNPUBLISHED: { value: 0 },
       PUBLISHED: { value: 1 },
-      ARCHIVE: { value: 2 },
-      TRASH: { value: 3 },
+      ARCHIVED: { value: 2 },
+      TRASHED: { value: 3 },
     },
   }),
 };
