@@ -1,21 +1,17 @@
-const CategoryMapModel = require('./categoryMap.model');
-const { APIError } = require('../../helpers/errorHandler');
+const { APIError } = require('../../utils/exception');
 
 module.exports = {
-  getCategory: async (_parent, { id, number }, _) => {
+  getCategory: async (_parent, { id = null, number = null }, { API: { Category: CategoryMap } }) => {
     try {
-      if (!id && (!number || number instanceof Number)) {
-        return APIError('BAD_REQUEST');
-      }
+      const _category = !id ? await CategoryMap.findByNumber.load(number) : await CategoryMap.findByID.load(id);
 
-      const _category = !id ? await CategoryMapModel.findOne({ number }) : await CategoryMapModel.findById(id);
       if (!_category) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'The requested category does not exist.' });
       }
 
       return _category;
     } catch (error) {
-      return APIError(null, error);
+      throw APIError(null, error);
     }
   },
 };
