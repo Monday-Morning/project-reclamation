@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Article Model
@@ -36,24 +36,18 @@ const ArticleSchema = new Schema(
       required: false,
       trim: true,
     },
-    authors: [
+    users: [
       {
         name: {
           type: String,
           required: true,
         },
-        details: {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
+        /** [0 - Content, 1 - Photo & Films, 2 - Design, 3 - Technical] */
+        team: {
+          type: Number,
           required: true,
-        },
-      },
-    ],
-    tech: [
-      {
-        name: {
-          type: String,
-          required: true,
+          min: 0,
+          max: 3,
         },
         details: {
           type: Schema.Types.ObjectId,
@@ -87,7 +81,7 @@ const ArticleSchema = new Schema(
           required: true,
           trim: true,
         },
-        admin: {
+        isAdmin: {
           type: Boolean,
           required: false,
           default: false,
@@ -111,8 +105,13 @@ const ArticleSchema = new Schema(
         required: false,
       },
     },
-    /** [0 - Unpublished, 1 - Published, 2 - Archive, 3 - Trash] */
-    status: {
+    approvalStatus: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    /** [0 - Unpublished, 1 - Published, 2 - Archived, 3 - Trashed] */
+    publishStatus: {
       type: Number,
       required: false,
       default: 0,
@@ -360,6 +359,6 @@ const ArticleSchema = new Schema(
  * @description Generated Article Model
  * @constant ArticleModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Article', ArticleSchema);
