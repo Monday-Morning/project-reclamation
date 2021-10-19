@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Tag Model
@@ -28,6 +28,14 @@ const TagSchema = new Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    adminColor: {
+      type: String,
+      required: false,
+      trim: true,
+      uppercase: true,
+      minLength: 6,
+      maxLength: 6,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -60,6 +68,6 @@ const TagSchema = new Schema(
  * @description Generated Tag Model
  * @constant TagModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Tag', TagSchema);
