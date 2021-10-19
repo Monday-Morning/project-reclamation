@@ -14,7 +14,7 @@ const {
   // GraphQLSchema,
   GraphQLID,
   GraphQLList,
-  // GraphQLBoolean,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
   // GraphQLDate,
@@ -25,7 +25,7 @@ const {
 } = require('../scalars');
 
 const IssueType = require('./issue.type');
-const { getIssueByID, listIssues } = require('./issue.resolver');
+const { getIssueByID, getLatestIssues, getListOfIssues } = require('./issue.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'IssueQuery',
@@ -41,10 +41,14 @@ module.exports = new GraphQLObjectType({
       },
       resolve: getIssueByID,
     },
-    listIssues: {
-      description: 'Retrieves a list of all the Issues',
-      type: new GraphQLNonNull(new GraphQLList(IssueType)),
+    getLatestIssues: {
+      description: 'Retrieves the latest issues.',
+      type: new GraphQLList(IssueType),
       args: {
+        onlyPublished: {
+          description: 'Whether to only retrieve published issues.',
+          type: GraphQLBoolean,
+        },
         limit: {
           description: 'The number of results to return',
           type: GraphQLInt,
@@ -54,7 +58,26 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: listIssues,
+      resolve: getLatestIssues,
+    },
+    getListOfIssues: {
+      description: 'Retrieves a list of all the Issues',
+      type: new GraphQLNonNull(new GraphQLList(IssueType)),
+      args: {
+        id: {
+          type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
+          description: 'The mongo IDs of issues',
+        },
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+        offset: {
+          description: 'The number of results to skip | The paginatiion point',
+          type: GraphQLInt,
+        },
+      },
+      resolve: getListOfIssues,
     },
   },
 });
