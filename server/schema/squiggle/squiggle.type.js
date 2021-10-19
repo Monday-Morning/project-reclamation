@@ -31,6 +31,7 @@ const SquiggleType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     content: { type: GraphQLList(ContentType) },
+
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
     updatedAt: { type: GraphQLDateTime },
