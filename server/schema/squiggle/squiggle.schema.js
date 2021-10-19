@@ -26,7 +26,9 @@ const {
 } = require('../scalars');
 
 const SquiggleQuery = require('./squiggle.query');
+const SquiggleType = require('./squiggle.type');
 
 module.exports = new GraphQLSchema({
+  types: [SquiggleType],
   query: SquiggleQuery,
 });
