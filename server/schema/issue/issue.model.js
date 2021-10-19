@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Issue Model
@@ -24,7 +24,31 @@ const IssueSchema = new Schema(
       required: true,
       trim: true,
     },
-    publishedAt: {
+    thumbnail: {
+      storePath: {
+        type: String,
+        required: false,
+      },
+      blurhash: {
+        type: String,
+        required: false,
+      },
+    },
+    description: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    isPublished: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
       type: Date,
       required: true,
     },
@@ -42,28 +66,6 @@ const IssueSchema = new Schema(
         required: false,
       },
     ],
-    polls: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Poll',
-        required: false,
-      },
-    ],
-    thumbnail: {
-      storePath: {
-        type: String,
-        required: false,
-      },
-      blurhash: {
-        type: String,
-        required: false,
-      },
-    },
-    description: {
-      type: String,
-      required: false,
-      trim: true,
-    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -95,6 +97,6 @@ const IssueSchema = new Schema(
  * @description Generated Issue Model
  * @constant IssueModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Issue', IssueSchema);
