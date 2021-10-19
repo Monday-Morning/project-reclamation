@@ -26,7 +26,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
-      const _query = UserPermission.exists(session, authToken, decodedToken, 'tag.read.admin')
+      const _query = UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')
         ? { _id: ids }
         : { $and: [{ _id: ids }, { isAdmin: false }] };
 
@@ -55,7 +55,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'tag.read.admin')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
