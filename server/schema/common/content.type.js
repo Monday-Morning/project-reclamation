@@ -17,8 +17,8 @@ const {
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  // GraphQLJSON,
-  GraphQLJSONObject,
+  GraphQLJSON,
+  // GraphQLJSONObject,
 } = require('../scalars');
 const { ContentTypeEnumType, ListStyleEnumType, AlignEnumType } = require('./content.enum.types');
 
@@ -62,7 +62,10 @@ const ContentType = new GraphQLObjectType({
   name: 'Content',
   fields: () => ({
     plaintext: { type: GraphQLString },
-    data: { type: GraphQLJSONObject },
+    data: {
+      type: GraphQLJSON,
+      resolve: (parent) => (parent.data ? JSON.stringify(parent.data) : undefined),
+    },
     mediaID: {
       type: GraphQLID,
       resolve: (parent) => parent.media,
