@@ -82,7 +82,7 @@ module.exports = new GraphQLObjectType({
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        interestedTopics: { type: new GraphQLList(GraphQLString) },
+        interestedTopics: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
       },
       resolve: updateUserTopics,
     },

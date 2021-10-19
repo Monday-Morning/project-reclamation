@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Media Model
@@ -83,6 +83,6 @@ const MediaSchema = new Schema(
  * @description Generated Media Model
  * @constant MediaModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Media', MediaSchema);

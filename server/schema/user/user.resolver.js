@@ -10,15 +10,14 @@
  * @since 0.1.0
  */
 
-const fetch = require('node-fetch');
-const { v5: UUID, validate: validateUUID } = require('uuid');
-const { admin } = require('../../config/firebase');
+// const fetch = require('node-fetch');
+const { v5: UUID } = require('uuid');
 const { transporter } = require('../../config/nodemailer');
-const { HasPermmission, CheckSession } = require('../../helpers/authorization');
-const { APIError, FirebaseAuthError } = require('../../helpers/errorHandler');
-
-const UserModel = require('./user.model');
-const MediaModel = require('../media/media.model');
+const UserPermission = require('../../utils/userAuth/permission');
+const UserSession = require('../../utils/userAuth/session');
+const { APIError, FirebaseAuthError } = require('../../utils/exception');
+const { AccountTypeEnumType } = require('./user.enum.types');
+const getFieldNodes = require('../../utils/getFieldNodes');
 
 const PUBLIC_FIELDS = [
   'id',
@@ -33,460 +32,343 @@ const PUBLIC_FIELDS = [
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
+const ACCOUNT_TYPES = Object.fromEntries(AccountTypeEnumType.getValues().map((item) => [item.name, item.value]));
 
-const canUserUpdate = (id, context, fields) => {
-  if (!CheckSession(context.session, context.authToken)) {
-    return APIError('UNAUTHORIZED');
+const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, needsAdmin = false) => {
+  const _fields = getFieldNodes(fieldNodes);
+  if (!UserSession.valid(session, authToken)) {
+    throw APIError('UNAUTHORIZED', null, { reason: 'The user is not authenticated.' });
+  }
+
+  if (needsAdmin && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) {
+    throw APIError('FORBIDDEN', null, { reason: 'The user does not have the required administrative priveledges.' });
+  } else if (
+    (mid === id &&
+      !UserPermission.exists(session, authToken, decodedToken, 'user.write.self') &&
+      !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) ||
+    (mid !== id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
+  ) {
+    throw APIError('FORBIDDEN', null, { reason: 'The user does not have the permissions to perform this update.' });
   }
 
   if (
-    (context.mid === id && !HasPermmission(context, 'user.write.self') && !HasPermmission('user.write.all')) ||
-    (context.mid !== id && !HasPermmission(context, 'user.write.all'))
+    mid !== id &&
+    _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
   ) {
-    return APIError('FORBIDDEN');
-  }
-
-  if (
-    context.mid !== id &&
-    fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-    !HasPermmission(context, 'user.read.all')
-  ) {
-    return APIError('FORBIDDEN');
+    throw APIError('FORBIDDEN', null, {
+      reason: 'The user does not have the permissions to read the equested fields.',
+    });
   }
 
   return true;
 };
 
 module.exports = {
-  getUser: async (_parent, { id, email }, context, { fieldNodes }, _UserModel = UserModel) => {
-    const _fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+  getUser: async (
+    _parent,
+    { id = null, email = null },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
     try {
-      if (!id && !email) {
-        return APIError('BAD_REQUEST');
-      }
+      const _fields = getFieldNodes(fieldNodes);
 
-      const _user = !id ? await _UserModel.findOne({ email }) : await _UserModel.findById(id);
+      const _user = !id ? await User.findByEmail.load(email) : await User.findByID.load(id);
 
       if (!_user) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
       }
 
-      if ([2, 3].includes(_user.accountType)) {
+      if ([ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY].includes(_user.accountType)) {
         return _user;
       }
 
-      if (context.mid === _user.id) {
+      if (mid === _user.id) {
         return _user;
       }
 
-      if (_fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
       }
 
       return _user;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  // TODO: rework permission system - can list public users without auth
-  getUserList: async (
+  getListOfUsers: async (
     _parent,
-    { ids, emails, limit = DEF_LIMIT, offset = DEF_OFFSET },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel
+    { ids = [], emails = [], limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
+      const _fields = getFieldNodes(fieldNodes);
+      if (ids.length <= 0 && emails.length <= 0) {
+        throw APIError('BAD_REQUEST', null, { reason: 'No IDs and Emails were provided in the arguments.' });
+      }
+
       if (
-        (!ids || !(ids instanceof Array) || ids.length <= 0) &&
-        (!emails || !(emails instanceof Array) || emails.length <= 0)
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
       ) {
-        return APIError('BAD_REQUEST');
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not the required permissions to read the requested fields.',
+        });
       }
 
-      if (!HasPermmission(context, 'user.list.all') || !HasPermmission(context, 'user.read.public')) {
-        return APIError('FORBIDDEN');
-      }
-
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      // TODO: This is a cost operation. Need to rethink.
-      const _users = await _UserModel
-        .find({ $or: [{ _id: ids }, { email: emails }] })
-        .skip(offset)
-        .limit(limit);
+      // TODO: Use findByID and findByEmail
+      const _users = await User.find({ $or: [{ _id: ids }, { email: emails }] }, limit, offset);
 
       if (!_users || !(_users instanceof Array) || _users.length <= 0) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'No users were found with the provided IDs and Emails.' });
       }
 
-      return _users;
-    } catch (e) {
-      return APIError(null, e);
+      for (const _user of _users) {
+        User.findByID.prime(_user.id, _user);
+        User.findByEmail.prime(_user.email, _user);
+      }
+
+      // TODO: check user account type for all values and return error acordingly
+
+      return _users.length < ids.length + emails.length
+        ? [..._users, APIError('NOT_FOUND', null, { reason: 'One or more of the requested users were not found.' })]
+        : _users;
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  // TODO: rework permission system - listing users for admin panel
-  listUsers: async (
-    _parent,
-    { limit = DEF_LIMIT, offset = DEF_OFFSET },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel
-  ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
-    try {
-      if (
-        (!ids || !(ids instanceof Array) || ids.length <= 0) &&
-        (!emails || !(emails instanceof Array) || emails.length <= 0)
-      ) {
-        return APIError('BAD_REQUEST');
-      }
-
-      if (!HasPermmission(context, 'user.list.all') || !HasPermmission(context, 'user.read.public')) {
-        return APIError('FORBIDDEN');
-      }
-
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      // TODO: This is a cost operation. Need to rethink.
-      const _users = await _UserModel
-        .find({ $or: [{ _id: ids }, { email: emails }] })
-        .skip(offset)
-        .limit(limit);
-
-      if (!_users || !(_users instanceof Array) || _users.length <= 0) {
-        return APIError('NOT_FOUND');
-      }
-
-      return _users;
-    } catch (e) {
-      return APIError(null, e);
-    }
-  },
-  // TODO: rework permission system - can search public users without auth
+  // TODO: use aggregation pipelines
   searchUsers: async (
     _parent,
-    { keywords, accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel
+    { searchTerm, accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!keywords) {
-        return APIError('BAD_REQUEST');
+      const _fields = getFieldNodes(fieldNodes);
+
+      if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.public')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to perform this action.',
+        });
       }
 
-      if (!HasPermmission(context, 'user.list.public') || !HasPermmission(context, 'user.read.public')) {
-        return APIError('FORBIDDEN');
-      }
-
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to view the requested fields',
+        });
       }
 
       if (!accountType) {
-        let _userGt = 1;
-        if (HasPermmission(context, 'user.list.all')) {
-          _userGt = -1;
+        accountType = [ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY];
+        if (UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
+          accountType = [
+            ACCOUNT_TYPES.NORMAL,
+            ACCOUNT_TYPES.NITR_STUDENT,
+            ACCOUNT_TYPES.MM_TEAM,
+            ACCOUNT_TYPES.NITR_FACULTY,
+          ];
         }
-        const _users = await _UserModel
-          .find(
-            {
-              $and: [
-                {
-                  $text: {
-                    $search: keywords,
-                    $caseSensitive: false,
-                  },
-                },
-                {
-                  accountType: { $gt: _userGt },
-                },
-              ],
-            },
-            {
-              lean: true,
-            }
-          )
-          .skip(offset)
-          .limit(limit);
-
-        if (!_users || _users.length <= 0) {
-          return APIError('NOT_FOUND');
+      } else {
+        if (
+          [ACCOUNT_TYPES.NORMAL, ACCOUNT_TYPES.NITR_STUDENT].includes(accountType) &&
+          !UserPermission.exists(session, authToken, decodedToken, 'user.list.all')
+        ) {
+          throw APIError('FORBIDDEN', null, {
+            reason: 'The user does not the required permission to view the requested account type.',
+          });
         }
-
-        return _users;
+        accountType = [accountType];
       }
 
-      if (![0, 1, 2, 3].includes(accountType)) {
-        return APIError('BAD_REQUEST');
-      }
-
-      if (accountType < 2 && !HasPermmission(context, 'user.list.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _users = await _UserModel.find(
-        {
-          $and: [
-            {
-              $text: {
-                $search: keywords,
-                $caseSensitive: false,
-              },
-            },
-            {
-              accountType,
-            },
-          ],
-        },
-        {
-          lean: true,
-        }
-      );
+      const _users = await User.search(searchTerm, accountType, limit, offset);
 
       if (!_users || _users.length <= 0) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, {
+          reason: 'No users were found with the given search term and account type(s).',
+        });
       }
 
       return _users;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
 
   createUser: async (
     _parent,
     { fullName, email, interestedTopics },
-    context,
-    _info,
-    _UserModel = UserModel,
-    _auth = admin.auth()
+    { mid, session, authToken, decodedToken, API: { User } }
   ) => {
     try {
-      if (CheckSession(context.session, context.authToken) && !HasPermmission(context, 'user.write.all')) {
-        return APIError('METHOD_NOT_ALLOWED');
+      if (
+        UserSession.valid(session, authToken) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')
+      ) {
+        throw APIError('METHOD_NOT_ALLOWED');
       }
 
-      if (!fullName || !email) {
-        return APIError('BAD_REQUEST');
-      }
-      if (await _UserModel.exists({ email })) {
-        return APIError('METHOD_NOT_ALLOWED', null, { reason: 'User already exists' });
+      if (await User.exists({ email })) {
+        throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'User already exists' });
       }
 
-      const fbUser = await _auth.getUserByEmail(email);
-      if (fbUser.displayName !== fullName) {
+      // const _fbUser = await _auth.getUserByEmail(email);
+      const _fbUser = await User.findFirebaseUserByEmail(email);
+      if (_fbUser.displayName !== fullName) {
         return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
-      const mdbUser = await _UserModel.create({
-        fullName,
-        email,
-        interestedTopics,
-        createdBy: CheckSession(context.session, context.authToken) ? context.decodedToken.mid : null,
-      });
-
-      await _auth.setCustomUserClaims(fbUser.uid, {
-        mid: mdbUser.id,
-        // TODO: add all standard roles here
-        roles: ['user.basic'],
-      });
+      const _mdbUser = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
 
       // TODO: send welcome mail if required
 
-      return mdbUser;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
+      return _mdbUser;
+    } catch (error) {
+      throw FirebaseAuthError(error);
     }
   },
 
   updateUserName: async (
     _parent,
     { id, firstName, lastName },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel,
-    _auth = admin.auth()
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || !firstName || !lastName) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _user = await _UserModel.findById(id, 'firstName lastName isNameChanged');
+      // const _user = await _UserModel.findByID(id, 'firstName lastName isNameChanged');
+      const _user = await User.findByID(id);
 
       if (_user.firstName === firstName && _user.lastName === lastName) {
         return APIError('BAD_REQUEST', null, { reason: 'The current and new name matches' });
       }
-      if (_user.isNameChanged && !HasPermmission('user.write.all')) {
+      if (_user.isNameChanged && !UserPermission.exists('user.write.all')) {
         return APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user has already changed their name once.' });
       }
 
-      const _fbUser = await _auth.getUserByEmail(_user.email);
+      // const _fbUser = await _auth.getUserByEmail(_user.email);
+      const _fbUser = await User.findFirebaseUserByEmail(_user.email);
 
-      const _updatedUser = _UserModel.findByIdAndUpdate(id, { firstName, lastName });
-      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
+      const _updatedUser = await User.updateName(_fbUser.uid, id, firstName, lastName);
 
-      await Promise.all([_updatedUser, _updatedFbUser]);
-
-      return _updatedUser;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
+      return _updatedUser[0];
+    } catch (error) {
+      throw FirebaseAuthError(error);
     }
   },
-  updateUserPicture: async (
+  // TODO: rewrite function with data sources
+  // TODO: update all redundancies
+  // TODO: delete older picture
+  // updateUserPicture: async (
+  //   _parent,
+  //   { id, url, blurhash },
+  //   context,
+  //   { fieldNodes },
+  //   _UserModel = UserModel,
+  //   _MediaModel = MediaModel,
+  //   _auth = admin.auth(),
+  //   _fetch = fetch
+  // ) => {
+  //   const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+  //   try {
+  //     if (!id || !url || !blurhash) {
+  //       return APIError('BAD_REQUEST');
+  //     }
+  //     const _writePermission = canUserUpdate(id, context, fields);
+  //     if (_writePermission !== true) {
+  //       return _writePermission;
+  //     }
+  //     if (!HasPermmission(context, 'media.read.public') || !HasPermmission(context, 'media.write.self')) {
+  //       return APIError('FORBIDDEN');
+  //     }
+  //     const _res = await _fetch(url);
+  //     if (!_res.ok) {
+  //       return APIError('BAD_REQUEST', { reason: 'The provided image resource was not found on the media server.' });
+  //     }
+  //     const _user = await _UserModel.findByID(id);
+  //     if (!_user) {
+  //       return APIError('NOT_FOUND');
+  //     }
+  //     const _fbUser = await _auth.getUserByEmail(_user.email);
+  //     const _media = await _MediaModel.create({
+  //       storePath: url,
+  //       blurhash,
+  //       author: [
+  //         {
+  //           name: _user.name,
+  //           reference: id,
+  //         },
+  //       ],
+  //     });
+  //     const _updatedUser = _UserModel.findByIdAndUpdate(id, { picture: _media.id });
+  //     const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
+  //     await Promise.all([_updatedUser, _updatedFbUser]);
+  //     return _updatedUser;
+  //   } catch (error) {
+  //     return FirebaseAuthError(error);
+  //   }
+  // },
+  updateUserTopics: async (
     _parent,
-    { id, url, blurhash },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel,
-    _MediaModel = MediaModel,
-    _auth = admin.auth(),
-    _fetch = fetch
+    { id, interestedTopics },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || !url || !blurhash) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      if (!HasPermmission(context, 'media.read.public') || !HasPermmission(context, 'media.write.self')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _res = await _fetch(url);
-      if (!_res.ok) {
-        return APIError('BAD_REQUEST', { reason: 'The provided image resource was not found on the media server.' });
-      }
-
-      const _user = await _UserModel.findById(id);
-      if (!_user) {
-        return APIError('NOT_FOUND');
-      }
-
-      const _fbUser = await _auth.getUserByEmail(_user.email);
-
-      const _media = await _MediaModel.create({
-        storePath: url,
-        blurhash,
-        author: [
-          {
-            name: _user.name,
-            reference: id,
-          },
-        ],
-      });
-      const _updatedUser = _UserModel.findByIdAndUpdate(id, { picture: _media.id });
-      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
-
-      await Promise.all([_updatedUser, _updatedFbUser]);
-      return _updatedUser;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
-    }
-  },
-  updateUserTopics: async (_parent, { id, interestedTopics }, context, { fieldNodes }, _UserModel = UserModel) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
-    try {
-      if (!id || !topics) {
-        return APIError('BAD_REQUEST');
-      }
-
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _user = await _UserModel.findByIdAndUpdate(id, { interestedTopics });
+      const _user = await User.updateDetails(id, { interestedTopics }, session, authToken, mid);
       return _user;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
   updateUserBio: async (
     _parent,
     { id, bio, facebook, twitter, instagram, linkedin, website, github },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || (!bio && !facebook && !twitter && !instagram && !linkedin && !website && !github)) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _updateData = {
-        bio: !bio ? undefined : bio,
-        facebook: !facebook ? undefined : facebook,
-        twitter: !twitter ? undefined : twitter,
-        instagram: !instagram ? undefined : instagram,
-        linkedin: !linkedin ? undefined : linkedin,
-        website: !website ? undefined : website,
-        github: !github ? undefined : github,
-      };
-
-      const _user = await _UserModel.findByIdAndUpdate(id, _updateData);
+      const _user = await User.updateDetails(
+        id,
+        { bio, facebook, twitter, instagram, linkedin, website, github },
+        session,
+        authToken,
+        mid
+      );
       return _user;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
 
   addNITRMail: async (
     _parent,
     { id, email },
-    context,
+    { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes },
-    _UserModel = UserModel,
     _transporter = transporter,
     _namespace = process.env.UUID_NAMESPACE,
     _fromAddress = process.env.SMTP_FROM_ADDRESS
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || !email) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _uuid = UUID(JSON.stringify({ id, email }), _namespace).toString();
+      const _uuid = UUID(JSON.stringify({ id, email, authToken }), _namespace).toString();
 
       // TODO: Configure proper html template
       await _transporter.sendMail({
@@ -495,195 +377,157 @@ module.exports = {
         html: `<a href="https://mondaymorning.nitrkl.ac.in/user/verify/${email}?token=${_uuid}">Click here to verify!</a>`,
       });
 
-      const _user = await _UserModel.findByIdAndUpdate(id, {
-        nitrMail: email,
-        verifyEmailToken: _uuid,
-      });
+      const _user = await User.updateDetails(
+        id,
+        {
+          nitrMail: email,
+          verifyEmailToken: _uuid,
+        },
+        session,
+        authToken,
+        mid
+      );
       return _user;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
   verifyNITRMail: async (
     _parent,
     { id, email, token },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel,
-    _auth = admin.auth()
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || !email || !token || !validateUUID(token)) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _user = await _UserModel.findOneAndUpdate(
-        { $and: [{ _id: id }, { nitrMail: email }, { verfiyEmailToken: token }] },
-        { accountType: 1, verfiyEmailToken: null }
+      const _updatedUser = await User.setVerified(
+        id,
+        email,
+        token,
+        ACCOUNT_TYPES.NITR_STUDENT,
+        session,
+        authToken,
+        mid
       );
 
-      if (!_user) {
-        return APIError('NOT_FOUND', null, {
-          reason: 'Either the verification token is invalid or the user does not exist.',
-        });
-      }
-
-      const _fbUser = await _auth.getUserByEmail(_user.email);
-      const roles = _fbUser.customClaims.roles.map((item) => {
-        if (item.toString() !== 'user.basic') {
-          return item;
-        }
-        return 'user.verified';
-      });
-
-      await _auth.setCustomUserClaims(_fbUser.uid, {
-        ..._fbUser.customClaims,
-        roles,
-      });
-
-      return _user;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
+      return _updatedUser;
+    } catch (error) {
+      throw FirebaseAuthError(error);
     }
   },
 
-  newsletterSubscription: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+  newsletterSubscription: async (
+    _parent,
+    { id, flag },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
     try {
-      if (!id || flag === null || flag === undefined) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _writePermission = canUserUpdate(id, context, fields);
-      if (_writePermission !== true) {
-        return _writePermission;
-      }
-
-      const _user = await _UserModel.findByIdAndUpdate(id, { newsletterSubscription: flag });
+      const _user = await User.updateDetails(id, { newsletterSubscription: flag }, session, authToken, mid);
 
       if (!_user) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
       }
 
       return _user;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
 
   /** Admin APIs */
-  setUserAccountType: async (_parent, { id, accountType }, context, { fieldNodes }, _UserModel = UserModel) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+  listAllUsers: async (
+    _parent,
+    { limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
     try {
-      if (!id || !accountType) {
-        return APIError('BAD_REQUEST');
+      const _fields = getFieldNodes(fieldNodes);
+
+      if (
+        !UserPermission.exists(session, authToken, decodedToken, 'user.list.all') ||
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.public')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to perform this action.',
+        });
       }
 
-      if (![0, 1, 2, 3].includes(accountType)) {
-        return APIError('BAD_REQUEST');
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not the required permissions to read the requested fields.',
+        });
       }
 
-      if (!HasPermmission(context, 'user.write.all')) {
-        return APIError('FORBIDDEN');
+      const _users = await User.find({}, limit, offset);
+
+      for (const _user of _users) {
+        User.findByID.prime(_user.id, _user);
+        User.findByEmail.prime(_user.email, _user);
       }
 
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _user = await _UserModel.findByIdAndUpdate(id, { accountType });
-
-      if (!_user) {
-        return APIError('NOT_FOUND');
-      }
-
-      return _user;
-    } catch (e) {
-      return APIError(null, e);
+      return _users;
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  setUserBan: async (_parent, { id, flag }, context, { fieldNodes }, _UserModel = UserModel, _auth = admin.auth()) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
+  setUserAccountType: async (
+    _parent,
+    { id, accountType },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
     try {
-      if (!id || flag === null || flag === undefined) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
 
-      if (!HasPermmission(context, 'user.write.all')) {
-        return APIError('FORBIDDEN');
-      }
+      const _user = await User.updateDetails(id, { accountType }, session, authToken, mid);
 
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _user = await _UserModel.findById(id);
       if (!_user) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
       }
 
-      const _fbUser = await _auth.getUserByEmail(_user.email);
-
-      const _updatedUser = _UserModel.findByIdAndUpdate(id, { isBanned: flag });
-      const _updatedFbUser = _auth.updateUser(_fbUser.uid, { disabled: falg });
-
-      await Promise.all([_updatedUser, _updatedFbUser]);
       return _user;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  setUserBan: async (
+    _parent,
+    { id, flag },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
+    try {
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
+
+      const _user = await User.setBan(id, flag, session, authToken, mid);
+
+      return _user;
+    } catch (error) {
+      throw FirebaseAuthError(error);
     }
   },
   setUserRoles: async (
     _parent,
     { id, roles },
-    context,
-    { fieldNodes },
-    _UserModel = UserModel,
-    _auth = admin.auth()
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
   ) => {
-    const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
     try {
-      if (!id || !roles || roles instanceof Array) {
-        return APIError('BAD_REQUEST');
-      }
+      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
 
-      if (!HasPermmission(context, 'user.write.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      if (fields.some((item) => !PUBLIC_FIELDS.includes(item)) && !HasPermmission(context, 'user.read.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _user = await _UserModel.findById(id);
-      if (!_user) {
-        return APIError('NOT_FOUND');
-      }
-
-      const _fbUser = await _auth.getUserByEmail(_user.email);
-      await _auth.setCustomUserClaims(_fbUser.uid, {
-        ..._fbUser.customClaims,
-        roles,
-      });
+      const _user = await User.updateRoles(id, roles);
 
       return _user;
-    } catch (e) {
-      if (e.code && e.code.toString().substring(0, 4) === 'auth') {
-        return FirebaseAuthError(e);
-      }
-      return APIError(null, e);
+    } catch (error) {
+      return FirebaseAuthError(error);
     }
   },
 };

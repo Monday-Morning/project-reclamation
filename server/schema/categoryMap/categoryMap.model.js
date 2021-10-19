@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Category Map Model
@@ -72,6 +72,6 @@ const CategoryMapSchema = new Schema(
  * @description Generated Category Map Model
  * @constant CategoryMapModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('CategoryMap', CategoryMapSchema);

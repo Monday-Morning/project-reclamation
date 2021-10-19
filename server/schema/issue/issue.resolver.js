@@ -9,93 +9,129 @@
  * @since 0.1.0
  */
 
-const { APIError } = require('../../helpers/errorHandler');
-const { HasPermmission } = require('../../helpers/authorization');
+const { APIError } = require('../../utils/exception');
+const UserPermission = require('../../utils/userAuth/permission');
 
-const IssueModel = require('./issue.model');
+const DEF_LIMIT = 10,
+  DEF_OFFSET = 0;
 
-const DEF_LIMIT = 10;
-const DEF_OFFSET = 0;
 module.exports = {
-  getIssueByID: async (_parent, { id }, context, _info, _IssueModel = IssueModel) => {
+  getIssueByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, _) => {
     try {
-      const _issue = await _IssueModel.findById(id);
+      const _issue = await Issue.findByID.load(id);
 
-      if (!_issue) {
-        return APIError('NOT_FOUND');
-      }
-
-      if (new Date(_issue.publishedAt) > Date.now() && !HasPermmission(context, 'issue.read.unpublished')) {
-        return APIError('NOT_FOUND');
+      if (!_issue.isPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested issue is not found.' });
       }
 
       return _issue;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  listIssues: async (_parent, { limit = DEF_LIMIT, offset = DEF_OFFSET }, context, _info, _IssueModel = IssueModel) => {
+  getLatestIssues: (
+    _parent,
+    { onlyPublished = true, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { Issue } },
+    _
+  ) => {
     try {
-      const _issueQuery = HasPermmission(context, 'issue.list.private') ? {} : { publishedAt: { $lt: Date.now() } };
-      const _issues = await _IssueModel.find(_issueQuery).skip(offset).limit(limit);
+      if (!onlyPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.list.unpublished')) {
+        onlyPublished = true;
+      }
+
+      return Issue.find(onlyPublished ? { isPublished: true } : {}, limit, offset);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  getListOfIssues: async (
+    _parent,
+    { ids, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { Issue } },
+    _
+  ) => {
+    try {
+      const _issues = await Issue.find({ _id: ids }, limit, offset);
+
+      // TODO: return issues alongside the errors
+      if (
+        _issues.some((_issue) => !_issue.isPublished) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')
+      ) {
+        throw APIError('NOT_FOUND', null, { reason: 'One or more of the requested issues were not found.' });
+      }
 
       return _issues;
-    } catch (e) {
-      return APIError(null, e);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  addIssue: async (_parent, { name, description, publishedAt }, context, _info, _IssueModel = IssueModel) => {
+  createIssue: (
+    _parent,
+    { name, description, startDate, endDate, articles, featured },
+    { session, authToken, decodedToken, mid, API: { Issue } },
+    _
+  ) => {
     try {
-      if (!HasPermmission(context, 'issue.write.new')) {
-        return APIError('FORBIDDEN');
+      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.new')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permission to create a new issue.',
+        });
       }
-      const _issue = await _IssueModel.create({ name, description, publishedAt: new Date(publishedAt) });
 
-      return _issue;
-    } catch (e) {
-      return APIError(null, e);
+      return Issue.create(name, description, startDate, endDate, articles, featured, session, authToken, mid);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  updateIssue: async (_parent, { id, name, description, publishedAt }, context, _info, _IssueModel = IssueModel) => {
+  updateIssueProps: (
+    _parent,
+    { id, name, description, startDate, endDate },
+    { session, authToken, decodedToken, mid, API: { Issue } },
+    _
+  ) => {
     try {
-      const _issue = await _IssueModel.findById(id);
-
-      if (!_issue) {
-        return APIError('NOT_FOUND');
+      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permission to update this issue.',
+        });
       }
 
-      if (_issue.createdBy && !HasPermmission(context, 'issue.write.self')) {
-        return APIError('FORBIDDEN');
-      } else if (!HasPermmission(context, 'issue.write.all')) {
-        return APIError('FORBIDDEN');
-      }
-
-      const _propertiesObject = { name, description, publishedAt: new Date(publishedAt) };
-      const _updateObject = {};
-      let _key;
-      for (_key in _propertiesObject) {
-        if (_propertiesObject[_key]) {
-          _updateObject[_key] = _propertiesObject[_key];
-        }
-      }
-
-      return _IssueModel.findByIdAndUpdate(id, _updateObject);
-    } catch (e) {
-      return APIError(null, e);
+      return Issue.updateProps(id, { name, description, startDate, endDate }, session, authToken, mid);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
-  deleteIssue: async (_parents, { id }, context, _info, _IssueModel = IssueModel) => {
+  updateIssueArticles: (
+    _parent,
+    { id, articles, featured },
+    { session, authToken, decodedToken, mid, API: { Issue } },
+    _
+  ) => {
     try {
-      const _issue = await _IssueModel.findById(id);
-      if (!_issue) {
-        return APIError('NOT_FOUND');
+      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permission to update this issue.',
+        });
       }
-      if (!HasPermmission(context, 'issue.write.all')) {
-        APIError('FORBIDDEN');
+
+      return Issue.updateArticles(id, articles, featured, session, authToken, mid);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  removeIssue: (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, _) => {
+    try {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permission to delete this issue.',
+        });
       }
-      return _IssueModel.findByIdAndDelete(id);
-    } catch (e) {
-      return APIError(null, e);
+
+      return Issue.remove(id);
+    } catch (error) {
+      throw APIError(null, error);
     }
   },
 };

@@ -14,7 +14,7 @@ const {
   // GraphQLSchema,
   GraphQLID,
   GraphQLList,
-  // GraphQLBoolean,
+  GraphQLBoolean,
   GraphQLInt,
   // GraphQLNonNull,
   // GraphQLDate,
@@ -40,7 +40,13 @@ const IssueType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    publishedAt: { type: GraphQLDateTime },
+    thumbnail: { type: ThumbnailType },
+    description: { type: GraphQLString },
+
+    isPublished: { type: GraphQLBoolean },
+    startDate: { type: GraphQLDateTime },
+    endDate: { type: GraphQLDateTime },
+
     articleIDs: {
       type: new GraphQLList(GraphQLID),
       resolve: (parent) => parent.articles,
@@ -50,6 +56,7 @@ const IssueType = new GraphQLObjectType({
       resolve: (parent, _args, context) =>
         parent.articles ? getArticlesByIds(null, { ids: parent.articles }, context) : null,
     },
+
     featuredIDs: {
       type: new GraphQLList(GraphQLID),
       resolve: (parent) => parent.featured,
@@ -59,9 +66,7 @@ const IssueType = new GraphQLObjectType({
       resolve: (parent, _args, context) =>
         parent.articles ? getArticlesByIds(null, { ids: parent.featured }, context) : null,
     },
-    // polls: { type: GraphQLList(PollType) },
-    thumbnail: { type: ThumbnailType },
-    description: { type: GraphQLString },
+
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
     updatedAt: { type: GraphQLDateTime },

@@ -34,6 +34,7 @@ const {
 
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
 
+// TODO: Extract and standardize as common Image type
 const ProfilePictureType = new GraphQLObjectType({
   name: 'ProfilePicture',
   fields: () => ({
@@ -61,6 +62,7 @@ const UserProfileType = new GraphQLObjectType({
   }),
 });
 
+// TODO: rework the resolving method and structure
 const ContributionType = new GraphQLObjectType({
   name: 'Contribution',
   fields: () => ({
@@ -107,6 +109,7 @@ const UserType = new GraphQLObjectType({
 
     profile: { type: UserProfileType },
 
+    // TODO: rework the resolving method and structure
     contributions: {
       type: new GraphQLList(ContributionType),
     },

@@ -1,18 +1,17 @@
-const MediaModel = require('./media.model');
-const { APIError } = require('../../helpers/errorHandler');
+const { APIError } = require('../../utils/exception');
 
 module.exports = {
-  getMedia: async (_parent, { id }, _) => {
+  getMediaByID: async (_parent, { id }, { API: { Media } }, _) => {
     try {
-      const _media = await MediaModel.findById(id);
+      const _media = await Media.findByID.load(id);
 
       if (!_media) {
-        return APIError('NOT_FOUND');
+        throw APIError('NOT_FOUND', null, { reason: 'The requested media was not found.' });
       }
 
       return _media;
     } catch (error) {
-      return APIError(null, error);
+      throw APIError(null, error);
     }
   },
 };

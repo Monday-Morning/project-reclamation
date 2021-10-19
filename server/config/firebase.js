@@ -10,8 +10,7 @@
  */
 
 const Admin = require('firebase-admin');
-const Winston = require('../helpers/winston');
-const logger = new Winston('firebase');
+const logger = require('../utils/logger')('firebase');
 
 module.exports = {
   /**
@@ -28,7 +27,7 @@ module.exports = {
       });
       logger.info('Admin Application Initialized');
     } catch (e) {
-      logger.error('Could not initialize admin application', e);
+      logger.error('Could not initialize admin application: ', e);
     }
   },
 

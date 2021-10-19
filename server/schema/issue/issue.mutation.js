@@ -13,7 +13,7 @@ const {
   GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  //GraphQLList,
+  GraphQLList,
   // GraphQLBoolean,
   // GraphQLInt,
   GraphQLNonNull,
@@ -23,48 +23,54 @@ const {
   //GraphQLJSON,
   //GraphQLJSONObject,
 } = require('../scalars');
-const { addIssue, updateIssue, deleteIssue } = require('./issue.resolver');
+const { createIssue, updateIssueProps, updateIssueArticles, removeIssue } = require('./issue.resolver');
 const IssueType = require('./issue.type');
 
 module.exports = new GraphQLObjectType({
   name: 'IssueMutation',
   fields: {
-    addIssue: {
-      description: 'Adds a single issue',
+    createIssue: {
+      description: 'Adds a new issue',
       type: IssueType,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
-        // articles: { type: GraphQLList(GraphQLID) },
-        // featured: { type: GraphQLList(GraphQLID) },
-        // polls: { type: GraphQLList(PollType) },
-        // thumbnail: { type: MediaType },
-        publishedAt: { type: new GraphQLNonNull(GraphQLDateTime) },
         description: { type: GraphQLString },
+        startDate: { type: new GraphQLNonNull(GraphQLDateTime) },
+        endDate: { type: new GraphQLNonNull(GraphQLDateTime) },
+        articles: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        featured: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
-      resolve: addIssue,
+      resolve: createIssue,
     },
-    updateIssue: {
-      description: 'Updates a single issue',
+    updateIssueProps: {
+      description: 'Updates an issue',
       type: IssueType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        name: { type: GraphQLString },
-        // articles: { type: GraphQLList(GraphQLID) },
-        // featured: { type: GraphQLList(GraphQLID) },
-        // polls: { type: GraphQLList(PollType) },
-        // thumbnail: { type: MediaType },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString },
-        publishedAt: { type: GraphQLDateTime },
+        startDate: { type: new GraphQLNonNull(GraphQLDateTime) },
+        endDate: { type: new GraphQLNonNull(GraphQLDateTime) },
       },
-      resolve: updateIssue,
+      resolve: updateIssueProps,
     },
-    deleteIssue: {
-      description: 'Deletes a single issue by id',
+    updateIssueArticles: {
+      description: "Updates an issue's articles",
+      type: IssueType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        articles: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        featured: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+      },
+      resolve: updateIssueArticles,
+    },
+    removeIssue: {
+      description: 'Deletes an issue by ID',
       type: IssueType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve: deleteIssue,
+      resolve: removeIssue,
     },
   },
 });
