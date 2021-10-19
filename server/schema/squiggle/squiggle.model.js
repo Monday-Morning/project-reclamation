@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Squiggle Model
@@ -57,6 +57,6 @@ const SquiggleSchema = new Schema(
  * @description Generated Squiggle Model
  * @constant SquiggleModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Squiggle', SquiggleSchema);
