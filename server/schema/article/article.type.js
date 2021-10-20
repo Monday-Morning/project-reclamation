@@ -123,11 +123,11 @@ const ArticleType = new GraphQLObjectType({
     publishStatus: { type: PublishStatusEnumType },
     isInstituteRestricted: { type: GraphQLBoolean },
 
-    reactions: { type: GraphQLInt, resolve: (parent) => parent.engagement.reactions },
-    comments: { type: GraphQLInt, resolve: (parent) => parent.engagement.comments },
-    bookmarks: { type: GraphQLInt, resolve: (parent) => parent.engagement.bookmarks },
-    views: { type: GraphQLInt, resolve: (parent) => parent.engagement.views },
-    hits: { type: GraphQLInt, resolve: (parent) => parent.engagement.hits },
+    reactions: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.reactions },
+    comments: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.comments },
+    bookmarks: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.bookmarks },
+    views: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.views },
+    hits: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.hits },
 
     readTime: { type: GraphQLInt },
     timeSpent: { type: GraphQLInt },
