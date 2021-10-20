@@ -44,7 +44,7 @@ const canUpdateArticle = async (id, mid, session, authToken, decodedToken, field
     });
   }
 
-  const _article = await Article.findById.load(id);
+  const _article = await Article.findByID.load(id);
 
   if (!_article) {
     throw APIError('NOT_FOUND', null, { reason: 'The requested was not found.' });
@@ -77,7 +77,7 @@ module.exports = {
     try {
       const _fields = getFieldNodes(fieldNodes);
 
-      const _article = await Article.findById.load(id);
+      const _article = await Article.findByID.load(id);
 
       if (!_article) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });

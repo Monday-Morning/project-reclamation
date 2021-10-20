@@ -31,7 +31,7 @@ module.exports = {
   // TODO: Only display if admin
   getSquiggleByID: async (_parent, { id }, { API: { Squiggle } }, _) => {
     try {
-      const _squiggle = await Squiggle.findById(id);
+      const _squiggle = await Squiggle.findByID(id);
 
       if (!_squiggle) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested squiggle was not found.' });
