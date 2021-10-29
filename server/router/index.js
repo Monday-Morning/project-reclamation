@@ -26,7 +26,7 @@ const router = express.Router();
 router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
 
 /** 404 Not Found - Default Response for Invalid Path */
-router.use((req, res) => {
+router.use((_req, res) => {
   res.json({
     error: true,
     code: 404,
