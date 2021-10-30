@@ -39,11 +39,13 @@ const RoleSchema = new Schema(
     },
     createdBy: {
       type: Schema.Types.ObjectId,
+      ref: 'User',
       required: false,
       default: null,
     },
     updatedBy: {
       type: Schema.Types.ObjectId,
+      ref: 'User',
       required: false,
       default: null,
     },
