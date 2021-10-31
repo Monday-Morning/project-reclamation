@@ -37,7 +37,7 @@ const ArticleCategoryType = new GraphQLObjectType({
     subcategory: { type: GraphQLBoolean },
     referenceID: {
       type: GraphQLID,
-      resolve: (parent) => parent.reference,
+      resolve: (parent) => parent?.reference,
     },
     reference: {
       type: CategoryMapType,
@@ -54,7 +54,7 @@ const ArticleTagType = new GraphQLObjectType({
     isAdmin: { type: GraphQLBoolean },
     referenceID: {
       type: GraphQLID,
-      resolve: (parent) => parent.reference,
+      resolve: (parent) => parent?.reference,
     },
     reference: {
       type: TagType,
@@ -67,13 +67,13 @@ const ArticleTagType = new GraphQLObjectType({
 const CoverMediaType = new GraphQLObjectType({
   name: 'CoverMedia',
   fields: () => ({
-    squareID: { type: GraphQLID, resolve: (parent) => parent.square },
+    squareID: { type: GraphQLID, resolve: (parent) => parent?.square },
     square: {
       type: MediaType,
       resolve: (parent, _args, context, info) =>
         parent?.square ? getMediaByID(parent, { id: parent.square }, context, info) : null,
     },
-    rectangleID: { type: GraphQLID, resolve: (parent) => parent.rectangle },
+    rectangleID: { type: GraphQLID, resolve: (parent) => parent?.rectangle },
     rectangle: {
       type: MediaType,
       resolve: (parent, _args, context, info) =>
@@ -93,28 +93,31 @@ const ArticleType = new GraphQLObjectType({
     content: { type: new GraphQLList(ContentType) },
     inshort: { type: GraphQLString },
 
-    authors: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent.users.filter((u) => u.team === 0) },
+    authors: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent?.users.filter((u) => u.team === 0) },
     photographers: {
       type: new GraphQLList(UserDetailType),
-      resolve: (parent) => parent.users.filter((u) => u.team === 1 || u.team === 5),
+      resolve: (parent) => parent?.users.filter((u) => u.team === 1 || u.team === 5),
     },
-    designers: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent.users.filter((u) => u.team === 2) },
-    tech: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent.users.filter((u) => u.team === 3) },
+    designers: {
+      type: new GraphQLList(UserDetailType),
+      resolve: (parent) => parent?.users.filter((u) => u.team === 2),
+    },
+    tech: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent?.users.filter((u) => u.team === 3) },
 
     categoryNumbers: {
       type: new GraphQLList(GraphQLInt),
-      resolve: (parent) => parent.categories.map((_cat) => _cat.number),
+      resolve: (parent) => parent?.categories.map((_cat) => _cat.number),
     },
     categories: { type: new GraphQLList(ArticleCategoryType) },
 
     tagNames: {
       type: new GraphQLList(GraphQLString),
-      resolve: (parent) => parent.tags.filter((_tag) => !_tag.isAdmin).map((_tag) => _tag.name),
+      resolve: (parent) => parent?.tags.filter((_tag) => !_tag.isAdmin).map((_tag) => _tag.name),
     },
-    tags: { type: new GraphQLList(ArticleTagType), resolve: (parent) => parent.tags.filter((_tag) => !_tag.isAdmin) },
+    tags: { type: new GraphQLList(ArticleTagType), resolve: (parent) => parent?.tags.filter((_tag) => !_tag.isAdmin) },
     adminTags: {
       type: new GraphQLList(ArticleTagType),
-      resolve: (parent) => parent.tags.filter((_tag) => _tag.isAdmin),
+      resolve: (parent) => parent?.tags.filter((_tag) => _tag.isAdmin),
     },
 
     coverMedia: { type: CoverMediaType },
@@ -123,11 +126,11 @@ const ArticleType = new GraphQLObjectType({
     publishStatus: { type: PublishStatusEnumType },
     isInstituteRestricted: { type: GraphQLBoolean },
 
-    reactions: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.reactions },
-    comments: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.comments },
-    bookmarks: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.bookmarks },
-    views: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.views },
-    hits: { type: GraphQLInt, resolve: (parent) => parent.engagementCount.hits },
+    reactions: { type: GraphQLInt, resolve: (parent) => parent?.engagementCount?.reactions },
+    comments: { type: GraphQLInt, resolve: (parent) => parent?.engagementCount?.comments },
+    bookmarks: { type: GraphQLInt, resolve: (parent) => parent?.engagementCount?.bookmarks },
+    views: { type: GraphQLInt, resolve: (parent) => parent?.engagementCount?.views },
+    hits: { type: GraphQLInt, resolve: (parent) => parent?.engagementCount?.hits },
 
     readTime: { type: GraphQLInt },
     timeSpent: { type: GraphQLInt },
