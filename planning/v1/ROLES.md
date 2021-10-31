@@ -43,13 +43,14 @@
 
 ### Article Roles
 
-| Role Name        | article.read.restricted | article.read.unpublished | article.read.admin | article.list.restricted | article.list.unpublished | article.write.new | article.write.self | user.write.all |
-| ---------------- | ----------------------- | ------------------------ | ------------------ | ----------------------- | ------------------------ | ----------------- | ------------------ | -------------- |
-| article.verified | Y                       | N                        | N                  | Y                       | N                        | N                 | N                  | N              |
-| article.team     | Y                       | Y                        | Y                  | Y                       | Y                        | N                 | Y                  | N              |
-| article.author   | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | N              |
-| article.admin    | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | Y              |
-|                  |                         |                          |                    |                         |                          |                   |                    |                |
+| Role Name        | article.read.restricted | article.read.unpublished | article.read.admin | article.list.restricted | article.list.unpublished | article.write.new | article.write.self | article.write.all |
+| ---------------- | ----------------------- | ------------------------ | ------------------ | ----------------------- | ------------------------ | ----------------- | ------------------ | ----------------- |
+| article.verified | Y                       | N                        | N                  | Y                       | N                        | N                 | N                  | N                 |
+| article.pic      | Y                       | Y                        | N                  | Y                       | Y                        | N                 | N                  | N                 |
+| article.team     | Y                       | Y                        | Y                  | Y                       | Y                        | N                 | Y                  | N                 |
+| article.author   | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | N                 |
+| article.admin    | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | Y                 |
+|                  |                         |                          |                    |                         |                          |                   |                    |                   |
 
 ---
 
