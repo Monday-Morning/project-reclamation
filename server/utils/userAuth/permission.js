@@ -41,7 +41,9 @@ const UserPermission = {
       ) {
         return false;
       }
-      const [_permissions] = decodedToken.roles.map((x) => _roles.find((y) => y.name === x).permissions);
+      const _permissions = decodedToken.roles
+        .map((x) => _roles.find((y) => y.name === x).permissions)
+        .reduce((prev, curr) => [...prev, ...curr]);
       if (!_permissions.includes(permission)) {
         return false;
       }
