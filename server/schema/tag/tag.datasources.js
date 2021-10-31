@@ -39,6 +39,11 @@ const autocomplete = (query, isAdmin, limit) =>
       },
     },
     {
+      $addFields: {
+        id: '$_id',
+      },
+    },
+    {
       $limit: limit,
     },
   ]);
