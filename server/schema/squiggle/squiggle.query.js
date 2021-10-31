@@ -25,7 +25,7 @@ const {
 } = require('../scalars');
 
 const SquiggleType = require('./squiggle.type');
-const { getSquiggleByID, listSquiggles } = require('./squiggle.resolver');
+const { getSquiggleByID, listSquiggles, getLatestSquiggle } = require('./squiggle.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'SquiggleQuery',
@@ -33,6 +33,7 @@ module.exports = new GraphQLObjectType({
     getLatestSquiggle: {
       description: 'Retrieves the latest squiggle',
       type: SquiggleType,
+      resolve: getLatestSquiggle,
     },
     getSquiggleByID: {
       description: 'Retrieves a single Squiggle',
