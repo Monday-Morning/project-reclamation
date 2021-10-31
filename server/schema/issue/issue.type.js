@@ -26,21 +26,14 @@ const {
 
 const ArticleType = require('../article/article.type');
 const { getArticlesByIds } = require('../article/article.resolver');
-
-const ThumbnailType = new GraphQLObjectType({
-  name: 'Thumbnail',
-  fields: () => ({
-    storePath: { type: GraphQLString },
-    blurhash: { type: GraphQLString },
-  }),
-});
+const ImageType = require('../common/image.type');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    thumbnail: { type: ThumbnailType },
+    thumbnail: { type: ImageType },
     description: { type: GraphQLString },
 
     isPublished: { type: GraphQLBoolean },
