@@ -1,3 +1,4 @@
+const StoreEnumType = require('../common/store.enum.type');
 const UserDetailType = require('../common/userDetail.type');
 const {
   GraphQLObjectType,
@@ -28,6 +29,7 @@ const MediaType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     authors: { type: new GraphQLList(UserDetailType) },
+    store: { type: StoreEnumType },
     storePath: { type: GraphQLString },
     mediaType: { type: MediaEnumType },
     blurhash: { type: GraphQLString },
