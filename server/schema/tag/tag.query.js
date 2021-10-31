@@ -11,7 +11,7 @@ const {
   GraphQLList,
   GraphQLString,
   GraphQLID,
-  // GraphQLBoolean,
+  GraphQLBoolean,
   GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
@@ -65,6 +65,10 @@ module.exports = new GraphQLObjectType({
         searchTerm: {
           description: 'The search term for autocomplete',
           type: new GraphQLNonNull(GraphQLString),
+        },
+        isAdmin: {
+          description: 'Flag for admin tags',
+          type: new GraphQLNonNull(GraphQLBoolean),
         },
         limit: {
           description: 'The number of results to return',

@@ -51,17 +51,20 @@ module.exports = {
   /** Admin APIs */
   getTagAutocomplete: async (
     _parent,
-    { searchTerm, limit = DEF_LIMIT },
+    { searchTerm, isAdmin, limit = DEF_LIMIT },
     { session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')) {
+      if (
+        (isAdmin && !UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')) ||
+        (!isAdmin && !UserPermission.exists(session, authToken, decodedToken, 'tag.list.public'))
+      ) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
 
-      const _tags = await Tag.autocomplete(searchTerm, true, limit);
+      const _tags = await Tag.autocomplete(searchTerm, isAdmin, limit);
 
       return _tags;
     } catch (error) {
