@@ -53,7 +53,7 @@ const search = (query, accountType, limit, offset) =>
     {
       $search: {
         // TODO: rectify index name
-        index: 'test1',
+        index: 'default',
         text: {
           query,
           path: ['firstName', 'lastName', 'email', 'nitrMail'],
@@ -72,6 +72,10 @@ const search = (query, accountType, limit, offset) =>
     },
     {
       $addFields: {
+        id: '$_id',
+        fullName: {
+          $concat: ['$firstName', ' ', '$lastName'],
+        },
         searchScore: {
           $meta: 'searchScore',
         },
