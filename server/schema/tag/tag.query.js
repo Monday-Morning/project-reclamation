@@ -62,8 +62,8 @@ module.exports = new GraphQLObjectType({
       description: 'Retrieves an autocomplete list of tags',
       type: new GraphQLList(TagType),
       args: {
-        ids: {
-          description: 'The list of tag mongo IDs',
+        searchTerm: {
+          description: 'The search term for autocomplete',
           type: new GraphQLNonNull(GraphQLString),
         },
         limit: {
