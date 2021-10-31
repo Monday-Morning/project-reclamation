@@ -145,7 +145,7 @@ module.exports = {
         decodedToken,
         'article.read.unpublished'
       );
-      const _restritedPermission = UserPermission(session, authToken, decodedToken, 'article.read.restricted');
+      const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
 
       // TODO: map the articles to return correct ones with errors instead of rejecting full output
       if (
