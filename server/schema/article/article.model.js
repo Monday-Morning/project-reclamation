@@ -123,7 +123,6 @@ const ArticleSchema = new Schema(
       required: false,
       default: false,
     },
-    // TODO: update content with final structure
     content: [
       {
         text: {
