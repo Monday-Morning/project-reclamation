@@ -26,9 +26,9 @@ const { ArticleTypeEnumType, PublishStatusEnumType } = require('./article.enum.t
 const CategoryMapType = require('../categoryMap/categoryMap.type');
 const { getCategory } = require('../categoryMap/categoryMap.resolver');
 const TagType = require('../tag/tag.type');
-const { getTag } = require('../tag/tag.resolver');
+const { getTagByID } = require('../tag/tag.resolver');
 const MediaType = require('../media/media.type');
-const { getMedia } = require('../media/media.resolver');
+const { getMediaByID } = require('../media/media.resolver');
 
 const ArticleCategoryType = new GraphQLObjectType({
   name: 'ArticleCategory',
@@ -59,7 +59,7 @@ const ArticleTagType = new GraphQLObjectType({
     reference: {
       type: TagType,
       resolve: (parent, _args, context, info) =>
-        parent?.reference ? getTag(parent, { id: parent.reference }, context, info) : null,
+        parent?.reference ? getTagByID(parent, { id: parent.reference }, context, info) : null,
     },
   }),
 });
@@ -71,13 +71,13 @@ const CoverMediaType = new GraphQLObjectType({
     square: {
       type: MediaType,
       resolve: (parent, _args, context, info) =>
-        parent.square ? getMedia(parent, { id: parent.square }, context, info) : null,
+        parent?.square ? getMediaByID(parent, { id: parent.square }, context, info) : null,
     },
     rectangleID: { type: GraphQLID, resolve: (parent) => parent.rectangle },
     rectangle: {
       type: MediaType,
       resolve: (parent, _args, context, info) =>
-        parent.rectangle ? getMedia(parent, { id: parent.rectangle }, context, info) : null,
+        parent?.rectangle ? getMediaByID(parent, { id: parent.rectangle }, context, info) : null,
     },
   }),
 });
