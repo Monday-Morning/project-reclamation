@@ -7,7 +7,7 @@ const DEF_LIMIT = 10,
 const DEFAULT_TAG_COLOR = 'ffffff';
 
 module.exports = {
-  getTag: async (_parent, { id }, { session, authToken, decodedToken, API: { Tag } }) => {
+  getTagByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Tag } }) => {
     try {
       const _tag = await Tag.findByID.load(id);
 

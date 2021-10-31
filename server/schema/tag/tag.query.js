@@ -20,7 +20,7 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-const { getTag, getListOfTags, getTagAutocomplete } = require('./tag.resolver');
+const { getTagByID, getListOfTags, getTagAutocomplete } = require('./tag.resolver');
 const TagType = require('./tag.type');
 
 module.exports = new GraphQLObjectType({
@@ -35,7 +35,7 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: getTag,
+      resolve: getTagByID,
     },
     getListOfTags: {
       description: 'Retrieves a list of tags',
