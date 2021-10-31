@@ -83,6 +83,7 @@
 | Permission Name  | Description                          |
 | ---------------- | ------------------------------------ |
 | tag.read.admin   | Can read admin tags                  |
+| tag.list.public  | Can list/search public tags          |
 | tag.list.admin   | Can list/search admin tags           |
 | tag.write.public | Can create/update/delete public tags |
 | tag.write.admin  | Can create/update/delete admin tags  |
@@ -90,10 +91,10 @@
 
 ### Tag Roles
 
-| Role Name | tag.read.admin | tag.list.admin | tag.write.public | tag.write.admin |
-| --------- | -------------- | -------------- | ---------------- | --------------- |
-| tag.team  | Y              | Y              | Y                | N               |
-| tag.admin | Y              | Y              | Y                | Y               |
-|           |                |                |                  |                 |
+| Role Name | tag.read.admin | tag.list.public | tag.list.admin | tag.write.public | tag.write.admin |
+| --------- | -------------- | --------------- | -------------- | ---------------- | --------------- |
+| tag.team  | Y              | Y               | N              | Y                | N               |
+| tag.admin | Y              | Y               | Y              | Y                | Y               |
+|           |                |                 |                |                  |                 |
 
 ---
