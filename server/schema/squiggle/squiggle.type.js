@@ -10,10 +10,10 @@
 
 const {
   GraphQLObjectType,
-  // GraphQLString,
+  GraphQLString,
   // GraphQLSchema,
   GraphQLID,
-  GraphQLList,
+  // GraphQLList,
   // GraphQLBoolean,
   GraphQLInt,
   // GraphQLNonNull,
@@ -24,13 +24,11 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const ContentType = require('../common/content.type');
-
 const SquiggleType = new GraphQLObjectType({
   name: 'Squiggle',
   fields: () => ({
     id: { type: GraphQLID },
-    content: { type: GraphQLList(ContentType) },
+    content: { type: GraphQLString },
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
