@@ -8,11 +8,11 @@ const {
   // GraphQLSchema,
   // GraphQLNonNull,
   // GraphQLError,
-  GraphQLList,
+  // GraphQLList,
   GraphQLString,
   GraphQLID,
   GraphQLBoolean,
-  GraphQLInt,
+  // GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
   // GraphQLTime,
@@ -23,7 +23,7 @@ const {
 const { ContentTypeEnumType, ListStyleEnumType, AlignEnumType } = require('./content.enum.types');
 
 const MediaType = require('../media/media.type');
-const { getMedia } = require('../media/media.resolver');
+const { getMediaByID } = require('../media/media.resolver');
 
 const BlockFormattingType = new GraphQLObjectType({
   name: 'BlockFormatting',
@@ -35,33 +35,10 @@ const BlockFormattingType = new GraphQLObjectType({
   }),
 });
 
-const TextFormattingType = new GraphQLObjectType({
-  name: 'TextFormatting',
-  fields: () => ({
-    bold: { type: GraphQLBoolean },
-    italic: { type: GraphQLBoolean },
-    underline: { type: GraphQLBoolean },
-    strikethrough: { type: GraphQLBoolean },
-    size: { type: GraphQLInt },
-    elementIndex: { type: GraphQLString },
-    start: { type: GraphQLInt },
-    end: { type: GraphQLInt },
-  }),
-});
-
-const LinkType = new GraphQLObjectType({
-  name: 'Link',
-  fields: () => ({
-    href: { type: GraphQLString },
-    start: { type: GraphQLInt },
-    end: { type: GraphQLInt },
-  }),
-});
-
 const ContentType = new GraphQLObjectType({
   name: 'Content',
   fields: () => ({
-    plaintext: { type: GraphQLString },
+    text: { type: GraphQLString },
     data: {
       type: GraphQLJSON,
       resolve: (parent) => (parent.data ? JSON.stringify(parent.data) : undefined),
@@ -72,12 +49,11 @@ const ContentType = new GraphQLObjectType({
     },
     media: {
       type: MediaType,
-      resolve: (parent) => (parent.media ? getMedia(null, { id: parent.media }) : null),
+      resolve: (parent, _args, context, info) =>
+        parent.media ? getMediaByID(null, { id: parent.media }, context, info) : null,
     },
     contentType: { type: ContentTypeEnumType },
     blockFormatting: { type: BlockFormattingType },
-    textFormatting: { type: new GraphQLList(TextFormattingType) },
-    links: { type: new GraphQLList(LinkType) },
   }),
 });
 
