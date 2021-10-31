@@ -89,6 +89,7 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
     },
     {
       $addFields: {
+        id: '$_id',
         searchScore: {
           $meta: 'searchScore',
         },
