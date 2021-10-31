@@ -25,7 +25,7 @@ const {
 } = require('../scalars');
 
 const ArticleType = require('../article/article.type');
-const { getArticleByID } = require('../article/article.resolver');
+const { getListOfArticles } = require('../article/article.resolver');
 const ImageType = require('../common/image.type');
 
 const IssueType = new GraphQLObjectType({
@@ -47,9 +47,7 @@ const IssueType = new GraphQLObjectType({
     articles: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context, info) =>
-        parent.articles instanceof Array
-          ? parent.articles.map((id) => getArticleByID(parent, { id }, context, info))
-          : null,
+        parent.articles instanceof Array ? getListOfArticles(parent, { ids: parent.articles }, context, info) : null,
     },
 
     featuredIDs: {
@@ -59,9 +57,7 @@ const IssueType = new GraphQLObjectType({
     featured: {
       type: new GraphQLList(ArticleType),
       resolve: (parent, _args, context, info) =>
-        parent.articles instanceof Array
-          ? parent.articles.map((id) => getArticleByID(parent, { id }, context, info))
-          : null,
+        parent.articles instanceof Array ? getListOfArticles(parent, { ids: parent.featured }, context, info) : null,
     },
 
     createdAt: { type: GraphQLDateTime },
