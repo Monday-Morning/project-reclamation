@@ -4,6 +4,7 @@ const { APIError } = require('../../utils/exception');
 const getLatest = async () => {
   try {
     const _squiggle = await SquiggleModel.findOne().sort({ _id: 'desc' });
+    return _squiggle;
   } catch (error) {
     throw APIError(null, error);
   }
