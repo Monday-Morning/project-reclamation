@@ -133,7 +133,7 @@ module.exports = {
         });
       }
 
-      const _articles = await Article.find({ _id: ids }, limit, offset);
+      const _articles = await Promise.all(ids.slice(offset, offset + limit).map((id) => Article.findByID.load(id)));
 
       if (!_articles || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article(s) were not found.' });
