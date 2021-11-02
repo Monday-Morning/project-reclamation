@@ -11,7 +11,7 @@ const findByID = () =>
     async (ids) => {
       try {
         const _users = await UserModel.find({ _id: ids });
-        return ids.map((id) => _users.find((_u) => _u.id === id) || null);
+        return ids.map((id) => _users.find((_u) => _u.id.toString() === id.toString()) || null);
       } catch (error) {
         throw APIError(null, error);
       }
