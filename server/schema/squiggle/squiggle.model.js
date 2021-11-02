@@ -19,13 +19,10 @@ const { Schema, model, Model: _Model } = require('mongoose');
  */
 const SquiggleSchema = new Schema(
   {
-    // TODO: update with standard content structure
-    content: [
-      {
-        type: Object,
-        required: true,
-      },
-    ],
+    content: {
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',

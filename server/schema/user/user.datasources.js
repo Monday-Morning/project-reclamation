@@ -11,7 +11,7 @@ const findByID = () =>
     async (ids) => {
       try {
         const _users = await UserModel.find({ _id: ids });
-        return ids.map((id) => _users.find((_u) => _u.id === id) || null);
+        return ids.map((id) => _users.find((_u) => _u.id.toString() === id.toString()) || null);
       } catch (error) {
         throw APIError(null, error);
       }
@@ -53,7 +53,7 @@ const search = (query, accountType, limit, offset) =>
     {
       $search: {
         // TODO: rectify index name
-        index: 'test1',
+        index: 'default',
         text: {
           query,
           path: ['firstName', 'lastName', 'email', 'nitrMail'],
@@ -72,6 +72,10 @@ const search = (query, accountType, limit, offset) =>
     },
     {
       $addFields: {
+        id: '$_id',
+        fullName: {
+          $concat: ['$firstName', ' ', '$lastName'],
+        },
         searchScore: {
           $meta: 'searchScore',
         },

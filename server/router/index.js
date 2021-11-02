@@ -11,7 +11,7 @@
  */
 
 const express = require('express');
-const { CacheRoles } = require('../helpers/authorization');
+const { cache } = require('../utils/userAuth/role');
 
 /**
  * @summary Express Router Object
@@ -23,10 +23,10 @@ const { CacheRoles } = require('../helpers/authorization');
 const router = express.Router();
 
 /** Updates roles cache */
-router.use('/admin/roles/sync', async (_req, res) => res.send(await CacheRoles()));
+router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
 
 /** 404 Not Found - Default Response for Invalid Path */
-router.use((req, res) => {
+router.use((_req, res) => {
   res.json({
     error: true,
     code: 404,

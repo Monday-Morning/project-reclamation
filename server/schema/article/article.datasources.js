@@ -35,7 +35,8 @@ const findByID = () =>
     async (ids) => {
       try {
         const _articles = await ArticleModel.find({ _id: ids });
-        return ids.map((id) => _articles.find((_u) => _u.id === id) || null);
+        const _returnIds = ids.map((id) => _articles.find((_u) => _u.id.toString() === id.toString()) || null);
+        return _returnIds;
       } catch (error) {
         throw APIError(null, error);
       }
@@ -89,6 +90,7 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
     },
     {
       $addFields: {
+        id: '$_id',
         searchScore: {
           $meta: 'searchScore',
         },

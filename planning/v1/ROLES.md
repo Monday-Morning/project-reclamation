@@ -43,13 +43,14 @@
 
 ### Article Roles
 
-| Role Name        | article.read.restricted | article.read.unpublished | article.read.admin | article.list.restricted | article.list.unpublished | article.write.new | article.write.self | user.write.all |
-| ---------------- | ----------------------- | ------------------------ | ------------------ | ----------------------- | ------------------------ | ----------------- | ------------------ | -------------- |
-| article.verified | Y                       | N                        | N                  | Y                       | N                        | N                 | N                  | N              |
-| article.team     | Y                       | Y                        | Y                  | Y                       | Y                        | N                 | Y                  | N              |
-| article.author   | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | N              |
-| article.admin    | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | Y              |
-|                  |                         |                          |                    |                         |                          |                   |                    |                |
+| Role Name        | article.read.restricted | article.read.unpublished | article.read.admin | article.list.restricted | article.list.unpublished | article.write.new | article.write.self | article.write.all |
+| ---------------- | ----------------------- | ------------------------ | ------------------ | ----------------------- | ------------------------ | ----------------- | ------------------ | ----------------- |
+| article.verified | Y                       | N                        | N                  | Y                       | N                        | N                 | N                  | N                 |
+| article.pic      | Y                       | Y                        | N                  | Y                       | Y                        | N                 | N                  | N                 |
+| article.team     | Y                       | Y                        | Y                  | Y                       | Y                        | N                 | Y                  | N                 |
+| article.author   | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | N                 |
+| article.admin    | Y                       | Y                        | Y                  | Y                       | Y                        | Y                 | Y                  | Y                 |
+|                  |                         |                          |                    |                         |                          |                   |                    |                   |
 
 ---
 
@@ -82,6 +83,7 @@
 | Permission Name  | Description                          |
 | ---------------- | ------------------------------------ |
 | tag.read.admin   | Can read admin tags                  |
+| tag.list.public  | Can list/search public tags          |
 | tag.list.admin   | Can list/search admin tags           |
 | tag.write.public | Can create/update/delete public tags |
 | tag.write.admin  | Can create/update/delete admin tags  |
@@ -89,10 +91,10 @@
 
 ### Tag Roles
 
-| Role Name | tag.read.admin | tag.list.admin | tag.write.public | tag.write.admin |
-| --------- | -------------- | -------------- | ---------------- | --------------- |
-| tag.team  | Y              | Y              | Y                | N               |
-| tag.admin | Y              | Y              | Y                | Y               |
-|           |                |                |                  |                 |
+| Role Name | tag.read.admin | tag.list.public | tag.list.admin | tag.write.public | tag.write.admin |
+| --------- | -------------- | --------------- | -------------- | ---------------- | --------------- |
+| tag.team  | Y              | Y               | N              | Y                | N               |
+| tag.admin | Y              | Y               | Y              | Y                | Y               |
+|           |                |                 |                |                  |                 |
 
 ---

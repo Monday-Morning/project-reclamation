@@ -11,7 +11,7 @@ const {
   GraphQLList,
   GraphQLString,
   GraphQLID,
-  // GraphQLBoolean,
+  GraphQLBoolean,
   GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
@@ -20,7 +20,7 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
-const { getTag, getListOfTags, getTagAutocomplete } = require('./tag.resolver');
+const { getTagByID, getListOfTags, getTagAutocomplete } = require('./tag.resolver');
 const TagType = require('./tag.type');
 
 module.exports = new GraphQLObjectType({
@@ -35,7 +35,7 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: getTag,
+      resolve: getTagByID,
     },
     getListOfTags: {
       description: 'Retrieves a list of tags',
@@ -62,9 +62,13 @@ module.exports = new GraphQLObjectType({
       description: 'Retrieves an autocomplete list of tags',
       type: new GraphQLList(TagType),
       args: {
-        ids: {
-          description: 'The list of tag mongo IDs',
+        searchTerm: {
+          description: 'The search term for autocomplete',
           type: new GraphQLNonNull(GraphQLString),
+        },
+        isAdmin: {
+          description: 'Flag for admin tags',
+          type: new GraphQLNonNull(GraphQLBoolean),
         },
         limit: {
           description: 'The number of results to return',

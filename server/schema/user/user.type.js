@@ -9,6 +9,7 @@
  * @since 0.1.0
  */
 
+const ImageType = require('../common/image.type');
 const {
   GraphQLObjectType,
   // GraphQLScalarType,
@@ -33,15 +34,6 @@ const {
 } = require('../scalars');
 
 const { AccountTypeEnumType, PositionEnumType, TeamEnumType } = require('./user.enum.types');
-
-// TODO: Extract and standardize as common Image type
-const ProfilePictureType = new GraphQLObjectType({
-  name: 'ProfilePicture',
-  fields: () => ({
-    storePath: { type: GraphQLString },
-    blurhash: { type: GraphQLString },
-  }),
-});
 
 /**
  * @description User Profile Type
@@ -102,7 +94,7 @@ const UserType = new GraphQLObjectType({
     email: { type: GraphQLString },
     accountType: { type: AccountTypeEnumType },
     nitrMail: { type: GraphQLString },
-    picture: { type: ProfilePictureType },
+    picture: { type: ImageType },
 
     interestedTopics: { type: new GraphQLList(GraphQLInt) },
     isNewsletterSubscribed: { type: GraphQLBoolean },

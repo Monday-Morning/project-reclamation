@@ -13,7 +13,9 @@ const PUBLIC_FIELDS = [
   'photographers',
   'designers',
   'tech',
+  'categoryNumbers',
   'categories',
+  'tagNames',
   'tags',
   'coverMedia',
   'reactions',
@@ -23,6 +25,9 @@ const PUBLIC_FIELDS = [
   'hits',
   'readTime',
   'timeSpent',
+  'createdAt',
+  'updatedAt',
+  '__typename',
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
@@ -42,7 +47,7 @@ const canUpdateArticle = async (id, mid, session, authToken, decodedToken, field
     });
   }
 
-  const _article = await Article.findById.load(id);
+  const _article = await Article.findByID.load(id);
 
   if (!_article) {
     throw APIError('NOT_FOUND', null, { reason: 'The requested was not found.' });
@@ -75,7 +80,7 @@ module.exports = {
     try {
       const _fields = getFieldNodes(fieldNodes);
 
-      const _article = await Article.findById.load(id);
+      const _article = await Article.findByID.load(id);
 
       if (!_article) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
@@ -131,7 +136,7 @@ module.exports = {
         });
       }
 
-      const _articles = await Article.find({ _id: ids }, limit, offset);
+      const _articles = await Promise.all(ids.slice(offset, offset + limit).map((id) => Article.findByID.load(id)));
 
       if (!_articles || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article(s) were not found.' });
@@ -143,7 +148,7 @@ module.exports = {
         decodedToken,
         'article.read.unpublished'
       );
-      const _restritedPermission = UserPermission(session, authToken, decodedToken, 'article.read.restricted');
+      const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
 
       // TODO: map the articles to return correct ones with errors instead of rejecting full output
       if (

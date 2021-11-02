@@ -25,22 +25,15 @@ const {
 } = require('../scalars');
 
 const ArticleType = require('../article/article.type');
-const { getArticlesByIds } = require('../article/article.resolver');
-
-const ThumbnailType = new GraphQLObjectType({
-  name: 'Thumbnail',
-  fields: () => ({
-    storePath: { type: GraphQLString },
-    blurhash: { type: GraphQLString },
-  }),
-});
+const { getListOfArticles } = require('../article/article.resolver');
+const ImageType = require('../common/image.type');
 
 const IssueType = new GraphQLObjectType({
   name: 'Issue',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    thumbnail: { type: ThumbnailType },
+    thumbnail: { type: ImageType },
     description: { type: GraphQLString },
 
     isPublished: { type: GraphQLBoolean },
@@ -53,8 +46,8 @@ const IssueType = new GraphQLObjectType({
     },
     articles: {
       type: new GraphQLList(ArticleType),
-      resolve: (parent, _args, context) =>
-        parent.articles ? getArticlesByIds(null, { ids: parent.articles }, context) : null,
+      resolve: (parent, _args, context, info) =>
+        parent.articles instanceof Array ? getListOfArticles(parent, { ids: parent.articles }, context, info) : null,
     },
 
     featuredIDs: {
@@ -63,8 +56,8 @@ const IssueType = new GraphQLObjectType({
     },
     featured: {
       type: new GraphQLList(ArticleType),
-      resolve: (parent, _args, context) =>
-        parent.articles ? getArticlesByIds(null, { ids: parent.featured }, context) : null,
+      resolve: (parent, _args, context, info) =>
+        parent.articles instanceof Array ? getListOfArticles(parent, { ids: parent.featured }, context, info) : null,
     },
 
     createdAt: { type: GraphQLDateTime },

@@ -10,7 +10,7 @@ const findByID = () =>
     async (ids) => {
       try {
         const _tags = await TagModel.find({ _id: ids });
-        return ids.map((id) => _tags.find((_u) => _u.id === id) || null);
+        return ids.map((id) => _tags.find((_u) => _u.id.toString() === id.toString()) || null);
       } catch (error) {
         throw APIError(null, error);
       }
@@ -36,6 +36,11 @@ const autocomplete = (query, isAdmin, limit) =>
     {
       $match: {
         isAdmin,
+      },
+    },
+    {
+      $addFields: {
+        id: '$_id',
       },
     },
     {

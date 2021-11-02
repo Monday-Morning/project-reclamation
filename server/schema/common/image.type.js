@@ -10,7 +10,7 @@ const {
   // GraphQLError,
   // GraphQLList,
   GraphQLString,
-  GraphQLID,
+  // GraphQLID,
   // GraphQLBoolean,
   // GraphQLInt,
   // GraphQLFloat,
@@ -20,21 +20,15 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const StoreEnumType = require('./store.enum.type');
 
-const UserType = require('../user/user.type');
-const { getUser } = require('../user/user.resolver');
-
-const UserDetailType = new GraphQLObjectType({
-  name: 'UserDetail',
+const ImageType = new GraphQLObjectType({
+  name: 'Image',
   fields: () => ({
-    name: { type: GraphQLString },
-    details: { type: GraphQLID },
-    user: {
-      type: UserType,
-      resolve: (parent, _args, context, info) =>
-        parent.details ? getUser(parent, { id: parent.details }, context, info) : null,
-    },
+    store: { type: StoreEnumType },
+    storePath: { type: GraphQLString },
+    blurhash: { type: GraphQLString },
   }),
 });
 
-module.exports = UserDetailType;
+module.exports = ImageType;

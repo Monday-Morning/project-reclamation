@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model, Model: _Model } = require('mongoose');
+const { Schema, model, Model: _Model, Types } = require('mongoose');
 
 /**
  * @description The schema definition for Media Model
@@ -19,6 +19,12 @@ const { Schema, model, Model: _Model } = require('mongoose');
  */
 const MediaSchema = new Schema(
   {
+    _id: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      default: Types.ObjectId(),
+      trim: true,
+    },
     authors: [
       {
         name: {
@@ -33,6 +39,14 @@ const MediaSchema = new Schema(
         },
       },
     ],
+    /** [0 - Adamantium Archive A, 1 - Adamantium Archive B, 2 - Active Store] */
+    store: {
+      type: Number,
+      required: false,
+      default: 2,
+      min: 0,
+      max: 2,
+    },
     storePath: {
       type: String,
       required: true,

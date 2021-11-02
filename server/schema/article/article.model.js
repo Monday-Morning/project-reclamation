@@ -123,10 +123,9 @@ const ArticleSchema = new Schema(
       required: false,
       default: false,
     },
-    // TODO: update content with final structure
     content: [
       {
-        plaintext: {
+        text: {
           type: String,
           required: true,
         },
@@ -138,6 +137,7 @@ const ArticleSchema = new Schema(
         /** Only for image type */
         media: {
           type: Schema.Types.ObjectId,
+          ref: 'Media',
           required: false,
         },
         /**
@@ -206,78 +206,6 @@ const ArticleSchema = new Schema(
             max: 9,
           },
         },
-        textFormatting: [
-          {
-            bold: {
-              type: Boolean,
-              required: false,
-            },
-            italic: {
-              type: Boolean,
-              required: false,
-            },
-            underline: {
-              type: Boolean,
-              required: false,
-            },
-            strikethrough: {
-              type: Boolean,
-              required: false,
-            },
-            subscript: {
-              type: Boolean,
-              required: false,
-            },
-            superscript: {
-              type: Boolean,
-              required: false,
-            },
-            size: {
-              type: Number,
-              required: false,
-              min: 1,
-              max: 48,
-            },
-            /** Index of list item or table cell */
-            elementIndex: {
-              type: String,
-              required: false,
-            },
-            /** Zero based index of starting character (inclusive) */
-            start: {
-              type: Number,
-              required: false,
-            },
-            /** Zero based index of ending character (inclusive) */
-            end: {
-              type: Number,
-              required: false,
-            },
-          },
-        ],
-        links: [
-          {
-            href: {
-              type: String,
-              required: false,
-            },
-            /** Index of list item or table cell */
-            elementIndex: {
-              type: String,
-              required: false,
-            },
-            /** Zero based index of starting character (inclusive) */
-            start: {
-              type: Number,
-              required: false,
-            },
-            /** Zero based index of ending character (inclusive) */
-            end: {
-              type: Number,
-              required: false,
-            },
-          },
-        ],
       },
     ],
     engagementCount: {

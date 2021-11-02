@@ -18,9 +18,9 @@ const UserAuth = {
         process.env.NODE_ENV === 'development' && process.env.TEST_AUTH_KEY === jwt
           ? {
               uid: '',
-              exp: 200000000000000000,
+              exp: 4102444800, // Jan 1, 2100 at midnight
               mid: '',
-              roles: ['user.superadmin'],
+              roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin'],
               email_verified: true,
             }
           : await _auth.verifyIdToken(jwt, true);

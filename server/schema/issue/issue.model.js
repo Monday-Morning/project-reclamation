@@ -25,6 +25,14 @@ const IssueSchema = new Schema(
       trim: true,
     },
     thumbnail: {
+      /** [0 - Adamantium Archive A, 1 - Adamantium Archive B, 2 - Active Store] */
+      store: {
+        type: Number,
+        required: false,
+        default: 2,
+        min: 0,
+        max: 2,
+      },
       storePath: {
         type: String,
         required: false,
