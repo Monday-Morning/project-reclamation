@@ -34,12 +34,9 @@ const ArticleCategoryType = new GraphQLObjectType({
   name: 'ArticleCategory',
   fields: () => ({
     number: { type: new GraphQLNonNull(GraphQLInt) },
-    subcategory: { type: GraphQLBoolean },
-    referenceID: {
-      type: GraphQLID,
-      resolve: (parent) => parent?.reference,
-    },
-    reference: {
+    isSubcategory: { type: GraphQLBoolean },
+    reference: { type: GraphQLID },
+    category: {
       type: CategoryMapType,
       resolve: (parent, _args, context, info) =>
         parent?.reference ? getCategory(parent, { id: parent.reference }, context, info) : null,
@@ -52,11 +49,8 @@ const ArticleTagType = new GraphQLObjectType({
   fields: () => ({
     name: { type: GraphQLString },
     isAdmin: { type: GraphQLBoolean },
-    referenceID: {
-      type: GraphQLID,
-      resolve: (parent) => parent?.reference,
-    },
-    reference: {
+    reference: { type: GraphQLID },
+    tag: {
       type: TagType,
       resolve: (parent, _args, context, info) =>
         parent?.reference ? getTagByID(parent, { id: parent.reference }, context, info) : null,
