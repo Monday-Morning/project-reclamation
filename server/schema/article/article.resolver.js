@@ -25,6 +25,9 @@ const PUBLIC_FIELDS = [
   'hits',
   'readTime',
   'timeSpent',
+  'createdAt',
+  'updatedAt',
+  '__typename',
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
