@@ -10,7 +10,7 @@ const {
   // GraphQLError,
   // GraphQLList,
   GraphQLString,
-  // GraphQLID,
+  GraphQLID,
   // GraphQLBoolean,
   // GraphQLInt,
   // GraphQLFloat,
@@ -28,7 +28,8 @@ const UserDetailType = new GraphQLObjectType({
   name: 'UserDetail',
   fields: () => ({
     name: { type: GraphQLString },
-    details: {
+    details: { type: GraphQLID },
+    user: {
       type: UserType,
       resolve: (parent, _args, context, info) =>
         parent.details ? getUser(parent, { id: parent.details }, context, info) : null,
