@@ -45,12 +45,16 @@ const ContentType = new GraphQLObjectType({
     },
     mediaID: {
       type: GraphQLID,
-      resolve: (parent) => parent.media,
+      resolve: (parent) => parent.mediaID || parent.media,
     },
     media: {
       type: MediaType,
       resolve: (parent, _args, context, info) =>
-        parent.media ? getMediaByID(null, { id: parent.media }, context, info) : null,
+        parent.mediaID
+          ? getMediaByID(null, { id: parent.mediaID.toString() }, context, info)
+          : parent.media
+          ? getMediaByID(null, { id: parent.media.toString() }, context, info)
+          : null,
     },
     contentType: { type: ContentTypeEnumType },
     blockFormatting: { type: BlockFormattingType },
