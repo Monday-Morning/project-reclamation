@@ -4,13 +4,9 @@
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
   "scripts": {
-    "start": "npx pm2 startOrGracefulReload ecosystem.config.js --env development --no-autorestart --node-args=\"--inspect-brk\" && npx pm2 logs --lines 0",
-    "start:stage": "npx pm2 startOrGracefulReload ecosystem.config.js --env staging",
-    "start:prod": "npx pm2-runtime ecosystem.config.js --env production",
-    "stop": "npx pm2 stop ecosystem.config.js && npx pm2 delete ecosystem.config.js",
-    "restart": "npx pm2 restart ecosystem.config.js",
-    "pm2:list": "npx pm2 list",
-    "logs": "npx pm2 logs --lines 0"
+    "start": "node app.js --development",
+    "start:stage": "node app.js --staging",
+    "start:prod": "node app.js --production"
   },
   "repository": {
     "type": "git",
@@ -49,6 +45,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "firebase-admin": "^9.3.0",

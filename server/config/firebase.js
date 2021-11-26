@@ -20,12 +20,28 @@ module.exports = {
   init: () => {
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
-      const firebaseServiceAccount = require('./firebase-service-account.json');
-      Admin.initializeApp({
-        credential: Admin.credential.cert(firebaseServiceAccount),
-        storageBucket: process.env.GCP_STORAGE_BUCKET || null,
-      });
-      logger.info('Admin Application Initialized');
+      const firebaseServiceAccount = {
+        type: 'service_account',
+        project_id: process.env.FIREBASE_PROJECT_ID,
+        private_key_id: process.env.FIREBASE_KEY_ID,
+        private_key: process.env.FIREBASE_KEY,
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        client_id: process.env.FIREBASE_CLIENT_ID,
+        auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+        token_uri: 'https://oauth2.googleapis.com/token',
+        auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+        client_x509_cert_url:
+          'https://www.googleapis.com/robot/v1/metadata/x509/' + encodeURI(process.env.FIREBASE_CLIENT_EMAIL),
+      };
+      if (process.env.NODE_ENV !== 'development') {
+        Admin.initializeApp({
+          credential: Admin.credential.cert(firebaseServiceAccount),
+          storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
+        });
+        logger.info('Admin Application Initialized');
+      } else {
+        logger.info('No Admin App - Development Environment');
+      }
     } catch (e) {
       logger.error('Could not initialize admin application: ', e);
     }
