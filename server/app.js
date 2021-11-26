@@ -23,11 +23,11 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV || process.argv[2]
 const Express = require('express');
 const Session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(Session);
-const CORS = require('cors');
 const { init: firebaseInit } = require('./config/firebase');
 const { init: mongooseInit } = require('./config/mongoose');
 const { cache: cacheRoles } = require('./utils/userAuth/role');
 // const { init: nodemailerInit } = require('./config/nodemailer');
+const { cors, CORS_OPTIONS } = require('./config/cors');
 const apolloServer = require('./config/apolloServer');
 const logger = require('./utils/logger')('app');
 
@@ -66,50 +66,8 @@ const app = Express();
  */
 const PORT = process.env.PORT || 8080;
 
-/**
- * @summary Cross Origin Options
- * @description Setup Cross-Origin Resource Sharing for the development environment
- * @constant CORS_OPTIONS
- *
- * @type {String}
- * @default http://localhost:3000
- */
-const CORS_OPTIONS = {
-  credentials: true,
-  origin(origin, callback) {
-    if (
-      (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') &&
-      (!origin ||
-        origin.includes('http://localhost') ||
-        origin.includes('http://127.0.0.1') ||
-        origin.includes('apollographql.com'))
-    ) {
-      callback(null, true);
-    } else if (
-      process.env.NODE_ENV === 'staging' &&
-      (!origin ||
-        origin.includes('http://localhost') ||
-        origin.includes('http://127.0.0.1') ||
-        origin.includes('https://project-infinity-98561') ||
-        origin.includes('https://mm.server1.dashnet.in') ||
-        origin.includes('https://studio.apollographql.com'))
-    ) {
-      callback(null, true);
-    } else if (
-      [
-        'https://mondaymorning.nitrkl.ac.in',
-        'https://mondaymorning.nitrkl.in',
-        'https://studio.apollographql.com',
-      ].includes(origin)
-    ) {
-      callback(null, true);
-    } else {
-      logger.warn(`CORS blocked a request from ${origin}`);
-      callback(new Error('Request blocked by CORS. Invalid source!'));
-    }
-  },
-};
-app.use(CORS(CORS_OPTIONS));
+/* Add CORS to Express */
+app.use(cors);
 
 /** Use Error Handler in development environment */
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
