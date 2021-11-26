@@ -12,4 +12,4 @@
 
 ## Reporting a Vulnerability
 
-- To report a vulnerability, create an issue with the label "vulnerability".
+- To report a vulnerability, create an issue with the label "vulnerability" or [click here](https://github.com/Monday-Morning/project-reclamation/issues/new?assignees=&labels=vulnerability&template=vulnerability_report.md&title=bug%3A+).
