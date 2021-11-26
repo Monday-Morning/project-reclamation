@@ -33,7 +33,7 @@ module.exports = {
         client_x509_cert_url:
           'https://www.googleapis.com/robot/v1/metadata/x509/' + encodeURI(process.env.FIREBASE_CLIENT_EMAIL),
       };
-      if (process.env.NODE_ENV !== 'development') {
+      if (process.env.FIREBASE_PROJECT_ID) {
         Admin.initializeApp({
           credential: Admin.credential.cert(firebaseServiceAccount),
           storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
