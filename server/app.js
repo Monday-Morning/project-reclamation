@@ -30,6 +30,7 @@ const { cache: cacheRoles } = require('./utils/userAuth/role');
 const { cors, CORS_OPTIONS } = require('./config/cors');
 const apolloServer = require('./config/apolloServer');
 const logger = require('./utils/logger')('app');
+const shutDownUtil = require('./utils/shutDownUtil');
 
 /**
  * @summary Express Router Object
@@ -121,23 +122,44 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
 }
 
 /** Start Apollo Server and attach to Express Server */
-apolloServer
+// apolloServer
+//   .start()
+//   .then(() => apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: CORS_OPTIONS }))
+//   /** Attach Express Router */
+//   .then(() => app.use(router))
+//   /** Start Express Server on defined port */
+//   .then(() =>
+//     app.listen(PORT, (err) => {
+//       if (err) {
+//         logger.error(`Could not start Express Server on Port ${PORT}: `, err);
+//         return;
+//       }
+//       logger.info(`Express Server Started on Port ${PORT}.`);
+//     })
+//   )
+//   .then(() => logger.info(`Apollo Server started and attached at ${apolloServer.graphqlPath}`))
+//   .catch((err) => logger.error(`Could not start Apollo Server: `, err));
+
+const server = app.listen(PORT, (err) => {
+  if (err) {
+    logger.error(`Could not start Express Server on Port ${PORT}: `, err);
+    return;
+  }
+  logger.info(`Express Server Started on Port ${PORT}.`);
+});
+
+const apolloApp = apolloServer(server);
+
+apolloApp
   .start()
-  .then(() => apolloServer.applyMiddleware({ app, path: '/v1/graph', cors: CORS_OPTIONS }))
+  .then(() => apolloApp.applyMiddleware({ app, path: '/v1/graph', cors: CORS_OPTIONS }))
   /** Attach Express Router */
   .then(() => app.use(router))
-  /** Start Express Server on defined port */
-  .then(() =>
-    app.listen(PORT, (err) => {
-      if (err) {
-        logger.error(`Could not start Express Server on Port ${PORT}: `, err);
-        return;
-      }
-      logger.info(`Express Server Started on Port ${PORT}.`);
-    })
-  )
-  .then(() => logger.info(`Apollo Server started and attached at ${apolloServer.graphqlPath}`))
+  .then(() => logger.info(`Apollo Server started and attached at ${apolloApp.graphqlPath}`))
   .catch((err) => logger.error(`Could not start Apollo Server: `, err));
+
+process.on('SIGTERM', () => shutDownUtil('SIGTERM', server, apolloApp));
+process.on('SIGINT', () => shutDownUtil('SIGINT', server, apolloApp));
 
 /**
  * @description Main Express Application

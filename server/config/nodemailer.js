@@ -33,4 +33,6 @@ module.exports = {
    * @type {nodemailer.Transporter}
    */
   transporter,
+
+  close: () => transporter?.close(),
 };

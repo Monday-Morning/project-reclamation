@@ -44,4 +44,6 @@ module.exports = {
    * @type {Admin}
    */
   admin: Admin,
+
+  close: () => Promise.all(Admin.apps.map((app) => app.delete())),
 };

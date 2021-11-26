@@ -1,4 +1,5 @@
 const { ApolloServer } = require('apollo-server-express');
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const UserAuth = require('../utils/userAuth');
 const UserDataSources = require('../schema/user/user.datasources');
 const TagDataSources = require('../schema/tag/tag.datasources');
@@ -36,29 +37,31 @@ const CustomLandingPagePlugin = {
  *
  * @type {ApolloServer}
  */
-const apolloServer = new ApolloServer({
-  schema: require('../schema'),
-  context: async ({ req }) => ({
-    ...(await UserAuth.getContext(req)),
-    session: req.session,
-    API: {
-      User: UserDataSources(),
-      Tag: TagDataSources(),
-      Squiggle: SquiggleDataSources(),
-      Media: MediaDataSources(),
-      Issue: IssueDataSources(),
-      CategoryMap: CategoryMapDataSources(),
-      Article: ArticleDataSources(),
+const apolloServer = (httpServer) =>
+  new ApolloServer({
+    schema: require('../schema'),
+    context: async ({ req }) => ({
+      ...(await UserAuth.getContext(req)),
+      session: req.session,
+      API: {
+        User: UserDataSources(),
+        Tag: TagDataSources(),
+        Squiggle: SquiggleDataSources(),
+        Media: MediaDataSources(),
+        Issue: IssueDataSources(),
+        CategoryMap: CategoryMapDataSources(),
+        Article: ArticleDataSources(),
+      },
+    }),
+    debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+    introspection: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+    apollo: {
+      key: process.env.APOLLO_KEY,
+      graphRef: process.env.APOLLO_GRAPH_REF,
+      graphVariant: process.env.APOLLO_GRAPH_VARIANT,
     },
-  }),
-  debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
-  introspection: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
-  apollo: {
-    key: process.env.APOLLO_KEY,
-    graphRef: process.env.APOLLO_GRAPH_REF,
-    graphVariant: process.env.APOLLO_GRAPH_VARIANT,
-  },
-  plugins: [CustomLandingPagePlugin],
-});
+    stopOnTerminationSignals: false,
+    plugins: [CustomLandingPagePlugin, ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
 
 module.exports = apolloServer;
