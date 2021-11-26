@@ -1,0 +1,115 @@
+name: PR Checks
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  deployments: read
+  issues: write
+  discussions: write
+  packages: read
+  pull-requests: write
+  repository-projects: read
+  security-events: read
+  statuses: read
+
+jobs:
+  prepare:
+    name: Prepare Repository
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved' && contains(github.event.pull_request.labels.*.name, 'safe-for-checks')
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+
+      - name: Use Actions Cache
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-dev-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install && cd server && yarn install
+
+      - name: Zip Artifact
+        run: zip repo.zip ./* -r
+
+      - name: Store Prepared Repository
+        uses: actions/upload-artifact@v2
+        with:
+          name: prep-repo
+          path: repo.zip
+          retention-days: 1
+
+  eslint:
+    name: ESLint Check
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Prepared Repository
+        uses: actions/download-artifact@v2
+        with:
+          name: prep-repo
+
+      - name: Unzip Artifact
+        run: unzip repo.zip
+
+      - name: Run ESLint
+        uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-pr-review
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_error: true
+          workdir: ./server
+
+  prettier:
+    name: Prettier Check
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Prepared Repository
+        uses: actions/download-artifact@v2
+        with:
+          name: prep-repo
+
+      - name: Unzip Artifact
+        run: unzip repo.zip
+
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.0
+        with:
+          prettier_options: -c ./.prettierrc.yml --check
+          file_pattern: ./server/.
+          dry: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  mocha:
+    name: Unit Tests
+    needs: [eslint, prettier]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Prepared Repository
+        uses: actions/download-artifact@v2
+        with:
+          name: prep-repo
+
+      - name: Unzip Artifact
+        run: unzip repo.zip
+
+      - name: Run Mocha
+        id: mocha_run
+        run: yarn test
