@@ -1,4 +1,16 @@
-# Contributing
+# Contributing Guidelines
+
+When contributing to this repository, please first discuss the change you wish to make via issue with the maintainers of this repository before making a change.
+
+Please note we have a code of conduct, please follow it in all your interactions with the project.
+
+## Pull Request Process
+
+1. Ensure any install or build dependencies are removed before the end of the layer when doing a
+   build. Add only relevant files to commit and ignore the rest to keep the repo clean.
+2. Update the README.md or other documentation with details of changes to the interface, this includes new environment
+   variables, exposed ports, useful file locations and container parameters.
+3. You should request review from the maintainers once you submit the Pull Request.
 
 ## Git Workflow
 
@@ -13,19 +25,19 @@ $ git clone https://github.com/<User-Name>/project-reclamation.git
 # Add upstream remote
 $ git remote add upstream https://github.com/Monday-Morning/project-reclamation.git
 
-# Fetch and rebase with upstream/development
+# Fetch and rebase with upstream/main
 $ git fetch upstream
-$ git rebase upstream/development
+$ git pull --ff upstream/main
 
 # Push if any changes are rebased
-$ git push origin development
+$ git push origin main
 ```
 
 ### **Step 3:** Create and Publish Working Branch
 
 ```bash
-# Ensure you are in the development branch
-$ git checkout development
+# Ensure you are in the main branch
+$ git branch
 
 # Create your new branch
 $ git checkout -b <type>/<issue|issue-number>/{<additional-fixes>}
@@ -44,52 +56,48 @@ $ git push origin <type>/<issue|issue-number>/{<additional-fixes>}
 # Ensure branch
 $ git branch
 
-# Fetch and rebase with upstream/development
+# Fetch and rebase with upstream/main
 $ git fetch upstream
-$ git rebase upstream/development
+$ git pull --ff upstream/main
 
 # Add untracked files one by one
-$ git add filename
+$ git add .
 
 # Commit all changes with appropriate commit message and description. Strcitly follow commit message standards.
 $ git commit -m "your-commit-message" -m "your-commit-description"
 
-# Fetch and rebase with upstream/development again
+# Fetch and rebase with upstream/main again
 $ git fetch upstream
-$ git rebase upstream/development
+$ git pull --ff upstream/main
 
 # Push changes to your forked repository
 $ git push origin <type>/<issue|issue-number>/{<additional-fixes>}
-
-# If rebase adds commits in your older commit history, use force push
-$ git push --force origin <type>/<issue|issue-number>/{<additional-fixes>}
-
-## Creating the PR using GitHub Website
 ```
 
 ### **Step 5:** Create the PR using GitHub Website
 
-1. Create Pull Request from <type>/<issue|issue-number>/{<additional-fixes>} branch in your forked repository to the development branch in the upstream repository. Again, ensure the name follows commit standards and the description must detail the work done.
+1. Create Pull Request from <type>/<issue|issue-number>/{<additional-fixes>} branch in your forked repository to the main branch in the upstream repository. Again, ensure the name follows commit standards and the description must detail the work done.
 1. After creating PR, add a Reviewer (Any Admin) and add yourself as the assignee
-1. Link Pull Request to appropriate Issue, or Project+Milestone (if no issue created)
+1. Link Pull Request to appropriate Issue, and Project+Milestone (if applicable)
 1. **Do Not Merge the PR.** That will be done by the reviewer.
 
 ### **After PR Merge, Step 6:** Working repository cleanup
 
 ```bash
+# Fetch and push changes
+$ git checkout main
+$ git fetch upstream main
+$ git pull --ff upstream main
+$ git push origin main
+
 # Delete branch from forked repo
 $ git branch -d <type>/<issue|issue-number>/{<additional-fixes>}
 $ git push --delete origin <type>/<issue|issue-number>/{<additional-fixes>}
-
-# Fetch and rebase with upstream/development
-$ git checkout development
-$ git rebase upstream/development
-$ git push --force origin development
 ```
 
 ---
 
 ## Important Instuctions & Guides
 
-- Always follow [commit message standards](https://chris.beams.io/posts/git-commit/)
+- Always follow [conventional commits standards](https://www.conventionalcommits.org/en/v1.0.0/)
 - About the [fork-and-branch workflow](https://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/)

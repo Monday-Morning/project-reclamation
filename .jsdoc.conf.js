@@ -62,8 +62,8 @@ module.exports = {
   plugins: ['plugins/markdown'],
   recursiveDepth: 20,
   source: {
-    exclude: ['node_module', '.gitsecret', '.git', 'test', 'server/node_modules'],
-    include: ['server/.env_sample.js'],
+    exclude: ['node_module', '.gitsecret', '.git', 'test', 'server/node_modules', '.env.*'],
+    include: ['server/.env.sample'],
     includePattern: '.+\\.js$',
     excludePattern: '(^|\\/|\\\\)_',
   },

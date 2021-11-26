@@ -33,7 +33,7 @@ const UserSession = {
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  start: async (session, jwt, _auth = admin.auth()) => {
+  start: async (session, jwt, _auth = admin?.auth()) => {
     try {
       const _decodedToken = await UserAuth.authenticate(jwt, _auth);
       const { uid, exp, roles, mid } = _decodedToken;

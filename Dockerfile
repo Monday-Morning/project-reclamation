@@ -1,15 +1,12 @@
-FROM node:alpine
+FROM node:14-alpine
+WORKDIR /server
 
-WORKDIR /app
+COPY ["server/package.json", "server/yarn.lock", "./"]
 
-COPY server/package.json .
+RUN yarn install --frozen-lockfile --prod
 
-RUN npm -g install pm2
+COPY ["server", "./"]
 
-RUN npm install --only=production --force
+EXPOSE 5000
 
-COPY server .
-
-EXPOSE 3000
-
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "app.js"]

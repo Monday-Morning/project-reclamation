@@ -563,8 +563,6 @@ out
 # Roles Cache
 roles.json
 
-# Git Secret
-.gitsecret/keys/random_seed
-!*.secret
-.env.js
-firebase-service-account.json
+# Environment Variables
+.env.*
+!.env.sample

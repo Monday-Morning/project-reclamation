@@ -12,7 +12,7 @@ const UserAuth = {
    * @param {admin.Auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  authenticate: async (jwt, _auth = admin.auth()) => {
+  authenticate: async (jwt, _auth = admin?.auth()) => {
     try {
       const _decodedToken =
         process.env.NODE_ENV === 'development' && process.env.TEST_AUTH_KEY === jwt
@@ -42,7 +42,7 @@ const UserAuth = {
    * @param {String} jwt
    * @returns {NULL | Object | GraphQLError}
    */
-  getContext: async (req, _auth = admin.auth()) => {
+  getContext: async (req, _auth = admin?.auth()) => {
     try {
       if (!req || !req.headers || !req.headers.authorization) {
         return { authToken: null, decodedToken: null, mid: null };

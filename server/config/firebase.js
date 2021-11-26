@@ -20,12 +20,18 @@ module.exports = {
   init: () => {
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
-      const firebaseServiceAccount = require('./firebase-service-account.json');
-      Admin.initializeApp({
-        credential: Admin.credential.cert(firebaseServiceAccount),
-        storageBucket: process.env.GCP_STORAGE_BUCKET || null,
-      });
-      logger.info('Admin Application Initialized');
+      const firebaseServiceAccount = JSON.parse(
+        Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
+      );
+      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        Admin.initializeApp({
+          credential: Admin.credential.cert(firebaseServiceAccount),
+          storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
+        });
+        logger.info('Admin Application Initialized');
+      } else {
+        logger.info('No Admin App - Development Environment');
+      }
     } catch (e) {
       logger.error('Could not initialize admin application: ', e);
     }
@@ -38,4 +44,6 @@ module.exports = {
    * @type {Admin}
    */
   admin: Admin,
+
+  close: () => Promise.all(Admin.apps.map((app) => app.delete())),
 };

@@ -41,4 +41,6 @@ module.exports = {
    * @type {Mongoose.Mongoose}
    */
   Mongoose,
+
+  close: () => (Mongoose.connection.readyState !== 1 ? Mongoose.connection.close(false) : true),
 };
