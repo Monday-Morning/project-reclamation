@@ -1,6 +1,12 @@
-version: '3'
+version: "3.7"
+
 services:
-  api:
-    build: .
+  reclamation:
+    image: reclamation:latest
+    volumes:
+      - "./logs:/server/logs"
     ports:
-      - '3000:3000'
+      - 5000:5000
+    environment:
+      - NODE_ENV=production
+    command: node app.js
