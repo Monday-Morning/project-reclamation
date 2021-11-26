@@ -1,0 +1,8 @@
+{
+  "name": "Project Reclamation",
+  "description": "The backend service for Project Infinity, Monday Morning",
+  "website": "https://mondaymorning.nitrkl.ac.in/",
+  "repository": "https://github.com/Monday-Morning/project-reclamation.git",
+  "logo": "https://mondaymorning.nitrkl.ac.in/logo.png",
+  "stack": "container"
+}
