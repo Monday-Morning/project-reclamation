@@ -45,7 +45,7 @@ jobs:
         run: yarn install && cd server && yarn install
 
       - name: Zip Artifact
-        run: zip repo.zip ./* -r
+        run: zip repo.zip . -r
 
       - name: Store Prepared Repository
         uses: actions/upload-artifact@v2
@@ -73,7 +73,7 @@ jobs:
           reporter: github-pr-review
           github_token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
-          workdir: ./server
+          eslint_flags: 'server/'
 
   prettier:
     name: Prettier Check
