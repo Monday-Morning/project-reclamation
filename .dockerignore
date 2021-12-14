@@ -554,3 +554,10 @@ FodyWeavers.xsd
 out
 
 .vscode/**
+
+# Roles Cache
+roles.json
+
+# Environment Variables
+.env.*
+!.env.sample
