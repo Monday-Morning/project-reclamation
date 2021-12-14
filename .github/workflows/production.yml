@@ -4,26 +4,33 @@ on:
   release:
     types: [released]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  NODE_ENV: production
+
 jobs:
-  devDeploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+  build:
+    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/build.yml@main
+    with:
+      node_env: ${{ env.NODE_ENV }}
+      image_name: ${{ env.IMAGE_NAME }}
+      registry: ${{ env.REGISTRY }}
+      context: .
+      dockerfile: ./Dockerfile
+      is_latest: true
+    secrets:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          name: id_rsa
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          config: ${{ secrets.SSH_CONFIG }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '14'
-
-      - name: Run PM2 Deploy
-        run: cd server && npx pm2 deploy production
+  deploy:
+    needs: build
+    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/deploy.yml@main
+    with:
+      node_env: ${{ env.NODE_ENV }}
+      ssh_hosts: ${{ secrets.SSH_HOSTS }}
+      ssh_username: mm
+      image_name: ${{ env.IMAGE_NAME }}
+      registry: ${{ env.REGISTRY }}
+    secrets:
+      env_vars: ${{ secrets.PROD_ENV }}
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
