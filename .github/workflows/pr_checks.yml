@@ -19,14 +19,14 @@ permissions:
 
 jobs:
   setup:
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/setup.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/setup.yml@main
     if: github.event.review.state == 'approved' && contains(github.event.pull_request.labels.*.name, 'safe-for-checks')
     with:
       setup_dev: true
 
   eslint:
     needs: setup
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/eslint.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/eslint.yml@main
     with:
       reporter: github-pr-review
       fail_on_error: true
@@ -36,7 +36,7 @@ jobs:
 
   prettier:
     needs: setup
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/prettier.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/prettier.yml@main
     with:
       file_pattern: './server/.'
       config_path: './.prettierrc.yml'
@@ -45,4 +45,4 @@ jobs:
 
   mocha:
     needs: [eslint, prettier]
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/mocha.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/mocha.yml@main

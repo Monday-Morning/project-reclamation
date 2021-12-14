@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/build.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/build.yml@main
     with:
       node_env: ${{ env.NODE_ENV }}
       image_name: ${{ env.IMAGE_NAME }}
@@ -24,7 +24,7 @@ jobs:
 
   deploy:
     needs: build
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/deploy.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/deploy.yml@main
     with:
       node_env: ${{ env.NODE_ENV }}
       ssh_hosts: ${{ secrets.SSH_HOSTS }}
