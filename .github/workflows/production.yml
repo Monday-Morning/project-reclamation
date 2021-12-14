@@ -20,7 +20,7 @@ jobs:
       dockerfile: ./Dockerfile
       is_latest: true
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     needs: build

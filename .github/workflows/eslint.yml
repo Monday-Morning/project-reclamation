@@ -13,7 +13,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      token:
         required: true
 
 jobs:
@@ -33,6 +33,6 @@ jobs:
         uses: reviewdog/action-eslint@v1
         with:
           reporter: ${{ inputs.reporter }}
-          github_token: ${{ secrets.github_token }}
+          token: ${{ secrets.token }}
           fail_on_error: ${{ inputs.fail_on_error }}
           eslint_flags: ${{ inputs.eslint_flags }}

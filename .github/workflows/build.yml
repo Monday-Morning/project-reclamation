@@ -22,7 +22,7 @@ on:
         required: true
         type: boolean
     secrets:
-      github_token:
+      token:
         required: true
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
         with:
           registry: ${{ input.registry }}
           username: ${{ github.actor }}
-          password: ${{ secrets.github_token }}
+          password: ${{ secrets.token }}
 
       - name: Set up Docker Buildx
         id: buildx

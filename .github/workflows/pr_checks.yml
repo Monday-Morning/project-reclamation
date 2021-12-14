@@ -32,7 +32,7 @@ jobs:
       fail_on_error: true
       eslint_flags: 'server/'
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   prettier:
     needs: setup

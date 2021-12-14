@@ -38,7 +38,7 @@ jobs:
       fail_on_error: true
       eslint_flags: 'server/'
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   prettier:
     needs: setup
@@ -64,4 +64,4 @@ jobs:
       dockerfile: ./Dockerfile
       is_latest: true
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
