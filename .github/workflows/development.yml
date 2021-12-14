@@ -1,4 +1,4 @@
-name: PR Checks
+name: Development CI/CD
 
 on:
   pull_request_review:
