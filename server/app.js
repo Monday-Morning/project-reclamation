@@ -19,7 +19,7 @@
  * @since 0.1.0
  */
 
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV || process.argv[2]?.substr(2) || 'production'}` });
+require('dotenv').config({ path: `./env/.env.${process.env.NODE_ENV || process.argv[2]?.substr(2) || 'production'}` });
 const Express = require('express');
 const Session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(Session);
