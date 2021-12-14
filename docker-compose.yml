@@ -2,11 +2,13 @@ version: "3.7"
 
 services:
   reclamation:
-    image: reclamation:latest
+    # image: reclamation:latest
+    image: ghcr.io/Monday-Morning/project-reclamation:production
     volumes:
-      - "./logs:/server/logs"
+      - "./server/env:/server/env:rw"
+      - "./server/logs:/server/logs:rw"
     ports:
       - 5000:5000
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     command: node app.js

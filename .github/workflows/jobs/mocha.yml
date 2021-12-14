@@ -1,0 +1,21 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+
+jobs:
+  mocha:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Prepared Repository
+        uses: actions/download-artifact@v2
+        with:
+          name: setup-app
+
+      - name: Unzip Artifact
+        run: unzip app.zip
+
+      - name: Run Mocha
+        id: mocha_run
+        run: yarn test
