@@ -26,13 +26,13 @@ env:
 
 jobs:
   setup:
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/setup.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/setup.yml@main
     with:
       setup_dev: true
 
   eslint:
     needs: setup
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/eslint.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/eslint.yml@main
     with:
       reporter: github-check
       fail_on_error: true
@@ -42,7 +42,7 @@ jobs:
 
   prettier:
     needs: setup
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/prettier.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/prettier.yml@main
     with:
       file_pattern: './server/.'
       config_path: './.prettierrc.yml'
@@ -51,11 +51,11 @@ jobs:
 
   mocha:
     needs: [eslint, prettier]
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/mocha.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/mocha.yml@main
 
   build:
     needs: mocha
-    uses: Monday-Morning/project-reclamation/.github/workflows/jobs/build.yml@main
+    uses: Monday-Morning/project-reclamation/.github/workflows/build.yml@main
     with:
       node_env: ${{ env.NODE_ENV }}
       image_name: ${{ env.IMAGE_NAME }}
