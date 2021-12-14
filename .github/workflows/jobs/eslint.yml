@@ -1,0 +1,38 @@
+name: ESLint Check
+
+on:
+  workflow_call:
+    inputs:
+      reporter:
+        required: true
+        type: string
+      fail_on_error:
+        required: true
+        type: boolean
+      eslint_flags:
+        required: true
+        type: string
+    secrets:
+      github_token:
+        required: true
+
+jobs:
+  eslint:
+    name: ESLint Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Prepared Repository
+        uses: actions/download-artifact@v2
+        with:
+          name: setup-app
+
+      - name: Unzip Artifact
+        run: unzip app.zip
+
+      - name: Run ESLint
+        uses: reviewdog/action-eslint@v1
+        with:
+          reporter: ${{ inputs.reporter }}
+          github_token: ${{ secrets.github_token }}
+          fail_on_error: ${{ inputs.fail_on_error }}
+          eslint_flags: ${{ inputs.eslint_flags }}
