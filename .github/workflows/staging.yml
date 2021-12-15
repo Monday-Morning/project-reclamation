@@ -36,6 +36,7 @@ jobs:
     with:
       config_path: ./.eslintrc.yml
       ignore_path: ./.eslintignore
+      file_path: 'server/'
 
   prettier:
     needs: setup
