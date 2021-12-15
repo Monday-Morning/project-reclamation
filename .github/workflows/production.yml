@@ -4,18 +4,13 @@ on:
   release:
     types: [released]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  NODE_ENV: production
-
 jobs:
   build:
     uses: Monday-Morning/project-reclamation/.github/workflows/build.yml@main
     with:
-      node_env: ${{ env.NODE_ENV }}
-      image_name: ${{ env.IMAGE_NAME }}
-      registry: ${{ env.REGISTRY }}
+      node_env: production
+      image_name: ${{ github.repository }}
+      registry: ghcr.io
       context: .
       dockerfile: ./Dockerfile
       is_latest: true
@@ -26,11 +21,11 @@ jobs:
     needs: build
     uses: Monday-Morning/project-reclamation/.github/workflows/deploy.yml@main
     with:
-      node_env: ${{ env.NODE_ENV }}
+      node_env: production
       ssh_hosts: ${{ secrets.SSH_HOSTS }}
       ssh_username: mm
-      image_name: ${{ env.IMAGE_NAME }}
-      registry: ${{ env.REGISTRY }}
+      image_name: ${{ github.repository }}
+      registry: ghcr.io
     secrets:
       env_vars: ${{ secrets.PROD_ENV }}
       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

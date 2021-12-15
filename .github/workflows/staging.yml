@@ -19,11 +19,6 @@ permissions:
   security-events: read
   statuses: read
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  NODE_ENV: staging
-
 jobs:
   setup:
     uses: Monday-Morning/project-reclamation/.github/workflows/setup.yml@main
@@ -57,9 +52,9 @@ jobs:
     needs: mocha
     uses: Monday-Morning/project-reclamation/.github/workflows/build.yml@main
     with:
-      node_env: ${{ env.NODE_ENV }}
-      image_name: ${{ env.IMAGE_NAME }}
-      registry: ${{ env.REGISTRY }}
+      node_env: staging
+      image_name: ${{ github.repository }}
+      registry: ghcr.io
       context: .
       dockerfile: ./Dockerfile
       is_latest: true
