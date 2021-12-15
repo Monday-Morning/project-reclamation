@@ -44,7 +44,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v1
         with:
-          registry: ${{ input.registry }}
+          registry: ${{ inputs.registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.token }}
 
@@ -56,9 +56,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ input.registry }}/${{ input.image_name }}
+          images: ${{ inputs.registry }}/${{ inputs.image_name }}
           flavor: |
-            latest=${{ input.is_latest }}
+            latest=${{ inputs.is_latest }}
           tags: |
             type=sha
             type=sha,format=long
@@ -69,8 +69,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ${{ input.context }}
-          file: ${{ input.dockerfile }}
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
