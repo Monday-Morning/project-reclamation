@@ -3,18 +3,12 @@ name: ESLint Check
 on:
   workflow_call:
     inputs:
-      reporter:
+      config_path:
         required: true
         type: string
-      fail_on_error:
-        required: true
-        type: boolean
-      eslint_flags:
+      ignore_path:
         required: true
         type: string
-    secrets:
-      token:
-        required: true
 
 jobs:
   eslint:
@@ -29,10 +23,21 @@ jobs:
       - name: Unzip Artifact
         run: unzip app.zip
 
-      - name: Run ESLint
-        uses: reviewdog/action-eslint@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          reporter: ${{ inputs.reporter }}
-          github_token: ${{ secrets.token }}
-          fail_on_error: ${{ inputs.fail_on_error }}
-          eslint_flags: ${{ inputs.eslint_flags }}
+          node-version: "14"
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+
+      - name: Install ESLint
+        run: yarn global add eslint
+
+      - name: Run ESLint
+        run: eslint -c ${{ inputs.config_path }} --ignore path ${{ inputs.ignore_path }} --output-file eslint_report.txt
+
+      - name: ESLint Output
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          cat eslint_report.txt

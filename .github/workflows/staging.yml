@@ -34,11 +34,8 @@ jobs:
     needs: setup
     uses: Monday-Morning/project-reclamation/.github/workflows/eslint.yml@main
     with:
-      reporter: github-check
-      fail_on_error: true
-      eslint_flags: 'server/'
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      config_path: ./.eslintrc.yml
+      ignore_path: ./.eslintignore
 
   prettier:
     needs: setup
