@@ -2,9 +2,10 @@ name: Unit Tests
 
 on:
   workflow_call:
-    package_path:
-      required: true
-      type: string
+    inputs:
+      package_path:
+        required: true
+        type: string
 
 jobs:
   mocha:
