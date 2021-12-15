@@ -2,6 +2,9 @@ name: Unit Tests
 
 on:
   workflow_call:
+    package_path:
+      required: true
+      type: string
 
 jobs:
   mocha:
@@ -28,4 +31,4 @@ jobs:
 
       - name: Run Mocha
         id: mocha_run
-        run: yarn test
+        run: mocha --package ${{ inputs.package_path }} --check-leaks --reporter spec --recursive --exit

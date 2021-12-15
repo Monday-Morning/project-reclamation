@@ -50,6 +50,8 @@ jobs:
   mocha:
     needs: [eslint, prettier]
     uses: Monday-Morning/project-reclamation/.github/workflows/mocha.yml@main
+    with:
+      package_path: ./server/package.json
 
   build:
     needs: mocha
