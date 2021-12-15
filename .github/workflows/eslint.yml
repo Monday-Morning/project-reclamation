@@ -33,6 +33,6 @@ jobs:
         uses: reviewdog/action-eslint@v1
         with:
           reporter: ${{ inputs.reporter }}
-          token: ${{ secrets.token }}
+          github_token: ${{ secrets.token }}
           fail_on_error: ${{ inputs.fail_on_error }}
           eslint_flags: ${{ inputs.eslint_flags }}
