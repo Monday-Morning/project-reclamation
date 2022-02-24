@@ -2,8 +2,7 @@ version: "3.7"
 
 services:
   reclamation:
-    # image: reclamation:latest
-    image: ghcr.io/Monday-Morning/project-reclamation:production
+    image: ghcr.io/monday-morning/project-reclamation:production
     volumes:
       - "./server/env:/server/env:rw"
       - "./server/logs:/server/logs:rw"

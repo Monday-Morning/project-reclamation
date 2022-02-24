@@ -25,7 +25,7 @@ const CORS_OPTIONS = {
     if (!origin && process.env.NODE_ENV !== 'production') {
       return callback(null, true);
     }
-    if (origin.match(ORIGIN_PATTERS[process.env.NODE_ENV || 'production'])) {
+    if (origin?.match(ORIGIN_PATTERS[process.env.NODE_ENV || 'production'])) {
       return callback(null, true);
     }
     logger.warn(`CORS blocked a request from ${origin}`);
