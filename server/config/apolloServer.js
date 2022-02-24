@@ -9,7 +9,7 @@ const IssueDataSources = require('../schema/issue/issue.datasources');
 const CategoryMapDataSources = require('../schema/categoryMap/categoryMap.datasources');
 const ArticleDataSources = require('../schema/article/article.datasources');
 
-const APOLLO_ENDPOINT = process.env.APOLLO_ENDPOINT.includes('herokuapp')
+const APOLLO_ENDPOINT = process.env.APOLLO_ENDPOINT?.includes('herokuapp')
   ? process.env.APOLLO_ENDPOINT.replace('num', process.env.HEROKU_PR_NUMBER)
   : process.env.APOLLO_ENDPOINT;
 
