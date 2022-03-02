@@ -4,12 +4,12 @@ const logger = require('../utils/logger')('CORS');
 const ORIGIN_PATTERS = {
   // Allows localhost and Apollo Studio
   development: new RegExp(
-    /^https?:\/\/(127\.0\.0\.1|localhost|studio\.apollographql\.com|project-reclamation-pr-\d{0,}\.herokuapp\.com)$/
+    /^https?:\/\/((127\.0\.0\.1|localhost)(:\d{1,})?|studio\.apollographql\.com|project-reclamation-pr-\d{0,}\.herokuapp\.com)$/
   ),
 
   // Allows localhost, Apollo Studio, Firebase Project Domains, DashNet MM Domains, and NITR MM Domains
   staging: new RegExp(
-    /^https?:\/\/(127\.0\.0\.1|localhost|studio\.apollographql\.com|project-infinity-98561(.{0,}\.)(web\.app|firebaseapp\.com)|mm(\.server1)?.dashnet.in|(mm|mondaymorning)\.nitrkl(\.ac)?\.in|project-reclamation-staging\.herokuapp\.com)$/
+    /^https?:\/\/((127\.0\.0\.1|localhost)(:\d{1,})?|studio\.apollographql\.com|project-infinity-98561(.{0,}\.)(web\.app|firebaseapp\.com)|mm(\.server1)?.dashnet.in|(mm|mondaymorning)\.nitrkl(\.ac)?\.in|project-reclamation-staging\.herokuapp\.com)$/
   ),
 
   // Allows Apollo Studio, Firebase Project Domains, DashNet MM Domains, and NITR MM Domains
