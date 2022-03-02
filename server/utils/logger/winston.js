@@ -70,7 +70,7 @@ class Winston {
      * @type {createLogger}
      */
     const logger =
-      !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+      !process.env.NODE_ENV || process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'staging'
         ? createLogger({
             transports: [new transports.Console(options.console)],
             exitOnError: false,
