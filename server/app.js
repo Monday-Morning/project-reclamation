@@ -114,7 +114,12 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
       secret: process.env.SESSION_SECRET,
       key: process.env.SESSION_KEY,
       cookie: {
-        maxAge: 86400000,
+        maxAge: 3600000, // 1 Hour
+        secure: true,
+        httpOnly: true,
+        domain: 'example.com',
+        path: 'foo/bar',
+        expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
       },
       store,
       resave: false,
