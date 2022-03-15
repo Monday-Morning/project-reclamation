@@ -24,6 +24,9 @@
 		<a href="https://github.com/Monday-Morning/project-reclamation/actions/workflows/staging.yml">
 			<img src="https://github.com/Monday-Morning/project-reclamation/actions/workflows/staging.yml/badge.svg" alt="Staging Checks Status">
 		</a>
+		<a href="https://project-reclamation-staging.herokuapp.com">
+			<img src="https://heroku-badge.herokuapp.com/?app=project-reclamation-staging" alt="Staging Deploy Status">
+		</a>
 		<a href="https://github.com/Monday-Morning/project-reclamation/actions/workflows/production.yml">
 			<img src="https://github.com/Monday-Morning/project-reclamation/actions/workflows/production.yml/badge.svg" alt="Production Release Status">
 		</a>
