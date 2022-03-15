@@ -48,8 +48,12 @@ jobs:
     with:
       package_path: ./server/package.json
 
+  analyze:
+    needs: [eslint, prettier]
+    uses: Monday-Morning/project-reclamation/.github/workflows/analyze.yml@main
+
   build:
-    needs: mocha
+    needs: [mocha, analyze]
     uses: Monday-Morning/project-reclamation/.github/workflows/build.yml@main
     with:
       node_env: staging

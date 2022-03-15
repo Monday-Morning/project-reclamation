@@ -46,3 +46,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'safe-for-checks')
     with:
       package_path: ./server/package.json
+
+  analyze:
+    needs: [eslint, prettier]
+    uses: Monday-Morning/project-reclamation/.github/workflows/analyze.yml@main
