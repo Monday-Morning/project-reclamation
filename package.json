@@ -46,15 +46,15 @@
   "homepage": "https://github.com/Monday-Morning/project-reclamation#readme",
   "dependencies": {},
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
-    "prettier": "^2.2.1",
     "jsdoc": "^3.6.6",
     "jsdoc-to-markdown": "^6.0.1",
     "mocha": "^8.2.1",
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0"
+    "prettier": "^2.2.1"
   }
 }
