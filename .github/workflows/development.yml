@@ -20,14 +20,12 @@ permissions:
 jobs:
   setup:
     uses: Monday-Morning/project-reclamation/.github/workflows/setup.yml@main
-    runs-on: ubuntu-latest
     with:
       setup_dev: true
 
   eslint:
     needs: setup
     uses: Monday-Morning/project-reclamation/.github/workflows/eslint.yml@main
-    runs-on: ubuntu-latest
     with:
       config_path: ./.eslintrc.yml
       ignore_path: ./.eslintignore
@@ -36,7 +34,6 @@ jobs:
   prettier:
     needs: setup
     uses: Monday-Morning/project-reclamation/.github/workflows/prettier.yml@main
-    runs-on: ubuntu-latest
     with:
       file_pattern: './server/.'
       config_path: './.prettierrc.yml'
@@ -46,7 +43,6 @@ jobs:
   mocha:
     needs: [eslint, prettier]
     uses: Monday-Morning/project-reclamation/.github/workflows/mocha.yml@main
-    runs-on: ubuntu-latest
     if: join(github.event.pull_request.labels) != '' && contains(github.event.pull_request.labels.*.name, 'safe-for-checks')
     with:
       package_path: ./server/package.json
@@ -54,4 +50,3 @@ jobs:
   analyze:
     needs: [eslint, prettier]
     uses: Monday-Morning/project-reclamation/.github/workflows/analyze.yml@main
-    runs-on: ubuntu-latest
