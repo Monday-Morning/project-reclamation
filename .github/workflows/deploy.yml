@@ -27,8 +27,6 @@ jobs:
   deploy:
     name: Pull and Run Docker Container
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(secrets.ssh_hosts) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -39,7 +37,7 @@ jobs:
       - name: Copy Required Files
         uses: appleboy/scp-action@v0.0.1
         with:
-          host: ${{ matrix.host }}
+          host: ${{ secrets.ssh_hosts }}
           username: ${{ inputs.ssh_username }}
           key: ${{ secrets.ssh_private_key }}
           source: "docker-compose.yml,server/env/.env.${{ inputs.node_env }}"
@@ -48,7 +46,7 @@ jobs:
       - name: Run SSH Commands
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: ${{ matrix.host }}
+          host: ${{ secrets.ssh_hosts }}
           username: ${{ inputs.ssh_username }}
           key: ${{ secrets.ssh_private_key }}
           script: |
