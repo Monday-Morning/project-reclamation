@@ -15,9 +15,10 @@ on:
       registry:
         required: true
         type: string
-    secrets:
-      ssh_hosts:
+      ssh_host:
         required: true
+        type: string
+    secrets:
       env_vars:
         required: true
       ssh_private_key:
@@ -37,7 +38,7 @@ jobs:
       - name: Copy Required Files
         uses: appleboy/scp-action@v0.0.1
         with:
-          host: ${{ secrets.ssh_hosts }}
+          host: ${{ inputs.ssh_host }}
           username: ${{ inputs.ssh_username }}
           key: ${{ secrets.ssh_private_key }}
           source: "docker-compose.yml,server/env/.env.${{ inputs.node_env }}"
@@ -46,7 +47,7 @@ jobs:
       - name: Run SSH Commands
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: ${{ secrets.ssh_hosts }}
+          host: ${{ inputs.ssh_host }}
           username: ${{ inputs.ssh_username }}
           key: ${{ secrets.ssh_private_key }}
           script: |
