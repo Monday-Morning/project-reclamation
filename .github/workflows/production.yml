@@ -35,7 +35,7 @@ jobs:
     uses: Monday-Morning/project-reclamation/.github/workflows/deploy.yml@main
     with:
       node_env: production
-      ssh_hosts: mondaymorning.nitrkl.ac.in
+      ssh_host: mondaymorning.nitrkl.ac.in
       ssh_username: mm
       image_name: ${{ github.repository }}
       registry: ghcr.io
