@@ -52,5 +52,5 @@ jobs:
           key: ${{ secrets.ssh_private_key }}
           script: |
             cd ~/apps/project-reclamation
-            docker pull ${{ input.registry }}/${{ input.image_name }}:${{ inputs.node_env }}
+            docker pull ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.node_env }}
             docker-compose up
