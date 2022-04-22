@@ -5,9 +5,6 @@ on:
     inputs:
       node_env:
         required: true
-        type: 
-      ssh_hosts:
-        required: true
         type: string
       ssh_username:
         required: true
@@ -19,6 +16,8 @@ on:
         required: true
         type: string
     secrets:
+      ssh_hosts:
+        required: true
       env_vars:
         required: true
       ssh_private_key:
@@ -29,7 +28,7 @@ jobs:
     name: Pull and Run Docker Container
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(inputs.ssh_hosts) }}
+      matrix: ${{ fromJson(secrets.ssh_hosts) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
