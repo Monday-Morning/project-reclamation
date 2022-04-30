@@ -22,10 +22,7 @@ const ORIGIN_PATTERS = {
 const CORS_OPTIONS = {
   credentials: true,
   origin(origin, callback) {
-    if (!origin && process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-    if (origin?.match(ORIGIN_PATTERS[process.env.NODE_ENV || 'production'])) {
+    if (!origin || origin.match(ORIGIN_PATTERS[process.env.NODE_ENV || 'production'])) {
       return callback(null, true);
     }
     logger.warn(`CORS blocked a request from ${origin}`);
