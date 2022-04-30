@@ -73,6 +73,10 @@ const UserSchema = new Schema(
         required: false,
       },
     },
+    oldUserName: {
+      type: String,
+      required: false,
+    },
     interestedTopics: [
       {
         type: Number,

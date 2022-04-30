@@ -36,6 +36,10 @@ const ArticleSchema = new Schema(
       required: false,
       trim: true,
     },
+    oldArticleId: {
+      type: Number,
+      required: false,
+    },
     users: [
       {
         name: {
