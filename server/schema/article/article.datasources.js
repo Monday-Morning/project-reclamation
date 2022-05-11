@@ -46,6 +46,27 @@ const findByID = () =>
     }
   );
 
+const findByOldID = () =>
+  new DataLoader(
+    async (ids) => {
+      try {
+        const _articles = await ArticleModel.find({ oldArticleId: ids });
+        const _returnIds = ids.map(
+          (id) => _articles.find((_u) => _u.oldArticleId.toString() === id.toString()) || null
+        );
+        for (const _article of _articles) {
+          findByID().prime(_article._id, _article);
+        }
+        return _returnIds;
+      } catch (error) {
+        throw APIError(null, error);
+      }
+    },
+    {
+      batchScheduleFn: (cb) => setTimeout(cb, 100),
+    }
+  );
+
 const find = (query, limit, offset) => ArticleModel.find(query).sort({ _id: 'desc' }).limit(limit).skip(offset);
 
 const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit, offset) =>
@@ -363,6 +384,7 @@ const incrementEngagementCount = (id, fields) =>
 
 const ArticleDataSources = () => ({
   findByID: findByID(),
+  findByOldID: findByOldID(),
   find,
   findByCategories,
   findAll,
