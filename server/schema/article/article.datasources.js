@@ -61,6 +61,11 @@ const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit
     )
   );
 
+const countOfArticleBySubCategory = (allowRestricted, onlyPublished, categoryNumber) =>
+  ArticleModel.countDocuments({
+    $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': categoryNumber }],
+  })
+
 const findAll = (allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.find({
     $and: getBaseConditions(allowRestricted, onlyPublished),
@@ -154,12 +159,12 @@ const create = async (
           team: authors.includes(_user._id.toString())
             ? 0
             : photographers.includes(_user._id.toString())
-            ? 1
-            : designers.includes(_user._id.toString())
-            ? 2
-            : tech.includes(_user._id.toString())
-            ? 3
-            : APIError(null, null, { reason: 'The data being processed was invalid.' }),
+              ? 1
+              : designers.includes(_user._id.toString())
+                ? 2
+                : tech.includes(_user._id.toString())
+                  ? 3
+                  : APIError(null, null, { reason: 'The data being processed was invalid.' }),
           details: _user._id,
         })),
         categories: _categories.map((_category) => ({
@@ -365,6 +370,7 @@ const ArticleDataSources = () => ({
   findByID: findByID(),
   find,
   findByCategories,
+  countOfArticleBySubCategory,
   findAll,
   search,
   create,
