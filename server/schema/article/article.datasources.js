@@ -85,7 +85,7 @@ const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit
 const countOfArticleBySubCategory = (allowRestricted, onlyPublished, categoryNumber) =>
   ArticleModel.countDocuments({
     $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': categoryNumber }],
-  })
+  });
 
 const findAll = (allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.find({
