@@ -26,7 +26,7 @@ const {
   getArticlesByCategories,
   searchArticle,
   listAllArticles,
-  countOfArticlesBySubCategory
+  countOfArticlesBySubCategory,
   getArticleByOldID,
 } = require('./article.resolver');
 
