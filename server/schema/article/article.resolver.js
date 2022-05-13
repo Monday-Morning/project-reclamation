@@ -261,7 +261,7 @@ module.exports = {
     _parent,
     { categoryNumber, onlyPublished = true },
     { session, authToken, decodedToken, API: { Article } },
-    _info
+    _
   ) => {
     try {
 
