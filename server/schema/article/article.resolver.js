@@ -217,7 +217,6 @@ module.exports = {
     _info
   ) => {
     try {
-
       const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
       onlyPublished =
         onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
