@@ -16,7 +16,7 @@ const ARTICLE_PUBLISH_TYPES = Object.fromEntries(
 const getBaseConditions = (allowRestricted, onlyPublished) => {
   const _baseConditions = [];
   if (!allowRestricted) {
-    _baseConditions.push({ isInstituteRestrcited: false });
+    _baseConditions.push({ isInstituteRestricted: false });
   }
   if (onlyPublished) {
     _baseConditions.push({ publishStatus: ARTICLE_PUBLISH_TYPES.PUBLISHED });
@@ -99,7 +99,7 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.aggregate([
     {
       $search: {
-        index: 'default',
+        index: 'articleSearch',
         text: {
           query: keywords,
           path: ['title', 'inshort', 'tags.name'],
