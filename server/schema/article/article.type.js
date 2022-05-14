@@ -87,6 +87,8 @@ const ArticleType = new GraphQLObjectType({
     content: { type: new GraphQLList(ContentType) },
     inshort: { type: GraphQLString },
 
+    oldArticleId: { type: GraphQLInt },
+
     authors: { type: new GraphQLList(UserDetailType), resolve: (parent) => parent?.users.filter((u) => u.team === 0) },
     photographers: {
       type: new GraphQLList(UserDetailType),

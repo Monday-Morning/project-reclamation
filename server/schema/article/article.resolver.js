@@ -118,6 +118,53 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  getArticleByOldID: async (
+    _parent,
+    { id },
+    { session, authToken, decodedToken, API: { Article } },
+    { fieldNodes }
+  ) => {
+    try {
+      const _fields = getFieldNodes(fieldNodes);
+
+      const _article = await Article.findByOldID.load(id);
+
+      if (!_article) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
+      }
+
+      if (
+        [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
+          _article.publishStatus
+        ) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished')
+      ) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
+      }
+
+      if (
+        _article.isInstituteRestricted &&
+        !UserPermission(session, authToken, decodedToken, 'article.read.restricted')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The requested article can only be viewed by students and faculty of NIT Rourkela.',
+        });
+      }
+
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
+      return _article;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   getListOfArticles: async (
     _parent,
     { ids, limit = DEF_LIMIT, offset = DEF_OFFSET },
@@ -214,7 +261,7 @@ module.exports = {
     _parent,
     { categoryNumber, onlyPublished = true },
     { session, authToken, decodedToken, API: { Article } },
-    _info
+    _
   ) => {
     try {
       const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');

@@ -36,7 +36,7 @@ jobs:
         run: ${{ secrets.env_vars }} > server/env/.env.${{ inputs.node_env }}
 
       - name: Copy Required Files
-        uses: appleboy/scp-action@v0.0.1
+        uses: appleboy/scp-action@v0.1.2
         with:
           host: ${{ inputs.ssh_host }}
           username: ${{ inputs.ssh_username }}
@@ -53,4 +53,6 @@ jobs:
           script: |
             cd ~/apps/project-reclamation
             docker pull ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.node_env }}
-            docker-compose up
+            docker-compose down
+            docker-compose up -d
+            docker image prune

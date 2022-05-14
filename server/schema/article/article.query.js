@@ -26,7 +26,8 @@ const {
   getArticlesByCategories,
   searchArticle,
   listAllArticles,
-  countOfArticlesBySubCategory
+  countOfArticlesBySubCategory,
+  getArticleByOldID,
 } = require('./article.resolver');
 
 const ArticleType = require('./article.type');
@@ -44,6 +45,17 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: getArticleByID,
+    },
+    getArticleByOldID: {
+      description: 'Find an article from old ID',
+      type: ArticleType,
+      args: {
+        id: {
+          description: 'The old ID of the article',
+          type: new GraphQLNonNull(GraphQLInt),
+        },
+      },
+      resolve: getArticleByOldID,
     },
     getListOfArticles: {
       description: 'Retrives multiple articles by ID',
