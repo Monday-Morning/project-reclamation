@@ -26,6 +26,7 @@ const {
   getArticlesByCategories,
   searchArticle,
   listAllArticles,
+  countOfArticlesBySubCategory,
   getArticleByOldID,
 } = require('./article.resolver');
 
@@ -135,6 +136,21 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: searchArticle,
+    },
+    countOfArticlesBySubCategory: {
+      description: 'Get total number of articles by Sub Category',
+      type: GraphQLInt,
+      args: {
+        categoryNumber: {
+          description: 'The category number',
+          type: new GraphQLNonNull(GraphQLInt),
+        },
+        onlyPublished: {
+          description: 'Whether to only list published articles',
+          type: GraphQLBoolean,
+        },
+      },
+      resolve: countOfArticlesBySubCategory,
     },
   },
 });

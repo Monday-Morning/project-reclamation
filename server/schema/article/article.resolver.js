@@ -257,6 +257,24 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  countOfArticlesBySubCategory: async (
+    _parent,
+    { categoryNumber, onlyPublished = true },
+    { session, authToken, decodedToken, API: { Article } },
+    _
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      const _articleCount = await Article.countOfArticleBySubCategory(allowRestricted, onlyPublished, categoryNumber);
+
+      return _articleCount;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   listAllArticles: async (
     _parent,
     { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET },
