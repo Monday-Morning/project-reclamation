@@ -29,6 +29,7 @@ const PUBLIC_FIELDS = [
   'nitrMail',
   'accountType',
   'email',
+  'contributions',
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
