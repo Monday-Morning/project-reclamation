@@ -67,7 +67,7 @@ const findByOldID = () =>
     }
   );
 
-const find = (query, limit, offset) => ArticleModel.find(query).sort({ _id: 'desc' }).limit(limit).skip(offset);
+const find = (query, limit, offset) => ArticleModel.find(query).sort({ createdAt: 'desc' }).limit(limit).skip(offset);
 
 const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit, offset) =>
   Promise.all(
@@ -75,7 +75,7 @@ const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit
       ArticleModel.find({
         $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': number }],
       })
-        .sort({ _id: 'desc' })
+        .sort({ createdAt: 'desc' })
         .skip(offset)
         .limit(limit)
         .exec()
@@ -91,7 +91,7 @@ const findAll = (allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.find({
     $and: getBaseConditions(allowRestricted, onlyPublished),
   })
-    .sort({ _id: 'desc' })
+    .sort({ createdAt: 'desc' })
     .skip(offset)
     .limit(limit);
 
@@ -133,7 +133,9 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
     {
       $limit: limit,
     },
-  ]);
+  ]).sort({
+    createdAt: 'desc',
+  });
 
 const create = async (
   articleType,
