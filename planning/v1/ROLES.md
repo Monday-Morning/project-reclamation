@@ -98,3 +98,39 @@
 |           |                |                 |                |                  |                 |
 
 ---
+
+### Live Section 
+
+### Live Permissions
+
+| Permission Name  | Description                |
+| ---------------  | ---------------------------|
+| live.read.all    | Can read all live data     |
+| live.write.all   | Can add/edit all live data |
+
+### Live Roles
+
+| Role Name         |  live.read.all   | live.write.all  |
+| ------------------|------------------|-----------------|
+| live.verified     |  Y               | N               |
+| live.superadmin   |  Y               | Y               |
+
+
+
+### Media Section 
+
+### Media Permissions
+
+| Permission Name   | Description                                   |
+| ------------------| ----------------------------------------------|
+| media.read.all    | Can read all media data                       |
+| media.read.self   | Can read own added media data                 |
+| media.write.all   | Can add/delete all media data                 |
+| media.write.self  | Can add media data                            |
+
+### Media Roles
+
+| Role Name          |  media.read.all   | media.read.self   | media.write.all    | media.write.self   |
+| -------------------|-------------------|-------------------|--------------------|--------------------|
+| media.team         |  N                | Y                 | N                  | Y                  |
+| media.admin        |  Y                | Y                 | Y                  | Y                  | 
