@@ -36,6 +36,19 @@ const LiveSchema = new Schema(
       required: false,
       min: 0,
     },
+    year: {
+      type: String,
+      required: true,
+      minlength: 4,
+      maxlength: 4,
+    },
+    /** [0-autumn ,1-spring] */
+    semester: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 1,
+    },
     studentsRecruited: [
       {
         name: {
@@ -77,7 +90,7 @@ const LiveSchema = new Schema(
     },
     date: {
       type: Date,
-      required: true,
+      required: false,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
