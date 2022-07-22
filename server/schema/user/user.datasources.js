@@ -94,6 +94,17 @@ const search = (query, accountType, limit, offset) =>
     },
   ]);
 
+const getIdByOldUserName = async (oldUserName) => {
+  try {
+    const _users = await UserModel.find({ oldUserName: oldUserName });
+    const [{ _id: id }] = _users;
+
+    return id;
+  } catch (error) {
+    throw APIError(null, error);
+  }
+};
+
 const create = async (uid, fullName, email, interestedTopics, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
 
@@ -252,6 +263,7 @@ const setBan = async (id, flag, session, authToken, mid) => {
 const UserDataSources = () => ({
   findByID: findByID(),
   findByEmail: findByEmail(),
+  getIdByOldUserName,
   findFirebaseUserById,
   findFirebaseUserByEmail,
   findOne,

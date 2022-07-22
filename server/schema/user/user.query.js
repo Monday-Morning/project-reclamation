@@ -31,7 +31,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { getUser, getListOfUsers, listAllUsers, searchUsers } = require('./user.resolver');
+const { getUser, getListOfUsers, getUserByOldUserName, listAllUsers, searchUsers } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
@@ -39,6 +39,17 @@ const UserType = require('./user.type');
 module.exports = new GraphQLObjectType({
   name: 'UserQuery',
   fields: {
+    getUserByOldUserName: {
+      description: "Retrieves a single user by the user's old username.",
+      type: UserType,
+      args: {
+        oldUserName: {
+          description: "The user's old username.",
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: getUserByOldUserName,
+    },
     getUserByID: {
       description: "Retrieves a single user by the user's mongo ID.",
       type: UserType,
