@@ -105,9 +105,8 @@ module.exports = {
 
   getUserByOldUserName: async (_parent, { oldUserName }, { API: { User } }) => {
     try {
-      const _userId = await User.getIdByOldUserName(oldUserName);
+      const user = await User.getUserByOldUserName.load(oldUserName);
 
-      const user = await User.findByID.load(_userId);
       return user;
     } catch (error) {
       throw APIError(null, error);

@@ -94,16 +94,27 @@ const search = (query, accountType, limit, offset) =>
     },
   ]);
 
-const getIdByOldUserName = async (oldUserName) => {
-  try {
-    const _users = await UserModel.find({ oldUserName: oldUserName });
-    const [{ _id: id }] = _users;
+const getUserByOldUserName = () =>
+  new DataLoader(
+    async (oldUserNames) => {
+      try {
+        const _users = await UserModel.find({ oldUserName: oldUserNames });
+        const _returnIds = oldUserNames.map(
+          (oldUserName) => _users.find((_u) => _u.oldUserName === oldUserName) || null
+        );
 
-    return id;
-  } catch (error) {
-    throw APIError(null, error);
-  }
-};
+        for (const _user of _users) {
+          findByID().prime(_user._id, _user);
+        }
+        return _returnIds;
+      } catch (error) {
+        throw APIError(null, error);
+      }
+    },
+    {
+      batchScheduleFn: (cb) => setTimeout(cb, 100),
+    }
+  );
 
 const create = async (uid, fullName, email, interestedTopics, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
@@ -263,7 +274,7 @@ const setBan = async (id, flag, session, authToken, mid) => {
 const UserDataSources = () => ({
   findByID: findByID(),
   findByEmail: findByEmail(),
-  getIdByOldUserName,
+  getUserByOldUserName: getUserByOldUserName(),
   findFirebaseUserById,
   findFirebaseUserByEmail,
   findOne,
