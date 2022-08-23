@@ -29,20 +29,20 @@ jobs:
     name: Pull and Run Docker Container
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+#       - name: Checkout Repository
+#         uses: actions/checkout@v2
 
-      - name: Add Env File
-        run: ${{ secrets.env_vars }} > server/env/.env.${{ inputs.node_env }}
+#       - name: Add Env File
+#         run: ${{ secrets.env_vars }} > server/env/.env.${{ inputs.node_env }}
 
-      - name: Copy Required Files
-        uses: appleboy/scp-action@v0.1.2
-        with:
-          host: ${{ inputs.ssh_host }}
-          username: ${{ inputs.ssh_username }}
-          key: ${{ secrets.ssh_private_key }}
-          source: "docker-compose.yml,server/env/.env.${{ inputs.node_env }}"
-          target: "~/apps/project-reclamation"
+#       - name: Copy Required Files
+#         uses: appleboy/scp-action@v0.1.2
+#         with:
+#           host: ${{ inputs.ssh_host }}
+#           username: ${{ inputs.ssh_username }}
+#           key: ${{ secrets.ssh_private_key }}
+#           source: "docker-compose.yml,server/env/.env.${{ inputs.node_env }}"
+#           target: "~/apps/project-reclamation"
 
       - name: Run SSH Commands
         uses: appleboy/ssh-action@v0.1.4
@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.ssh_private_key }}
           script: |
             cd ~/apps/project-reclamation
-            docker pull ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.node_env }}
+            docker pull ghcr.io/monday-morning/project-reclamation:production
             docker-compose down
             docker-compose up -d
-            docker image prune
+            docker image prune -a -f
