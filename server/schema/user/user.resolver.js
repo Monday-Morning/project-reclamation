@@ -102,6 +102,17 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+
+  getUserByOldUserName: async (_parent, { oldUserName }, { API: { User } }) => {
+    try {
+      const user = await User.getUserByOldUserName.load(oldUserName);
+
+      return user;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+
   getListOfUsers: async (
     _parent,
     { ids = [], emails = [], limit = DEF_LIMIT, offset = DEF_OFFSET },
