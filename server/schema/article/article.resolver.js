@@ -197,26 +197,17 @@ module.exports = {
       );
       const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
 
-      // TODO: map the articles to return correct ones with errors instead of rejecting full output
-      if (
-        _articles.some(
-          (_article) =>
-            [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
-              _article.publishStatus
-            ) && !_unpublishedPermission
-        )
-      ) {
-        throw APIError('NOT_FOUND', null, { reason: 'One or more of the requested articles cannot be found.' });
-      }
+      if (_restritedPermission && _unpublishedPermission) return _articles;
 
-      // TODO: map the articles to return correct ones with errors instead of rejecting full output
-      if (_articles.some((_article) => _article.isInstituteRestricted && !_restritedPermission)) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'One or more of the requested articles can only be viewed by students and faculty of NIT Rourkela.',
-        });
-      }
+      const publicArticles = _articles.filter(
+        ({ publishStatus, isInstituteRestricted }) =>
+          (_restritedPermission || !isInstituteRestricted) && (_unpublishedPermission || publishStatus)
+      );
 
-      return _articles;
+      return publicArticles.length === _articles.length ?
+        publicArticles
+        :
+        [...publicArticles, APIError('FORBIDDEN', null, { reason: 'One or more article(s) were not found.' })]
     } catch (error) {
       throw APIError(null, error);
     }
