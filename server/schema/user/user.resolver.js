@@ -239,7 +239,7 @@ module.exports = {
         return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
-      const _mdbUser = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
+      const [_mdbUser] = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
 
       // TODO: send welcome mail if required
 

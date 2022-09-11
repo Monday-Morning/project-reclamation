@@ -121,14 +121,13 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
   try {
     mdbSession.startTransaction();
-
     const _user = await UserModel.create(
-      {
+      [{
         fullName,
         email,
         interestedTopics,
         createdBy: UserSession.valid(session, authToken) ? mid : null,
-      },
+      }],
       { session: mdbSession }
     );
 
@@ -140,14 +139,12 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
     await mdbSession.commitTransaction();
     await mdbSession.endSession();
-
     return _user;
   } catch (error) {
     await mdbSession.abortTransaction();
     await mdbSession.endSession();
 
     await admin.auth().deleteUser(uid);
-
     throw FirebaseAuthError(error, { reason: "The user's account could not be created." });
   }
 };
