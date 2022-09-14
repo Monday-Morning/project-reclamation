@@ -452,7 +452,7 @@ module.exports = {
   /** Admin APIs */
   listAllUsers: async (
     _parent,
-    { limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { accountType = -1, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
@@ -460,8 +460,7 @@ module.exports = {
       const _fields = getFieldNodes(fieldNodes);
 
       if (
-        !UserPermission.exists(session, authToken, decodedToken, 'user.list.all') ||
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.public')
+        !UserPermission.exists(session, authToken, decodedToken, 'user.list.all')
       ) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to perform this action.',
@@ -477,8 +476,8 @@ module.exports = {
         });
       }
 
-      const _users = await User.find({}, limit, offset);
-
+      const _users = await User.find(accountType === -1 ? {} : { accountType }, limit, offset);
+      
       for (const _user of _users) {
         User.findByID.prime(_user.id, _user);
         User.findByEmail.prime(_user.email, _user);
