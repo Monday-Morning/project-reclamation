@@ -197,7 +197,9 @@ module.exports = {
       );
       const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
 
-      if (_restritedPermission && _unpublishedPermission) return _articles;
+      if (_restritedPermission && _unpublishedPermission) {
+        return _articles;
+      }
 
       const publicArticles = _articles.filter(
         ({ publishStatus, isInstituteRestricted }) =>
