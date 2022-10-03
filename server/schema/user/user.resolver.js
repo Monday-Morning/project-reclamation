@@ -477,7 +477,7 @@ module.exports = {
       }
 
       const _users = await User.find(accountType === -1 ? {} : { accountType }, limit, offset);
-      
+
       for (const _user of _users) {
         User.findByID.prime(_user.id, _user);
         User.findByEmail.prime(_user.email, _user);
