@@ -122,12 +122,14 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
   try {
     mdbSession.startTransaction();
     const _user = await UserModel.create(
-      [{
-        fullName,
-        email,
-        interestedTopics,
-        createdBy: UserSession.valid(session, authToken) ? mid : null,
-      }],
+      [
+        {
+          fullName,
+          email,
+          interestedTopics,
+          createdBy: UserSession.valid(session, authToken) ? mid : null,
+        },
+      ],
       { session: mdbSession }
     );
 
