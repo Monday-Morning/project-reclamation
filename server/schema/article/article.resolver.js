@@ -204,10 +204,9 @@ module.exports = {
           (_restritedPermission || !isInstituteRestricted) && (_unpublishedPermission || publishStatus)
       );
 
-      return publicArticles.length === _articles.length ?
-        publicArticles
-        :
-        [...publicArticles, APIError('FORBIDDEN', null, { reason: 'One or more article(s) were not found.' })]
+      return publicArticles.length === _articles.length
+        ? publicArticles
+        : [...publicArticles, APIError('FORBIDDEN', null, { reason: 'One or more article(s) were not found.' })];
     } catch (error) {
       throw APIError(null, error);
     }

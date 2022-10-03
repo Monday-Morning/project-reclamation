@@ -459,9 +459,7 @@ module.exports = {
     try {
       const _fields = getFieldNodes(fieldNodes);
 
-      if (
-        !UserPermission.exists(session, authToken, decodedToken, 'user.list.all')
-      ) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to perform this action.',
         });

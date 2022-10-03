@@ -125,7 +125,7 @@ module.exports = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       args: {
         accountType: {
-          description: "Return the list of users by account type",
+          description: 'Return the list of users by account type',
           type: GraphQLInt,
         },
         limit: {
