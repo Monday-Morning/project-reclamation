@@ -266,6 +266,47 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  listArticlesByYearandMonth: async (
+    _parent,
+    { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET, year, month },
+    { session, authToken, decodedToken, API: { Article } },
+    { fieldNodes }
+  ) => {
+    try {
+      const _fields = getFieldNodes(fieldNodes);
+
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not the required permissions to read the requested fields.',
+        });
+      }
+
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      const startAndEndDate = (year, month) => {
+        return month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
+      };
+      const _articles = await Article.findByYearAndMonth(
+        allowRestricted,
+        onlyPublished,
+        limit,
+        offset,
+        startAndEndDate(year, month)
+      );
+      if (!_articles || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No articles were found.' });
+      }
+
+      return _articles;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   listAllArticles: async (
     _parent,
     { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET },
