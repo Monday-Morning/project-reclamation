@@ -452,7 +452,7 @@ module.exports = {
   /** Admin APIs */
   listAllUsers: async (
     _parent,
-    { accountType = -1, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
@@ -474,7 +474,7 @@ module.exports = {
         });
       }
 
-      const _users = await User.find(accountType === -1 ? {} : { accountType }, limit, offset);
+      const _users = await User.find(accountType ? { accountType } : {}, limit, offset);
 
       for (const _user of _users) {
         User.findByID.prime(_user.id, _user);
