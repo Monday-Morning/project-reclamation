@@ -87,6 +87,27 @@ const countOfArticleBySubCategory = (allowRestricted, onlyPublished, categoryNum
     $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': categoryNumber }],
   });
 
+const findByYearAndMonth = (allowRestricted, onlyPublished, limit, offset, startAndEndDate) =>
+  ArticleModel.aggregate([
+    {
+      $match: {
+        $and: getBaseConditions(allowRestricted, onlyPublished),
+        createdAt: { $gte: startAndEndDate[0], $lt: startAndEndDate[1] },
+      },
+    },
+    {
+      $sort: {
+        createdAt: 1,
+      },
+    },
+    {
+      $skip: offset,
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
 const findAll = (allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.find({
     $and: getBaseConditions(allowRestricted, onlyPublished),
@@ -395,6 +416,7 @@ const ArticleDataSources = () => ({
   find,
   findByCategories,
   countOfArticleBySubCategory,
+  findByYearAndMonth,
   findAll,
   search,
   create,
