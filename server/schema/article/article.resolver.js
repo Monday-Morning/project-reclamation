@@ -266,9 +266,9 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  listArticlesByYearandMonth: async (
+  listArticlesByYearAndMonth: async (
     _parent,
-    { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET, year, month },
+    { year, month, onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { Article } },
     { fieldNodes }
   ) => {

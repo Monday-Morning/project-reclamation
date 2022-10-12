@@ -25,7 +25,7 @@ const {
   getListOfArticles,
   getArticlesByCategories,
   searchArticle,
-  listArticlesByYearandMonth,
+  listArticlesByYearAndMonth,
   listAllArticles,
   countOfArticlesBySubCategory,
   getArticleByOldID,
@@ -100,7 +100,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: getArticlesByCategories,
     },
-    listArticlesByYearandMonth: {
+    listArticlesByYearAndMonth: {
       description: 'List all article by month and year',
       type: new GraphQLList(ArticleType),
       args: {
@@ -125,7 +125,7 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: listArticlesByYearandMonth,
+      resolve: listArticlesByYearAndMonth,
     },
     listAllArticles: {
       description: 'Lists all articles in descending order of creation time',
