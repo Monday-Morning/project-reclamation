@@ -12,6 +12,7 @@
 
 const express = require('express');
 const { cache } = require('../utils/userAuth/role');
+const ImageKit = require('imagekit');
 
 /**
  * @summary Express Router Object
@@ -24,6 +25,16 @@ const router = express.Router();
 
 /** Updates roles cache */
 router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
+
+router.use('/imagekit', (req, res) => {
+  const imagekit = new ImageKit({
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URLENDPOINT,
+  });
+  const authenticationParameters = imagekit.getAuthenticationParameters();
+  res.send(authenticationParameters);
+});
 
 /** 404 Not Found - Default Response for Invalid Path */
 router.use((_req, res) => {
