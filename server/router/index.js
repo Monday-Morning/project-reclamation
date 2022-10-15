@@ -26,7 +26,7 @@ const router = express.Router();
 /** Updates roles cache */
 router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
 
-router.use('/imagekit', (req, res) => {
+router.use('/admin/media/auth', (req, res) => {
   const imagekit = new ImageKit({
     publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
     privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
