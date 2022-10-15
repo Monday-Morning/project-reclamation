@@ -53,6 +53,7 @@
     "graphql": "^15.4.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
+    "imagekit": "^4.1.1",
     "mongoose": "^6.0.11",
     "nodemailer": "^6.5.0",
     "pm2": "^5.1.2",
