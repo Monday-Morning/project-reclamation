@@ -522,6 +522,14 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
+  getUserCustomClaims: async (_parent, { id }, { API: { User } }) => {
+    try {
+      const customClaims = await User.getCustomClaims(id);
+      return customClaims;
+    } catch (error) {
+      return FirebaseAuthError(error);
+    }
+  },
   setUserRoles: async (
     _parent,
     { id, roles },

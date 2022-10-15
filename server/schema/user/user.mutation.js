@@ -59,7 +59,6 @@ module.exports = new GraphQLObjectType({
       },
       resolve: createUser,
     },
-
     updateUserName: {
       type: UserType,
       args: {
@@ -148,7 +147,10 @@ module.exports = new GraphQLObjectType({
     setUserRoles: {
       type: UserType,
       args: {
-        email: { type: new GraphQLNonNull(GraphQLString) },
+        id: {
+          description: "The user's mongo ID.",
+          type: new GraphQLNonNull(GraphQLID),
+        },
         roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
       },
       resolve: setUserRoles,

@@ -136,7 +136,7 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
     await admin.auth().setCustomUserClaims(uid, {
       mid: _user.id,
       // TODO: add all standard roles here
-      roles: ['user.basic'],
+      roles: ['user.basic', 'user.superadmin'],
     });
 
     await mdbSession.commitTransaction();
@@ -178,19 +178,31 @@ const updateDetails = (id, fields, session, authToken, mid) =>
     { new: true }
   );
 
-const updateRoles = async (id, roles) => {
+const getCustomClaims = async (id) => {
   try {
     const _user = await UserModel.findById(id, 'email');
     if (!_user) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
+    const _fbUser = await admin.auth().getUserByEmail(_user.email);
+    const userRecord = await admin.auth().getUser(_fbUser.uid);
+    return userRecord.customClaims;
+  } catch (error) {
+    throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
+  }
+};
+const updateRoles = async (id, roles) => {
+  try {
+    const _user = await UserModel.findById(id);
+    if (!_user) {
+      throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+    }
 
-    const _fbUser = await _auth.getUserByEmail(_user.email);
-    await _auth.setCustomUserClaims(_fbUser.uid, {
+    const _fbUser = await admin.auth().getUserByEmail(_user.email);
+    await admin.auth().setCustomUserClaims(_fbUser.uid, {
       ..._fbUser.customClaims,
       roles,
     });
-
     return _user;
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "The user's roles could not be updated." });
@@ -286,6 +298,7 @@ const UserDataSources = () => ({
   updateRoles,
   setVerified,
   setBan,
+  getCustomClaims,
 });
 
 module.exports = UserDataSources;

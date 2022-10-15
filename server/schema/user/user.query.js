@@ -27,11 +27,18 @@ const {
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  // GraphQLJSON,
+  GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { getUser, getListOfUsers, getUserByOldUserName, listAllUsers, searchUsers } = require('./user.resolver');
+const {
+  getUser,
+  getListOfUsers,
+  getUserCustomClaims,
+  getUserByOldUserName,
+  listAllUsers,
+  searchUsers,
+} = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
@@ -60,6 +67,17 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: getUser,
+    },
+    getUserCustomClaims: {
+      description: 'Get user roles',
+      type: GraphQLJSON,
+      args: {
+        id: {
+          description: "The user's mongo ID.",
+          type: new GraphQLNonNull(GraphQLID),
+        },
+      },
+      resolve: getUserCustomClaims,
     },
     getUserByEmail: {
       description: "Retrieves a single user by the user's email ID.",
