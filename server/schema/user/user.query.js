@@ -72,9 +72,9 @@ module.exports = new GraphQLObjectType({
       description: 'Get user roles',
       type: GraphQLJSON,
       args: {
-        id: {
-          description: "The user's mongo ID.",
-          type: new GraphQLNonNull(GraphQLID),
+        email: {
+          description: "The user's email id",
+          type: new GraphQLNonNull(GraphQLString),
         },
       },
       resolve: getUserCustomClaims,

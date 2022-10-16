@@ -178,32 +178,33 @@ const updateDetails = (id, fields, session, authToken, mid) =>
     { new: true }
   );
 
-const getCustomClaims = async (id) => {
+const getCustomClaims = async (email) => {
   try {
-    const _user = await UserModel.findById(id, 'email');
-    if (!_user) {
+    const _fbUser = await admin.auth().getUserByEmail(email);
+    if (!_fbUser) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
-    const _fbUser = await admin.auth().getUserByEmail(_user.email);
     const userRecord = await admin.auth().getUser(_fbUser.uid);
     return userRecord.customClaims;
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
   }
 };
-const updateRoles = async (id, roles) => {
+const updateRoles = async (email, roles) => {
   try {
-    const _user = await UserModel.findById(id);
-    if (!_user) {
+    console.log('Update roles called');
+    const _fbUser = await admin.auth().getUserByEmail(email);
+    console.log(_fbUser);
+    if (!_fbUser) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
-
-    const _fbUser = await admin.auth().getUserByEmail(_user.email);
     await admin.auth().setCustomUserClaims(_fbUser.uid, {
       ..._fbUser.customClaims,
       roles,
     });
-    return _user;
+    const customClaims = await getCustomClaims(email);
+    console.log(customClaims);
+    return customClaims.roles;
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "The user's roles could not be updated." });
   }

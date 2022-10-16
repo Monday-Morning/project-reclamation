@@ -522,9 +522,9 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  getUserCustomClaims: async (_parent, { id }, { API: { User } }) => {
+  getUserCustomClaims: async (_parent, { email }, { API: { User } }) => {
     try {
-      const customClaims = await User.getCustomClaims(id);
+      const customClaims = await User.getCustomClaims(email);
       return customClaims;
     } catch (error) {
       return FirebaseAuthError(error);
@@ -532,15 +532,14 @@ module.exports = {
   },
   setUserRoles: async (
     _parent,
-    { id, roles },
+    { email, id, roles },
     { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
       canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
 
-      const _user = await User.updateRoles(id, roles);
-
+      const _user = await User.updateRoles(email, roles);
       return _user;
     } catch (error) {
       return FirebaseAuthError(error);

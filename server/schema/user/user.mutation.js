@@ -27,7 +27,7 @@ const {
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  // GraphQLJSON,
+  GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
 
@@ -145,8 +145,12 @@ module.exports = new GraphQLObjectType({
       resolve: setUserBan,
     },
     setUserRoles: {
-      type: UserType,
+      type: GraphQLJSON,
       args: {
+        email: {
+          description: "The user's email id",
+          type: new GraphQLNonNull(GraphQLString),
+        },
         id: {
           description: "The user's mongo ID.",
           type: new GraphQLNonNull(GraphQLID),
