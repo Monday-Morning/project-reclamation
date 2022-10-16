@@ -53,7 +53,7 @@ const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, ne
 
   if (
     mid !== id &&
-    _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    _fields?.some((item) => !PUBLIC_FIELDS.includes(item)) &&
     !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
   ) {
     throw APIError('FORBIDDEN', null, {
