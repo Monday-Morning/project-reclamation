@@ -136,7 +136,7 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
     await admin.auth().setCustomUserClaims(uid, {
       mid: _user.id,
       // TODO: add all standard roles here
-      roles: ['user.basic', 'user.superadmin'],
+      roles: ['user.basic'],
     });
 
     await mdbSession.commitTransaction();
