@@ -200,8 +200,7 @@ const updateRoles = async (email, roles) => {
       ..._fbUser.customClaims,
       roles,
     });
-    const customClaims = await getCustomClaims(email);
-    return customClaims.roles;
+    return { email, roles };
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "The user's roles could not be updated." });
   }
