@@ -192,9 +192,7 @@ const getCustomClaims = async (email) => {
 };
 const updateRoles = async (email, roles) => {
   try {
-    console.log('Update roles called');
     const _fbUser = await admin.auth().getUserByEmail(email);
-    console.log(_fbUser);
     if (!_fbUser) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
@@ -203,7 +201,6 @@ const updateRoles = async (email, roles) => {
       roles,
     });
     const customClaims = await getCustomClaims(email);
-    console.log(customClaims);
     return customClaims.roles;
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "The user's roles could not be updated." });
