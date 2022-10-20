@@ -289,9 +289,9 @@ module.exports = {
       onlyPublished =
         onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
 
-      const startAndEndDate = (year, month) =>
-        month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
-
+      function startAndEndDate(year, month) {
+        return month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
+      }
       const _articles = await Article.findByYearAndMonth(
         allowRestricted,
         onlyPublished,
