@@ -52,6 +52,29 @@ const UserPermission = {
       throw APIError(null, error, { reason: 'The server could not check for a permission.' });
     }
   },
+
+  getAll: (session, authToken, decodedToken) => {
+    try {
+      if (!UserSession.valid(session, authToken)) {
+        return false;
+      }
+      const _roles = UserRole.get();
+      if (
+        !decodedToken ||
+        !decodedToken.roles ||
+        !(decodedToken.roles instanceof Array) ||
+        decodedToken.roles.length <= 0
+      ) {
+        return false;
+      }
+      const _permissions = decodedToken.roles
+        .map((x) => _roles.find((y) => y.name === x).permissions)
+        .reduce((prev, curr) => [...prev, ...curr]);
+      return _permissions;
+    } catch (error) {
+      throw APIError(null, error, { reason: 'The server could not list all permissions.' });
+    }
+  },
 };
 
 module.exports = UserPermission;

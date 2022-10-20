@@ -15,7 +15,7 @@ const UserAuth = {
   authenticate: async (jwt, _auth = admin?.auth()) => {
     try {
       const _decodedToken =
-        process.env.NODE_ENV === 'development' && process.env.TEST_AUTH_KEY === jwt
+        process.env.NODE_ENV === 'development' && process.env.FIREBASE_TEST_AUTH_KEY === jwt
           ? {
               uid: '',
               exp: 4102444800, // Jan 1, 2100 at midnight
@@ -50,15 +50,18 @@ const UserAuth = {
 
       const jwt = decodeURI(req.headers.authorization);
       if (!jwt) {
-        return null;
+        return { authToken: null, decodedToken: null, mid: null };
       }
+
       if (UserSession.valid(req.session, jwt)) {
-        return req.session.auth.decodedToken;
+        return {
+          authToken: req.session.auth.jwt,
+          decodedToken: req.session.auth.decodedToken,
+          mid: req.session.auth.mid,
+        };
       }
 
       const _decodedToken = await UserAuth.authenticate(jwt, _auth);
-
-      // const _decodedToken = await GetUserAuthScope(req.session, );
 
       if (!_decodedToken) {
         return { authToken: req.headers.authorization, decodedToken: null, mid: null };
