@@ -308,6 +308,21 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  countTotalNumberOfArticles: async (
+    _parent,
+    { onlyPublished },
+    { session, authToken, decodedToken, API: { Article } }
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      return await Article.countNumberOfArticles(allowRestricted, onlyPublished);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   listAllArticles: async (
     _parent,
     { onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET },
