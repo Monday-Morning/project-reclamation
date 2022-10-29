@@ -32,7 +32,7 @@ const {
 } = require('../scalars');
 
 const UserType = require('./user.type');
-const FirebaseUserType = require('./firebaseuser.type');
+const FirebaseUserType = require('./firebaseUser.type');
 const {
   createUser,
   setUserBan,

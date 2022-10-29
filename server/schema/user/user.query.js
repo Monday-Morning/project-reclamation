@@ -42,7 +42,7 @@ const {
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
-const FirebaseUserType = require('./firebaseuser.type');
+const FirebaseUserType = require('./firebaseUser.type');
 
 module.exports = new GraphQLObjectType({
   name: 'UserQuery',
