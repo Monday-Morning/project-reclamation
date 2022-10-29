@@ -538,8 +538,7 @@ module.exports = {
   ) => {
     try {
       canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
-
-      const _user = await User.updateRoles(email, roles);
+      const _user = await User.updateCustomClaims(email, { roles });
       return _user;
     } catch (error) {
       return FirebaseAuthError(error);
