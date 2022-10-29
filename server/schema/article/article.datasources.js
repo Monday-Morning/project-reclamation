@@ -110,7 +110,7 @@ const findByYearAndMonth = (allowRestricted, onlyPublished, limit, offset, start
 
 const countNumberOfArticles = (allowRestricted, onlyPublished) =>
   ArticleModel.countDocuments({
-    $and: [...getBaseConditions(allowRestricted, onlyPublished)],
+    $and: getBaseConditions(allowRestricted, onlyPublished),
   });
 
 const findAll = (allowRestricted, onlyPublished, limit, offset) =>
