@@ -190,7 +190,7 @@ const getCustomClaims = async (email) => {
     throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
   }
 };
-const updateRoles = async (email, roles) => {
+const updateCustomClaims = async (email, customClaims) => {
   try {
     const _fbUser = await admin.auth().getUserByEmail(email);
     if (!_fbUser) {
@@ -292,7 +292,7 @@ const UserDataSources = () => ({
   create,
   updateName,
   updateDetails,
-  updateRoles,
+  updateCustomClaims,
   setVerified,
   setBan,
   getCustomClaims,
