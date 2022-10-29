@@ -27,7 +27,7 @@ const {
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  GraphQLJSON,
+  // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
 
@@ -42,6 +42,7 @@ const {
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
+const FirebaseUserType = require('./firebaseuser.type');
 
 module.exports = new GraphQLObjectType({
   name: 'UserQuery',
@@ -70,7 +71,7 @@ module.exports = new GraphQLObjectType({
     },
     getFirebaseUserByEmail: {
       description: 'Get user roles',
-      type: GraphQLJSON,
+      type: FirebaseUserType,
       args: {
         email: {
           description: "The user's email id",

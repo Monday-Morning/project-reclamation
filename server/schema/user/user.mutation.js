@@ -27,11 +27,12 @@ const {
   // GraphQLDate,
   // GraphQLTime,
   // GraphQLDateTime,
-  GraphQLJSON,
+  // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
 
 const UserType = require('./user.type');
+const FirebaseUserType = require('./firebaseuser.type');
 const {
   createUser,
   setUserBan,
@@ -145,7 +146,7 @@ module.exports = new GraphQLObjectType({
       resolve: setUserBan,
     },
     setUserRoles: {
-      type: GraphQLJSON,
+      type: FirebaseUserType,
       args: {
         email: {
           description: "The user's email id",
