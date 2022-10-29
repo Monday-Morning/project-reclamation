@@ -421,6 +421,7 @@ const ArticleDataSources = () => ({
   find,
   findByCategories,
   countOfArticleBySubCategory,
+  countNumberOfArticles,
   findByYearAndMonth,
   findAll,
   search,
