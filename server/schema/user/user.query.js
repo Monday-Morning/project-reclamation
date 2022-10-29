@@ -34,7 +34,7 @@ const {
 const {
   getUser,
   getListOfUsers,
-  getUserCustomClaims,
+  getFirebaseUserByEmail,
   getUserByOldUserName,
   listAllUsers,
   searchUsers,
@@ -68,7 +68,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: getUser,
     },
-    getUserCustomClaims: {
+    getFirebaseUserByEmail: {
       description: 'Get user roles',
       type: GraphQLJSON,
       args: {
@@ -77,7 +77,7 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString),
         },
       },
-      resolve: getUserCustomClaims,
+      resolve: getFirebaseUserByEmail,
     },
     getUserByEmail: {
       description: "Retrieves a single user by the user's email ID.",

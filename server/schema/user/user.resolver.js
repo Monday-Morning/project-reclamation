@@ -522,10 +522,10 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  getUserCustomClaims: async (_parent, { email }, { API: { User } }) => {
+  getFirebaseUserByEmail: async (_parent, { email }, { API: { User } }) => {
     try {
-      const customClaims = await User.getCustomClaims(email);
-      return customClaims;
+      const firebaseUser = await User.getFirebaseUser(email);
+      return firebaseUser;
     } catch (error) {
       return FirebaseAuthError(error);
     }

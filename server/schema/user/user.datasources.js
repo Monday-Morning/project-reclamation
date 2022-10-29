@@ -178,14 +178,13 @@ const updateDetails = (id, fields, session, authToken, mid) =>
     { new: true }
   );
 
-const getCustomClaims = async (email) => {
+const getFirebaseUser = async (email) => {
   try {
     const _fbUser = await admin.auth().getUserByEmail(email);
     if (!_fbUser) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
-    const userRecord = await admin.auth().getUser(_fbUser.uid);
-    return userRecord.customClaims;
+    return _fbUser;
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
   }
@@ -295,7 +294,7 @@ const UserDataSources = () => ({
   updateCustomClaims,
   setVerified,
   setBan,
-  getCustomClaims,
+  getFirebaseUser,
 });
 
 module.exports = UserDataSources;
