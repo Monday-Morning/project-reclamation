@@ -31,10 +31,18 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
-const { getUser, getListOfUsers, getUserByOldUserName, listAllUsers, searchUsers } = require('./user.resolver');
+const {
+  getUser,
+  getListOfUsers,
+  getFirebaseUserByEmail,
+  getUserByOldUserName,
+  listAllUsers,
+  searchUsers,
+} = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
 const UserType = require('./user.type');
+const FirebaseUserType = require('./firebaseUser.type');
 
 module.exports = new GraphQLObjectType({
   name: 'UserQuery',
@@ -60,6 +68,17 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: getUser,
+    },
+    getFirebaseUserByEmail: {
+      description: 'Get user roles',
+      type: FirebaseUserType,
+      args: {
+        email: {
+          description: "The user's email id",
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: getFirebaseUserByEmail,
     },
     getUserByEmail: {
       description: "Retrieves a single user by the user's email ID.",

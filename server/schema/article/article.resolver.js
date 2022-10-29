@@ -289,9 +289,9 @@ module.exports = {
       onlyPublished =
         onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
 
-      const startAndEndDate = (year, month) => {
+      function startAndEndDate(year, month) {
         return month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
-      };
+      }
       const _articles = await Article.findByYearAndMonth(
         allowRestricted,
         onlyPublished,
@@ -304,6 +304,21 @@ module.exports = {
       }
 
       return _articles;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  countTotalNumberOfArticles: async (
+    _parent,
+    { onlyPublished },
+    { session, authToken, decodedToken, API: { Article } }
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      return await Article.countNumberOfArticles(allowRestricted, onlyPublished);
     } catch (error) {
       throw APIError(null, error);
     }

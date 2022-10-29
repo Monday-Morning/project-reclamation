@@ -53,7 +53,7 @@ const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, ne
 
   if (
     mid !== id &&
-    _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    _fields?.some((item) => !PUBLIC_FIELDS.includes(item)) &&
     !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
   ) {
     throw APIError('FORBIDDEN', null, {
@@ -522,17 +522,23 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
+  getFirebaseUserByEmail: async (_parent, { email }, { API: { User } }) => {
+    try {
+      const firebaseUser = await User.getFirebaseUser(email);
+      return firebaseUser;
+    } catch (error) {
+      return FirebaseAuthError(error);
+    }
+  },
   setUserRoles: async (
     _parent,
-    { id, roles },
+    { email, roles },
     { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
-
-      const _user = await User.updateRoles(id, roles);
-
+      canUpdateUser(null, mid, session, authToken, decodedToken, fieldNodes, true);
+      const _user = await User.updateCustomClaims(email, { roles });
       return _user;
     } catch (error) {
       return FirebaseAuthError(error);

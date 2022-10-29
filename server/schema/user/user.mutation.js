@@ -32,6 +32,7 @@ const {
 } = require('../scalars');
 
 const UserType = require('./user.type');
+const FirebaseUserType = require('./firebaseUser.type');
 const {
   createUser,
   setUserBan,
@@ -59,7 +60,6 @@ module.exports = new GraphQLObjectType({
       },
       resolve: createUser,
     },
-
     updateUserName: {
       type: UserType,
       args: {
@@ -146,9 +146,12 @@ module.exports = new GraphQLObjectType({
       resolve: setUserBan,
     },
     setUserRoles: {
-      type: UserType,
+      type: FirebaseUserType,
       args: {
-        email: { type: new GraphQLNonNull(GraphQLString) },
+        email: {
+          description: "The user's email id",
+          type: new GraphQLNonNull(GraphQLString),
+        },
         roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
       },
       resolve: setUserRoles,
