@@ -532,12 +532,12 @@ module.exports = {
   },
   setUserRoles: async (
     _parent,
-    { email, id, roles },
+    { email, roles },
     { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
+      canUpdateUser(null, mid, session, authToken, decodedToken, fieldNodes, true);
       const _user = await User.updateCustomClaims(email, { roles });
       return _user;
     } catch (error) {
