@@ -30,7 +30,7 @@ const MetaDataType = new GraphQLObjectType({
   }),
 });
 
-const customClaimsType = new GraphQLObjectType({
+const CustomClaimsType = new GraphQLObjectType({
   name: 'CustomClaims',
   fields: () => ({
     mid: { type: GraphQLID },
@@ -49,7 +49,7 @@ const FirebaseUserType = new GraphQLObjectType({
     photoURL: { type: GraphQLString },
     disabled: { type: GraphQLBoolean },
     metadata: { type: MetaDataType },
-    customClaims: { type: customClaimsType },
+    customClaims: { type: CustomClaimsType },
   }),
 });
 
