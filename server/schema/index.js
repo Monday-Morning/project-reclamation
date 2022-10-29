@@ -21,9 +21,10 @@ const ContentType = require('./common/content.type');
 const UserDetailType = require('./common/userDetail.type');
 const CategoryMapType = require('./categoryMap/categoryMap.type');
 const ArticleSchema = require('./article/article.schema');
+const MediaSchema = require('./media/media.schema');
 
 module.exports = stitchSchemas({
-  subschemas: [UserSchema, TagSchema, SquiggleSchema, IssueSchema, ArticleSchema],
+  subschemas: [UserSchema, TagSchema, SquiggleSchema, IssueSchema, ArticleSchema, MediaSchema],
   types: [MediaType, ContentType, UserDetailType, CategoryMapType],
   mergeTypes: true,
 });
