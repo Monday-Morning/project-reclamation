@@ -1,5 +1,12 @@
 const UserPermission = require('../../utils/userAuth/permission');
 const { APIError } = require('../../utils/exception');
+const ImageKit = require('imagekit');
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URLENDPOINT,
+});
 
 module.exports = {
   getMediaByID: async (_parent, { id }, { API: { Media } }, _) => {
@@ -17,31 +24,52 @@ module.exports = {
   },
   addMedia: async (
     _parent,
-    { authors, store, storePath, mediaType, blurhash },
+    { imageKitFileID, authors, store, storePath, mediaType, blurhash },
     { mid, session, authToken, decodedToken, API: { Media } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'media.write.self')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'media.write.new')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-      const media = Media.create(authors, store, storePath, mediaType, blurhash, session, authToken, mid);
-      return media;
+      imagekit.getFileDetails(imageKitFileID, function (err, res) {
+        if (err) {
+          throw APIError('Image not uploaded', null, err);
+        } else {
+          const media = Media.create(
+            imageKitFileID,
+            authors,
+            store,
+            storePath,
+            mediaType,
+            blurhash,
+            session,
+            authToken,
+            mid
+          );
+          return media;
+        }
+      });
     } catch (error) {
       throw APIError(null, error);
     }
   },
-  deleteMediaById: async (_parent, { id }, { mid, session, authToken, decodedToken, API: { Media } }) => {
+  deleteMediaById: async (_parent, { id, imageKitFileID }, { session, authToken, decodedToken, API: { Media } }) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'media.write.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-
-      const _deletedMedia = Media.deleteById(id);
-      return _deletedMedia;
+      imagekit.getFileDetails(imageKitFileID, function (err, res) {
+        if (err) {
+          const _deletedMedia = Media.deleteById(id);
+          return _deletedMedia;
+        } else {
+          throw APIError('Image not deleted', null, res);
+        }
+      });
     } catch (error) {
       throw APIError(null, error);
     }
