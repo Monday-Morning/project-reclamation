@@ -1,7 +1,4 @@
-const { GraphQLObjectType, GraphQLNonNull, GraphQLID } = require('../scalars');
-const MediaType = require('./media.type');
-
-const { getMediaByID } = require('./media.resolver');
+const { GraphQLObjectType } = require('../scalars');
 
 module.exports = new GraphQLObjectType({
   name: 'MediaQuery',
