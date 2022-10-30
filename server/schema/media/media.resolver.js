@@ -57,7 +57,10 @@ module.exports = {
   },
   deleteMediaById: async (_parent, { id, imageKitFileID }, { session, authToken, decodedToken, API: { Media } }) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'media.write.all')) {
+      if (
+        !UserPermission.exists(session, authToken, decodedToken, 'media.write.all') ||
+        !UserPermission.exists(session, authToken, decodedToken, 'media.write.self')
+      ) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
