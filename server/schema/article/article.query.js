@@ -25,6 +25,7 @@ const {
   getListOfArticles,
   getArticlesByCategories,
   searchArticle,
+  autoComplete,
   listArticlesByYearAndMonth,
   listAllArticles,
   countOfArticlesBySubCategory,
@@ -165,6 +166,21 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: searchArticle,
+    },
+    autoComplete: {
+      description: 'auto complete suggestion for articles using keywords',
+      type: new GraphQLList(ArticleType),
+      args: {
+        keywords: {
+          description: 'The search keywords.',
+          type: new GraphQLNonNull(GraphQLString),
+        },
+        limit: {
+          description: 'The number of results to return',
+          type: GraphQLInt,
+        },
+      },
+      resolve: autoComplete,
     },
     countTotalArticles: {
       description: 'Counts the total number of articles',

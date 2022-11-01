@@ -163,6 +163,23 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
     createdAt: 'desc',
   });
 
+const autoComplete = (keyword, allowRestricted, onlyPublished, limit) =>
+  ArticleModel.aggregate([
+    {
+      $search: { index: 'autoComplete', autocomplete: { query: keyword, path: 'title' } },
+    },
+    {
+      $match: {
+        $and: getBaseConditions(allowRestricted, onlyPublished),
+      },
+    },
+    {
+      $limit: limit,
+    },
+  ]).sort({
+    createdAt: 'desc',
+  });
+
 const create = async (
   articleType,
   title,
@@ -425,6 +442,7 @@ const ArticleDataSources = () => ({
   findByYearAndMonth,
   findAll,
   search,
+  autoComplete,
   create,
   updateProps,
   updateUsers,
