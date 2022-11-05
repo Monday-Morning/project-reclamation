@@ -388,7 +388,7 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  autoComplete: async (
+  getAutoComplete: async (
     _parent,
     { keywords, limit = DEF_LIMIT },
     { session, authToken, decodedToken, API: { Article } }
