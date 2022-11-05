@@ -180,7 +180,7 @@ module.exports = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: autoComplete,
+      resolve: getAutoComplete,
     },
     countTotalArticles: {
       description: 'Counts the total number of articles',
