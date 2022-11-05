@@ -167,7 +167,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: searchArticle,
     },
-    autoComplete: {
+    getAutoComplete: {
       description: 'auto complete suggestion for articles using keywords',
       type: new GraphQLList(ArticleType),
       args: {
