@@ -22,7 +22,7 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  addMedia: async (
+  addMedia: (
     _parent,
     { imageKitFileID, authors, store, storePath, mediaType, blurhash },
     { mid, session, authToken, decodedToken, API: { Media } }
@@ -33,7 +33,7 @@ module.exports = {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-      imagekit.getFileDetails(imageKitFileID, function (err, res) {
+      imagekit.getFileDetails(imageKitFileID, (err, _) => {
         if (err) {
           throw APIError('Image not uploaded', null, err);
         } else {
@@ -55,7 +55,7 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  deleteMediaById: async (_parent, { id, imageKitFileID }, { session, authToken, decodedToken, API: { Media } }) => {
+  deleteMediaById: (_parent, { id, imageKitFileID }, { session, authToken, decodedToken, API: { Media } }) => {
     try {
       if (
         !UserPermission.exists(session, authToken, decodedToken, 'media.write.all') ||
@@ -65,13 +65,12 @@ module.exports = {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-      imagekit.getFileDetails(imageKitFileID, function (err, res) {
+      imagekit.getFileDetails(imageKitFileID, (err, res) => {
         if (err) {
           const _deletedMedia = Media.deleteById(id);
           return _deletedMedia;
-        } else {
-          throw APIError('Image not deleted', null, res);
         }
+        throw APIError('Image not deleted', null, res);
       });
     } catch (error) {
       throw APIError(null, error);
