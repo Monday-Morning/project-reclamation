@@ -25,7 +25,7 @@ const {
   getListOfArticles,
   getArticlesByCategories,
   searchArticle,
-  autoComplete,
+  getAutoComplete,
   listArticlesByYearAndMonth,
   listAllArticles,
   countOfArticlesBySubCategory,
