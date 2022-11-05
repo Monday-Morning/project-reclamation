@@ -388,6 +388,26 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  getAutoComplete: async (
+    _parent,
+    { keywords, limit = DEF_LIMIT },
+    { session, authToken, decodedToken, API: { Article } }
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      const _articles = await Article.autoComplete(keywords, allowRestricted, onlyPublished, limit);
+
+      if (!_articles || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No articles were found with the given keywords.' });
+      }
+      return _articles;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+
   createArticle: async (
     _parent,
     { articleType, title, authors, photographers, designers, tech, categories },
