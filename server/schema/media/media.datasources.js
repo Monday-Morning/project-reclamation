@@ -1,6 +1,7 @@
 const DataLoader = require('dataloader');
 const { APIError } = require('../../utils/exception');
 const MediaModel = require('./media.model');
+const UserSession = require('../../utils/userAuth/session');
 
 const findByID = () =>
   new DataLoader(
@@ -17,8 +18,36 @@ const findByID = () =>
     }
   );
 
+const create = (imageKitFileID, authors, store, storePath, mediaType, blurhash, session, authToken, mid) => {
+  try {
+    const media = MediaModel.create({
+      imageKitFileID,
+      authors,
+      store,
+      storePath,
+      mediaType,
+      blurhash,
+      createdBy: UserSession.valid(session, authToken) ? mid : null,
+    });
+    return media;
+  } catch (error) {
+    throw APIError(error, { reason: 'Failed to add media' });
+  }
+};
+
+const deleteById = (id) => {
+  try {
+    const deleteMedia = MediaModel.findByIdAndDelete(id);
+    return deleteMedia;
+  } catch (error) {
+    throw APIError(error, { reason: 'Failed to delete media' });
+  }
+};
+
 const MediaDataSources = () => ({
   findByID: findByID(),
+  create,
+  deleteById,
 });
 
 module.exports = MediaDataSources;

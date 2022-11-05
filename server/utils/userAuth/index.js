@@ -20,7 +20,7 @@ const UserAuth = {
               uid: '',
               exp: 4102444800, // Jan 1, 2100 at midnight
               mid: '',
-              roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin'],
+              roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin', 'media.admin'],
               email_verified: true,
             }
           : await _auth.verifyIdToken(jwt, true);

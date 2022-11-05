@@ -98,3 +98,20 @@
 |           |                |                 |                |                  |                 |
 
 ---
+
+### Media Section
+
+### Media Permissions
+
+| Permission Name  | Description                   |
+| ---------------- | ----------------------------- |
+| media.write.new  | Can add media data            |
+| media.write.self | Can delete own media data     |
+| media.write.all  | Can add/delete all media data |
+
+### Media Roles
+
+| Role Name   | media.write.new | media.write.self | media.write.all  |
+| ----------- | --------------- | ---------------- | ---------------- |
+| media.team  | Y               | Y                | N                |
+| media.admin | Y               | Y                | Y                |
