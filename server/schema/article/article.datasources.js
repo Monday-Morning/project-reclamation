@@ -96,6 +96,11 @@ const findByYearAndMonth = (allowRestricted, onlyPublished, limit, offset, start
       },
     },
     {
+      $addFields: {
+        id: '$_id',
+      },
+    },
+    {
       $sort: {
         createdAt: 1,
       },
@@ -171,6 +176,11 @@ const autoComplete = (keyword, allowRestricted, onlyPublished, limit) =>
     {
       $match: {
         $and: getBaseConditions(allowRestricted, onlyPublished),
+      },
+    },
+    {
+      $addFields: {
+        id: '$_id',
       },
     },
     {
