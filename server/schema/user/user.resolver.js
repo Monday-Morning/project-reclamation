@@ -223,8 +223,9 @@ module.exports = {
   ) => {
     try {
       if (
-        UserSession.valid(session, authToken) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')
+        !UserSession.valid(session, authToken) ||
+        ((await User.getFirebaseUser(email)).email !== email &&
+          !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
       ) {
         throw APIError('METHOD_NOT_ALLOWED');
       }
