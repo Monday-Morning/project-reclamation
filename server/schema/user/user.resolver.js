@@ -53,7 +53,7 @@ const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, ne
 
   if (
     mid !== id &&
-    _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    _fields?.some((item) => !PUBLIC_FIELDS.includes(item)) &&
     !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
   ) {
     throw APIError('FORBIDDEN', null, {
@@ -102,6 +102,17 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+
+  getUserByOldUserName: async (_parent, { oldUserName }, { API: { User } }) => {
+    try {
+      const user = await User.getUserByOldUserName.load(oldUserName);
+
+      return user;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+
   getListOfUsers: async (
     _parent,
     { ids = [], emails = [], limit = DEF_LIMIT, offset = DEF_OFFSET },
@@ -212,8 +223,9 @@ module.exports = {
   ) => {
     try {
       if (
-        UserSession.valid(session, authToken) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')
+        !UserSession.valid(session, authToken) ||
+        ((await User.getFirebaseUser(email)).email !== email &&
+          !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
       ) {
         throw APIError('METHOD_NOT_ALLOWED');
       }
@@ -228,7 +240,7 @@ module.exports = {
         return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
-      const _mdbUser = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
+      const [_mdbUser] = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
 
       // TODO: send welcome mail if required
 
@@ -441,17 +453,14 @@ module.exports = {
   /** Admin APIs */
   listAllUsers: async (
     _parent,
-    { limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
       const _fields = getFieldNodes(fieldNodes);
 
-      if (
-        !UserPermission.exists(session, authToken, decodedToken, 'user.list.all') ||
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.public')
-      ) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to perform this action.',
         });
@@ -466,7 +475,7 @@ module.exports = {
         });
       }
 
-      const _users = await User.find({}, limit, offset);
+      const _users = await User.find(accountType ? { accountType } : {}, limit, offset);
 
       for (const _user of _users) {
         User.findByID.prime(_user.id, _user);
@@ -514,17 +523,23 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
+  getFirebaseUserByEmail: async (_parent, { email }, { API: { User } }) => {
+    try {
+      const firebaseUser = await User.getFirebaseUser(email);
+      return firebaseUser;
+    } catch (error) {
+      return FirebaseAuthError(error);
+    }
+  },
   setUserRoles: async (
     _parent,
-    { id, roles },
+    { email, roles },
     { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
-
-      const _user = await User.updateRoles(id, roles);
-
+      canUpdateUser(null, mid, session, authToken, decodedToken, fieldNodes, true);
+      const _user = await User.updateCustomClaims(email, { roles });
       return _user;
     } catch (error) {
       return FirebaseAuthError(error);

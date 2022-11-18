@@ -94,19 +94,42 @@ const search = (query, accountType, limit, offset) =>
     },
   ]);
 
+const getUserByOldUserName = () =>
+  new DataLoader(
+    async (oldUserNames) => {
+      try {
+        const _users = await UserModel.find({ oldUserName: oldUserNames });
+        const _returnIds = oldUserNames.map(
+          (oldUserName) => _users.find((_u) => _u.oldUserName === oldUserName) || null
+        );
+
+        for (const _user of _users) {
+          findByID().prime(_user._id, _user);
+        }
+        return _returnIds;
+      } catch (error) {
+        throw APIError(null, error);
+      }
+    },
+    {
+      batchScheduleFn: (cb) => setTimeout(cb, 100),
+    }
+  );
+
 const create = async (uid, fullName, email, interestedTopics, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
 
   try {
     mdbSession.startTransaction();
-
     const _user = await UserModel.create(
-      {
-        fullName,
-        email,
-        interestedTopics,
-        createdBy: UserSession.valid(session, authToken) ? mid : null,
-      },
+      [
+        {
+          fullName,
+          email,
+          interestedTopics,
+          createdBy: UserSession.valid(session, authToken) ? mid : null,
+        },
+      ],
       { session: mdbSession }
     );
 
@@ -118,14 +141,12 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
     await mdbSession.commitTransaction();
     await mdbSession.endSession();
-
     return _user;
   } catch (error) {
     await mdbSession.abortTransaction();
     await mdbSession.endSession();
 
     await admin.auth().deleteUser(uid);
-
     throw FirebaseAuthError(error, { reason: "The user's account could not be created." });
   }
 };
@@ -157,20 +178,34 @@ const updateDetails = (id, fields, session, authToken, mid) =>
     { new: true }
   );
 
-const updateRoles = async (id, roles) => {
+const getFirebaseUser = async (email) => {
   try {
-    const _user = await UserModel.findById(id, 'email');
-    if (!_user) {
+    const _fbUser = await admin.auth().getUserByEmail(email);
+    if (!_fbUser) {
       throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
     }
-
-    const _fbUser = await _auth.getUserByEmail(_user.email);
-    await _auth.setCustomUserClaims(_fbUser.uid, {
+    return _fbUser;
+  } catch (error) {
+    throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
+  }
+};
+const updateCustomClaims = async (email, customClaims) => {
+  try {
+    const _fbUser = await admin.auth().getUserByEmail(email);
+    if (!_fbUser) {
+      throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+    }
+    await admin.auth().setCustomUserClaims(_fbUser.uid, {
       ..._fbUser.customClaims,
-      roles,
+      ...customClaims,
     });
-
-    return _user;
+    return {
+      ..._fbUser,
+      customClaims: {
+        ..._fbUser.customClaims,
+        ...customClaims,
+      },
+    };
   } catch (error) {
     throw FirebaseAuthError(error, { reason: "The user's roles could not be updated." });
   }
@@ -252,6 +287,7 @@ const setBan = async (id, flag, session, authToken, mid) => {
 const UserDataSources = () => ({
   findByID: findByID(),
   findByEmail: findByEmail(),
+  getUserByOldUserName: getUserByOldUserName(),
   findFirebaseUserById,
   findFirebaseUserByEmail,
   findOne,
@@ -261,9 +297,10 @@ const UserDataSources = () => ({
   create,
   updateName,
   updateDetails,
-  updateRoles,
+  updateCustomClaims,
   setVerified,
   setBan,
+  getFirebaseUser,
 });
 
 module.exports = UserDataSources;

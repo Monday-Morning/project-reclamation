@@ -18,9 +18,10 @@ const findByID = () =>
     }
   );
 
-const create = (authors, store, storePath, mediaType, blurhash, session, authToken, mid) => {
+const create = (imageKitFileID, authors, store, storePath, mediaType, blurhash, session, authToken, mid) => {
   try {
     const media = MediaModel.create({
+      imageKitFileID,
       authors,
       store,
       storePath,

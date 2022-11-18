@@ -67,7 +67,7 @@ const findByOldID = () =>
     }
   );
 
-const find = (query, limit, offset) => ArticleModel.find(query).sort({ _id: 'desc' }).limit(limit).skip(offset);
+const find = (query, limit, offset) => ArticleModel.find(query).sort({ createdAt: 'desc' }).limit(limit).skip(offset);
 
 const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit, offset) =>
   Promise.all(
@@ -75,7 +75,7 @@ const findByCategories = (allowRestricted, onlyPublished, categoryNumbers, limit
       ArticleModel.find({
         $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': number }],
       })
-        .sort({ _id: 'desc' })
+        .sort({ createdAt: 'desc' })
         .skip(offset)
         .limit(limit)
         .exec()
@@ -87,11 +87,42 @@ const countOfArticleBySubCategory = (allowRestricted, onlyPublished, categoryNum
     $and: [...getBaseConditions(allowRestricted, onlyPublished), { 'categories.number': categoryNumber }],
   });
 
+const findByYearAndMonth = (allowRestricted, onlyPublished, limit, offset, startAndEndDate) =>
+  ArticleModel.aggregate([
+    {
+      $match: {
+        $and: getBaseConditions(allowRestricted, onlyPublished),
+        createdAt: { $gte: startAndEndDate[0], $lt: startAndEndDate[1] },
+      },
+    },
+    {
+      $addFields: {
+        id: '$_id',
+      },
+    },
+    {
+      $sort: {
+        createdAt: 1,
+      },
+    },
+    {
+      $skip: offset,
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+const countNumberOfArticles = (allowRestricted, onlyPublished) =>
+  ArticleModel.countDocuments({
+    $and: getBaseConditions(allowRestricted, onlyPublished),
+  });
+
 const findAll = (allowRestricted, onlyPublished, limit, offset) =>
   ArticleModel.find({
     $and: getBaseConditions(allowRestricted, onlyPublished),
   })
-    .sort({ _id: 'desc' })
+    .sort({ createdAt: 'desc' })
     .skip(offset)
     .limit(limit);
 
@@ -133,7 +164,31 @@ const search = (keywords, allowRestricted, onlyPublished, limit, offset) =>
     {
       $limit: limit,
     },
-  ]);
+  ]).sort({
+    createdAt: 'desc',
+  });
+
+const autoComplete = (keyword, allowRestricted, onlyPublished, limit) =>
+  ArticleModel.aggregate([
+    {
+      $search: { index: 'autoComplete', autocomplete: { query: keyword, path: 'title' } },
+    },
+    {
+      $match: {
+        $and: getBaseConditions(allowRestricted, onlyPublished),
+      },
+    },
+    {
+      $addFields: {
+        id: '$_id',
+      },
+    },
+    {
+      $limit: limit,
+    },
+  ]).sort({
+    createdAt: 'desc',
+  });
 
 const create = async (
   articleType,
@@ -393,8 +448,11 @@ const ArticleDataSources = () => ({
   find,
   findByCategories,
   countOfArticleBySubCategory,
+  countNumberOfArticles,
+  findByYearAndMonth,
   findAll,
   search,
+  autoComplete,
   create,
   updateProps,
   updateUsers,

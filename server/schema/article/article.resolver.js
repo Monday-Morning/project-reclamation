@@ -197,26 +197,18 @@ module.exports = {
       );
       const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
 
-      // TODO: map the articles to return correct ones with errors instead of rejecting full output
-      if (
-        _articles.some(
-          (_article) =>
-            [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
-              _article.publishStatus
-            ) && !_unpublishedPermission
-        )
-      ) {
-        throw APIError('NOT_FOUND', null, { reason: 'One or more of the requested articles cannot be found.' });
+      if (_restritedPermission && _unpublishedPermission) {
+        return _articles;
       }
 
-      // TODO: map the articles to return correct ones with errors instead of rejecting full output
-      if (_articles.some((_article) => _article.isInstituteRestricted && !_restritedPermission)) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'One or more of the requested articles can only be viewed by students and faculty of NIT Rourkela.',
-        });
-      }
+      const publicArticles = _articles.filter(
+        ({ publishStatus, isInstituteRestricted }) =>
+          (_restritedPermission || !isInstituteRestricted) && (_unpublishedPermission || publishStatus)
+      );
 
-      return _articles;
+      return publicArticles.length === _articles.length
+        ? publicArticles
+        : [...publicArticles, APIError('FORBIDDEN', null, { reason: 'One or more article(s) were not found.' })];
     } catch (error) {
       throw APIError(null, error);
     }
@@ -271,6 +263,62 @@ module.exports = {
       const _articleCount = await Article.countOfArticleBySubCategory(allowRestricted, onlyPublished, categoryNumber);
 
       return _articleCount;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  listArticlesByYearAndMonth: async (
+    _parent,
+    { year, month, onlyPublished, limit = DEF_LIMIT, offset = DEF_OFFSET },
+    { session, authToken, decodedToken, API: { Article } },
+    { fieldNodes }
+  ) => {
+    try {
+      const _fields = getFieldNodes(fieldNodes);
+
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not the required permissions to read the requested fields.',
+        });
+      }
+
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      function startAndEndDate(year, month) {
+        return month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
+      }
+      const _articles = await Article.findByYearAndMonth(
+        allowRestricted,
+        onlyPublished,
+        limit,
+        offset,
+        startAndEndDate(year, month)
+      );
+      if (!_articles || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No articles were found.' });
+      }
+
+      return _articles;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  countTotalNumberOfArticles: async (
+    _parent,
+    { onlyPublished },
+    { session, authToken, decodedToken, API: { Article } }
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      onlyPublished =
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      return await Article.countNumberOfArticles(allowRestricted, onlyPublished);
     } catch (error) {
       throw APIError(null, error);
     }
@@ -340,6 +388,26 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  getAutoComplete: async (
+    _parent,
+    { keywords, limit = DEF_LIMIT },
+    { session, authToken, decodedToken, API: { Article } }
+  ) => {
+    try {
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+
+      const _articles = await Article.autoComplete(keywords, allowRestricted, onlyPublished, limit);
+
+      if (!_articles || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No articles were found with the given keywords.' });
+      }
+      return _articles;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+
   createArticle: async (
     _parent,
     { articleType, title, authors, photographers, designers, tech, categories },

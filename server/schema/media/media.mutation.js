@@ -1,6 +1,5 @@
-const { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLInt } = require('../scalars');
+const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLString, GraphQLInt } = require('../scalars');
 const MediaType = require('./media.type');
-const userDetailInput = require('../common/userDetail.input.type');
 
 const { addMedia, deleteMediaById } = require('./media.resolver');
 
@@ -11,7 +10,8 @@ module.exports = new GraphQLObjectType({
       type: MediaType,
       description: 'add media by uploading image',
       args: {
-        authors: { type: new GraphQLNonNull(new GraphQLList(userDetailInput)) },
+        imageKitFileID: { type: new GraphQLNonNull(GraphQLID) },
+        authors: { type: new GraphQLNonNull(GraphQLList(GraphQLID)) },
         store: { type: GraphQLInt },
         storePath: { type: new GraphQLNonNull(GraphQLString) },
         mediaType: { type: GraphQLInt },
@@ -24,6 +24,7 @@ module.exports = new GraphQLObjectType({
       description: 'delete media by id',
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
+        imageKitFileID: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: deleteMediaById,
     },
