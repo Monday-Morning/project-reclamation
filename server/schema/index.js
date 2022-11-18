@@ -21,10 +21,22 @@ const ContentType = require('./common/content.type');
 const UserDetailType = require('./common/userDetail.type');
 const CategoryMapType = require('./categoryMap/categoryMap.type');
 const ArticleSchema = require('./article/article.schema');
+const CompanySchema = require('./company/company.schema');
+const CompanyType = require('./company/company.type');
+const LiveSchema = require('./live/live.schema');
 const MediaSchema = require('./media/media.schema');
 
 module.exports = stitchSchemas({
-  subschemas: [UserSchema, TagSchema, SquiggleSchema, IssueSchema, ArticleSchema, MediaSchema],
-  types: [MediaType, ContentType, UserDetailType, CategoryMapType],
+  subschemas: [
+    UserSchema,
+    TagSchema,
+    SquiggleSchema,
+    IssueSchema,
+    ArticleSchema,
+    CompanySchema,
+    LiveSchema,
+    MediaSchema,
+  ],
+  types: [MediaType, ContentType, UserDetailType, CategoryMapType, CompanyType],
   mergeTypes: true,
 });
