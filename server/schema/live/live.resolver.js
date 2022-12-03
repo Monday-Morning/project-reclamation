@@ -71,7 +71,7 @@ module.exports = {
   getLiveByYearandSemester: async (
     _parent,
     { year, semester },
-    { mid, session, authToken, decodedToken, API: { Live, Company } }
+    { session, authToken, decodedToken, API: { Live, Company } }
   ) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'live.read.all')) {
@@ -83,21 +83,22 @@ module.exports = {
       const _companyIds = liveByYearAndSemester.reduce((prev, curr) => prev.add(curr.company.toString()), new Set());
 
       const comapnyIds = Array.from(_companyIds);
-      console.log(comapnyIds);
+
       const comapnies = await Company.findByIDs(comapnyIds);
-      console.log(comapnies);
+
       const comapnies_map = new Map(comapnies.map((obj) => [obj.id, obj]));
 
-      const _liveByYearAndSemester = liveByYearAndSemester.map((curr) => {
-        return { ...curr._doc, company: comapnies_map.get(curr.company.toString()) };
-      });
+      const _liveByYearAndSemester = liveByYearAndSemester.map((curr) => ({
+        ...curr._doc,
+        company: comapnies_map.get(curr.company.toString()),
+      }));
 
       return _liveByYearAndSemester;
     } catch (error) {
       throw APIError(null, error);
     }
   },
-  deleteLiveData: async (_parent, { id }, { mid, session, authToken, decodedToken, API: { Live } }) => {
+  deleteLiveData: async (_parent, { id }, { session, authToken, decodedToken, API: { Live } }) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'live.write.all')) {
         throw APIError('FORBIDDEN', null, {

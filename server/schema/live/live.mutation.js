@@ -1,7 +1,7 @@
 const {
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLInputObjectType,
+  // GraphQLInputObjectType,
   GraphQLList,
   GraphQLString,
   GraphQLID,

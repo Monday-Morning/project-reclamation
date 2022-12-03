@@ -17,12 +17,11 @@ const create = async (name, location, logo, session, authToken, mid) => {
   }
 };
 
-const find = async (query, limit, offset) =>
-  await CompanyModel.find(query).sort({ name: 'asc' }).skip(offset).limit(limit);
+const find = (query, limit, offset) => CompanyModel.find(query).sort({ name: 'asc' }).skip(offset).limit(limit);
 
 const findByID = () =>
   new DataLoader(
-    async (ids) => {
+    (ids) => {
       try {
         const _company = ids.map((id) => CompanyModel.findById(id));
         return _company;
