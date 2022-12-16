@@ -271,7 +271,7 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
   try {
     mdbSession.startTransaction();
 
-    const _uniqueUserIds = [...Set([...authors, ...photographers, ...designers, ...tech])];
+    const _uniqueUserIds = [...new Set([...authors, ...photographers, ...designers, ...tech])];
 
     const _users = await UserModel.find({ _id: _uniqueUserIds });
 
@@ -289,28 +289,28 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
           ..._users
             .filter((_u) => authors.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 0,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => photographers.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 1,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => designers.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 2,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => tech.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 3,
               details: _u._id,
             })),
