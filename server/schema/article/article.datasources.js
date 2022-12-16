@@ -208,10 +208,7 @@ const create = async (
 
     const _users = await UserModel.find({ _id: [...authors, ...photographers, ...designers, ...tech] });
 
-    if (
-      _users.length !== authors.length + photographers.length + designers.length + tech.length ||
-      _users.some((user) => !user || user.accountType !== 2)
-    ) {
+    if (_users.some((user) => !user || user.accountType !== 2)) {
       throw APIError('BAD_REQUEST', null, {
         reason:
           'At least one of the user IDs supplied supplied is invalid, i.e. that user does not exist or is not a MM Team Member.',
@@ -219,30 +216,28 @@ const create = async (
     }
 
     // TODO: create google doc and link
-    const _article = await ArticleModel.create(
-      {
-        articleType,
-        title,
-        users: _users.map((_user) => ({
-          name: _user.fullName,
-          team: authors.includes(_user._id.toString())
-            ? 0
-            : photographers.includes(_user._id.toString())
-            ? 1
-            : designers.includes(_user._id.toString())
-            ? 2
-            : tech.includes(_user._id.toString())
-            ? 3
-            : APIError(null, null, { reason: 'The data being processed was invalid.' }),
-          details: _user._id,
-        })),
-        categories: _categories.map((_category) => ({
-          subcategory: _category.parent?.number ? true : false,
-          number: _category.number,
-          reference: _category._id,
-        })),
-        createdBy: UserSession.valid(session, authToken) ? mid : null,
-      },
+    const [_article] = await ArticleModel.create(
+      [
+        {
+          articleType,
+          title,
+          users: _users.map((_user) => ({
+            name: _user.fullName,
+            team: authors.includes(_user._id.toString())
+              ? 0
+              : photographers.includes(_user._id.toString())
+              ? 1
+              : designers.includes(_user._id.toString())
+              ? 2
+              : tech.includes(_user._id.toString())
+              ? 3
+              : APIError(null, null, { reason: 'The data being processed was invalid.' }),
+            details: _user._id,
+          })),
+          categories,
+          createdBy: UserSession.valid(session, authToken) ? mid : null,
+        },
+      ],
       { session: mdbSession }
     );
 
