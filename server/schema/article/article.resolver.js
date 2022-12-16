@@ -539,7 +539,20 @@ module.exports = {
     }
   },
   // TODO: link with media models
-  updateArticleCover: () => null,
+  updateArticleCover: async (
+    _parent,
+    { id, squareRef, rectangleRef },
+    { session, authToken, decodedToken, mid, API: { Article } },
+    { fieldNodes }
+  ) => {
+    try {
+      await canUpdateArticle(id, mid, session, authToken, decodedToken, fieldNodes, Article, true);
+
+      return Article.updateCover(id, squareRef, rectangleRef, session, authToken, mid);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   // TODO: get google docs API setup
   updateArticleContent: () => null,
   updateArticleApprovalStatus: async (

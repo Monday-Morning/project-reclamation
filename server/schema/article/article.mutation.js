@@ -29,7 +29,7 @@ const {
   updateArticleUsers,
   updateArticleCategories,
   updateArticleTags,
-  // updateArticleCover,
+  updateArticleCover,
   updateArticleApprovalStatus,
   updateArticlePublishStatus,
   incrementViewCount,
@@ -91,15 +91,15 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateArticleTags,
     },
-    // updateArticleCover: {
-    // 	type: ArticleType,
-    //   args: {
-    // 		id: { type: new GraphQLNonNull(GraphQLID) },
-    //     squareRef: { type: new GraphQLNonNull(GraphQLID) },
-    //     rectangleRef: { type: new GraphQLNonNull(GraphQLID) },
-    //   },
-    //   resolve: updateArticleCover,
-    // },
+    updateArticleCover: {
+      type: ArticleType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        squareRef: { type: new GraphQLNonNull(GraphQLID) },
+        rectangleRef: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: updateArticleCover,
+    },
     // updateArticleContent: {
     // 	type: ArticleType,
     // 	args: {

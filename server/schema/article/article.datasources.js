@@ -401,7 +401,15 @@ const removeTag = async (id, tag, isAdmin, session, authToken, mid) => {
 };
 
 // TODO: link up with other models
-const updateCover = () => null;
+const updateCover = (id, squareRef, rectangleRef, session, authToken, mid) =>
+  ArticleModel.findByIdAndUpdate(
+    id,
+    {
+      coverMedia: { square: squareRef, rectangle: rectangleRef },
+      updatedBy: UserSession.valid(session, authToken) ? mid : null,
+    },
+    { new: true }
+  );
 
 // TODO: code google docs API
 const updateContent = () => null;
