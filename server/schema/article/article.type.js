@@ -34,7 +34,10 @@ const ArticleCategoryType = new GraphQLObjectType({
   name: 'ArticleCategory',
   fields: () => ({
     number: { type: new GraphQLNonNull(GraphQLInt) },
-    isSubcategory: { type: GraphQLBoolean },
+    isSubcategory: {
+      type: GraphQLBoolean,
+      resolve: (parent) => parent?.subcategory,
+    },
     reference: { type: GraphQLID },
     category: {
       type: CategoryMapType,

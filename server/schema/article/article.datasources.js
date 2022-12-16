@@ -4,7 +4,6 @@ const ArticleModel = require('./article.model');
 const { PublishStatusEnumType } = require('./article.enum.types');
 const UserSession = require('../../utils/userAuth/session');
 const UserModel = require('../user/user.model');
-const CategoryMapModel = require('../categoryMap/categoryMap.model');
 const { connection } = require('../../config/mongoose');
 const createUpdateObject = require('../../utils/createUpdateObject');
 const TagModel = require('../tag/tag.model');
@@ -208,7 +207,6 @@ const create = async (
     mdbSession.startTransaction();
 
     const _users = await UserModel.find({ _id: [...authors, ...photographers, ...designers, ...tech] });
-    const _categories = await CategoryMapModel.find({ _id: categories });
 
     if (
       _users.length !== authors.length + photographers.length + designers.length + tech.length ||
@@ -217,11 +215,6 @@ const create = async (
       throw APIError('BAD_REQUEST', null, {
         reason:
           'At least one of the user IDs supplied supplied is invalid, i.e. that user does not exist or is not a MM Team Member.',
-      });
-    }
-    if (_categories.length !== categories.length || _users.some((item) => !item)) {
-      throw APIError('BAD_REQUEST', null, {
-        reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
       });
     }
 
@@ -348,22 +341,10 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
 
 const updateCategories = async (id, categories, session, authToken, mid) => {
   try {
-    const _categories = await CategoryMapModel.find({ _id: categories });
-
-    if (_categories.length !== categories.length || _users.some((item) => !item)) {
-      throw APIError('BAD_REQUEST', null, {
-        reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
-      });
-    }
-
     const _article = await ArticleModel.findByIdAndUpdate(
       id,
       {
-        categories: _categories.map((_category) => ({
-          subcategory: _category.parent?.number ? true : false,
-          number: _category.number,
-          reference: _category._id,
-        })),
+        categories,
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
       },
       { new: true }
