@@ -15,7 +15,8 @@ const { cache } = require('../utils/userAuth/role');
 const ImageKit = require('imagekit');
 const UserAuth = require('../utils/userAuth');
 const UserPermission = require('../utils/userAuth/permission');
-
+const axios = require('axios');
+const qs = require('qs');
 /**
  * @summary Express Router Object
  * @description Initialize Express Router
@@ -27,6 +28,33 @@ const router = express.Router();
 
 /** Updates roles cache */
 router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
+
+router.use('/admin/spotify/auth', async (_req, res) => {
+  try {
+    const spotifyClientId = process.env.SPOTIFY_CLIENT_ID;
+    const spotifyClientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+    const authToken = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`, 'utf-8').toString('base64');
+
+    const tokenUrl = 'https://accounts.spotify.com/api/token';
+    const data = qs.stringify({ grant_type: 'client_credentials' });
+
+    const response = await axios.post(tokenUrl, data, {
+      headers: {
+        Authorization: `Basic ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    res.status(200).send(response.data);
+  } catch (error) {
+    return res.status(500).json({
+      data: 'The spotify authentication paramters could not be retrived.',
+      code: 500,
+      error,
+    });
+  }
+});
 
 router.use('/admin/media/auth', (_req, res) => {
   try {
