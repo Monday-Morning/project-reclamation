@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLNonNull,GraphQLList, GraphQLString, GraphQLInt } = require('../scalars');
+const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLString, GraphQLInt } = require('../scalars');
 const LiveType = require('./live.type');
 const { getLiveByYearandSemester } = require('./live.resolver');
 

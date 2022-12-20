@@ -67,7 +67,7 @@ const update = async (
 
 const findLiveByYearAndSemester = async (year, semester) => {
   try {
-    const liveByYearAndSemester = await LiveModel.find({ year: year, semester: semester });
+    const liveByYearAndSemester = await LiveModel.find({ year, semester });
     return liveByYearAndSemester;
   } catch (error) {
     throw APIError(null, error);
