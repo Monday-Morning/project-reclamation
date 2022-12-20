@@ -31,15 +31,15 @@ router.use('/admin/roles/sync', async (_req, res) => res.send(await cache()));
 
 router.use('/admin/spotify/auth', async (_req, res) => {
   try {
-    const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
-    const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+    const spotifyClientId = process.env.SPOTIFY_CLIENT_ID;
+    const spotifyClientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
-    const authToken = Buffer.from(`${spotify_client_id}:${spotify_client_secret}`, 'utf-8').toString('base64');
+    const authToken = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`, 'utf-8').toString('base64');
 
-    const token_url = 'https://accounts.spotify.com/api/token';
+    const tokenUrl = 'https://accounts.spotify.com/api/token';
     const data = qs.stringify({ grant_type: 'client_credentials' });
 
-    const response = await axios.post(token_url, data, {
+    const response = await axios.post(tokenUrl, data, {
       headers: {
         Authorization: `Basic ${authToken}`,
         'Content-Type': 'application/x-www-form-urlencoded',
