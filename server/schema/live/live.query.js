@@ -1,18 +1,19 @@
-const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLString, GraphQLInt } = require('../scalars');
+const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLInt } = require('../scalars');
 const LiveType = require('./live.type');
-const { getLiveByYearandSemester } = require('./live.resolver');
+const { getLiveByYearAndSemester } = require('./live.resolver');
+const SemesterEnum = require('../common/session.enum.type');
 
 module.exports = new GraphQLObjectType({
   name: 'LiveQuery',
   fields: {
-    getLiveByYearandSemester: {
+    getLiveByYearAndSemester: {
       type: new GraphQLList(LiveType),
-      description: 'create live data',
+      description: 'Get all live data for a particular session.',
       args: {
-        year: { type: new GraphQLNonNull(GraphQLString) },
-        semester: { type: new GraphQLNonNull(GraphQLInt) },
+        year: { type: new GraphQLNonNull(GraphQLInt) },
+        semester: { type: new GraphQLNonNull(SemesterEnum) },
       },
-      resolve: getLiveByYearandSemester,
+      resolve: getLiveByYearAndSemester,
     },
   },
 });
