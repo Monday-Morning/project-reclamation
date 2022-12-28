@@ -33,13 +33,25 @@ const CompanySchema = new Schema(
     ],
     location: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     logo: {
-      type: Schema.Types.ObjectId,
-      ref: 'Media',
-      required: true,
+      /** [0 - Adamantium Archive A, 1 - Adamantium Archive B, 2 - Active Store] */
+      store: {
+        type: Number,
+        required: false,
+        min: 0,
+        max: 2,
+      },
+      storePath: {
+        type: String,
+        required: false,
+      },
+      blurhash: {
+        type: String,
+        required: false,
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,
