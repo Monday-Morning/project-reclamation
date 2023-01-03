@@ -69,7 +69,7 @@ module.exports = {
   },
   createIssue: (
     _parent,
-    { name, description, startDate, endDate, articles, featured },
+    { name, description, startDate, endDate, articles, featured, isPublished },
     { session, authToken, decodedToken, mid, API: { Issue } },
     _
   ) => {
@@ -80,7 +80,18 @@ module.exports = {
         });
       }
 
-      return Issue.create(name, description, startDate, endDate, articles, featured, session, authToken, mid);
+      return Issue.create(
+        name,
+        description,
+        startDate,
+        endDate,
+        articles,
+        featured,
+        isPublished,
+        session,
+        authToken,
+        mid
+      );
     } catch (error) {
       throw APIError(null, error);
     }

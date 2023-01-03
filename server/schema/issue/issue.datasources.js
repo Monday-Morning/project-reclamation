@@ -22,7 +22,18 @@ const findByID = () =>
 
 const find = (query, limit, offset) => IssueModel.find(query).sort({ _id: 'desc' }).skip(offset).limit(limit);
 
-const create = async (name, description, startDate, endDate, articles, featured, session, authToken, mid) => {
+const create = async (
+  name,
+  description,
+  startDate,
+  endDate,
+  articles,
+  featured,
+  isPublished,
+  session,
+  authToken,
+  mid
+) => {
   try {
     if (featured.some((_item) => !articles.includes(_item))) {
       throw APIError('BAD_REQUEST', null, { reason: 'The featured articles must be part of this issue.' });
@@ -42,6 +53,7 @@ const create = async (name, description, startDate, endDate, articles, featured,
       endDate,
       articles,
       featured,
+      isPublished,
       createdBy: UserSession.valid(session, authToken) ? mid : null,
     });
   } catch (error) {
