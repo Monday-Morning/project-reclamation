@@ -14,6 +14,15 @@ const { APIError } = require('../../utils/exception');
 const DEF_LIMIT = 10;
 const DEF_OFFSET = 0;
 module.exports = {
+  createSquiggle: async (_parent, { squiggleType, content }, { API: { Squiggle } }) => {
+    try {
+      const _squiggle = await Squiggle.create(squiggleType, content);
+
+      return _squiggle;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   getLatestSquiggle: async (_parent, _args, { API: { Squiggle } }, _) => {
     try {
       const _squiggle = await Squiggle.getLatest();

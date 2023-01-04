@@ -28,10 +28,22 @@ const find = async (query, limit, offset) => {
   }
 };
 
+const create = async (squiggleType, content) => {
+  try {
+    const _squiggle = await SquiggleModel.create({
+      squiggleType,
+      content,
+    });
+    return _squiggle;
+  } catch (error) {
+    throw APIError(null, error);
+  }
+};
 const SquiggleDataSources = () => ({
   getLatest,
   findByID,
   find,
+  create,
 });
 
 module.exports = SquiggleDataSources;
