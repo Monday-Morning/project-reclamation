@@ -10,7 +10,7 @@ const {
   // GraphQLError,
   // GraphQLList,
   GraphQLString,
-  // GraphQLID,
+  GraphQLID,
   // GraphQLBoolean,
   // GraphQLInt,
   // GraphQLFloat,
@@ -25,6 +25,7 @@ const StoreEnumType = require('./store.enum.type');
 const ImageType = new GraphQLObjectType({
   name: 'Image',
   fields: () => ({
+    id: { type: GraphQLID },
     store: { type: StoreEnumType },
     storePath: { type: GraphQLString },
     blurhash: { type: GraphQLString },

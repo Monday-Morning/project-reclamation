@@ -99,6 +99,21 @@
 
 ---
 
+### Live Section 
+
+### Live Permissions
+
+| Permission Name  | Description                |
+| ---------------  | ---------------------------|
+| live.read.all    | Can read all live data     |
+| live.write.all   | Can add/edit all live data |
+
+### Live Roles
+
+| Role Name         |  live.read.all   | live.write.all  |
+| ------------------|------------------|-----------------|
+| live.verified     |  Y               | N               |
+| live.superadmin   |  Y               | Y               |
 ### Media Section
 
 ### Media Permissions

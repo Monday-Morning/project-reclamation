@@ -20,17 +20,20 @@ module.exports = {
   init: () => {
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
-      const firebaseServiceAccount = JSON.parse(
-        Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
-      );
-      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.NODE_ENV === 'production') {
+        const firebaseServiceAccount = JSON.parse(
+          Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
+        );
         Admin.initializeApp({
           credential: Admin.credential.cert(firebaseServiceAccount),
           storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
         });
-        logger.info('Admin Application Initialized');
+        logger.info('Admin Application Initialized: Production Environment');
+      } else if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+        Admin.initializeApp({ projectId: process.env.GCLOUD_PROJECT });
+        logger.info('Admin Application Initialized: Emulated Environment');
       } else {
-        logger.info('No Admin App - Development Environment');
+        logger.info('No Admin App: Development Environment');
       }
     } catch (e) {
       logger.error('Could not initialize admin application: ', e);
