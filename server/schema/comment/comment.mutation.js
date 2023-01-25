@@ -22,7 +22,7 @@ const {
 } = require('../scalars');
 const { createComment, updateCommentAuthor, deleteComment } = require('./comment.resolver');
 
-const CommentType = require('./comment.type'); 
+const CommentType = require('./comment.type');
 
 module.exports = new GraphQLObjectType({
   name: 'CommentMutation',
@@ -34,7 +34,7 @@ module.exports = new GraphQLObjectType({
         content: { type: new GraphQLNonNull(new GraphQLList(GraphQLJSONObject)) },
         authorID: { type: new GraphQLNonNull(GraphQLID) },
         parentID: { type: new GraphQLNonNull(GraphQLID) },
-        parentType: { type: new GraphQLNonNull(GraphQLString) }
+        parentType: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: createComment,
     },
@@ -64,7 +64,6 @@ module.exports = new GraphQLObjectType({
         authorID: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: deleteComment,
-    }
-  } 
-})
-
+    },
+  },
+});

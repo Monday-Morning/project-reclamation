@@ -35,14 +35,17 @@ const ParentType = new GraphQLObjectType({
     reference: { type: GraphQLID },
 
     parent: {
+      // eslint-disable-next-line no-use-before-define
       type: ParentUniontype,
       resolve: (parent, _args, context, info) =>
-        parent.reference ? parent.model === 'Article' ? getArticleByID(parent, { id: parent.reference }, context, info)
-          : getCommentById(parent, { id: parent.reference }, context, info)
+        parent.reference
+          ? parent.model === 'Article'
+            ? getArticleByID(parent, { id: parent.reference }, context, info)
+            : getCommentById(parent, { id: parent.reference }, context, info)
           : null,
-    }
+    },
   }),
-})
+});
 
 const AuthorType = new GraphQLObjectType({
   name: 'Author',
@@ -55,7 +58,7 @@ const AuthorType = new GraphQLObjectType({
         parent.reference ? getUser(parent, { id: parent.reference }, context, info) : null,
     },
   }),
-})
+});
 
 const CommentType = new GraphQLObjectType({
   name: 'Comment',
@@ -63,26 +66,26 @@ const CommentType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(GraphQLID) },
 
     content: { type: new GraphQLList(new GraphQLNonNull(ContentType)) },
-    
+
     author: {
       type: AuthorType,
     },
 
     parent: { type: ParentType },
-    
+
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
     updatedAt: { type: GraphQLDateTime },
     updatedBy: { type: GraphQLID },
     schemaVersion: { type: GraphQLInt },
-  })
+  }),
 });
 
 const ParentUniontype = new GraphQLUnionType({
   name: 'ParentUnion',
   description: 'Union of article and comment for parent of comment',
   types: [ArticleType, CommentType],
-  resolveType: (value) => value.categories ? ArticleType : CommentType,
+  resolveType: (value) => (value.categories ? ArticleType : CommentType),
 });
 
 module.exports = CommentType;

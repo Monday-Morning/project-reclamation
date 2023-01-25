@@ -53,8 +53,7 @@ module.exports = new GraphQLObjectType({
         id: {
           description: 'The id of comment to be retrieved',
           type: new GraphQLNonNull(GraphQLID),
-        }
-
+        },
       },
       resolve: getCommentById,
     },
@@ -68,10 +67,10 @@ module.exports = new GraphQLObjectType({
         },
         parentType: {
           description: 'Type of parent',
-          type: GraphQLString
-        }
+          type: GraphQLString,
+        },
       },
       resolve: countOfComments,
-    }
-  }
-})
+    },
+  },
+});

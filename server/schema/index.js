@@ -38,7 +38,7 @@ module.exports = stitchSchemas({
     CompanySchema,
     LiveSchema,
     MediaSchema,
-    CommentSchema
+    CommentSchema,
   ],
   types: [MediaType, ContentType, UserDetailType, CategoryMapType, CompanyType, CommentType],
   mergeTypes: true,
