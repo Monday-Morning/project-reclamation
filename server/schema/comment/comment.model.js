@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Comment Model
@@ -81,6 +81,6 @@ const CommentSchema = new Schema(
  * @description Generated Comment Model
  * @constant CommentModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Comment', CommentSchema);
