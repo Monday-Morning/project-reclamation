@@ -34,11 +34,13 @@ const create = async (squiggleType, content) => {
       squiggleType,
       content,
     });
+
     return _squiggle;
   } catch (error) {
     throw APIError(null, error);
   }
 };
+
 const SquiggleDataSources = () => ({
   getLatest,
   findByID,
