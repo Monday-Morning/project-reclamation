@@ -9,13 +9,23 @@
  * @since 0.1.0
  */
 
+const UserPermission = require('../../utils/userAuth/permission');
 const { APIError } = require('../../utils/exception');
 
 const DEF_LIMIT = 10;
 const DEF_OFFSET = 0;
 module.exports = {
-  createSquiggle: async (_parent, { squiggleType, content }, { API: { Squiggle } }) => {
+  createSquiggle: async (
+    _parent,
+    { squiggleType, content },
+    { session, authToken, decodedToken, API: { Squiggle } }
+  ) => {
     try {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.new')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to create a squiggle.',
+        });
+      }
       const _squiggle = await Squiggle.create(squiggleType, content);
 
       return _squiggle;

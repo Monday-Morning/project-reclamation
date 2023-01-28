@@ -76,6 +76,24 @@
 
 ---
 
+## Squiggle Section
+
+### Squiggle Permissions
+
+| Permission Name    | Description               |
+| ------------------ | ------------------------- |
+| squiggle.write.new | Can create a new squiggle |
+|                    |                           |
+
+### Squiggle Roles
+
+| Role Name      | squiggle.write.new |
+| -------------- | ------------------ |
+| squiggle.admin | Y                  |
+|                |                    |
+
+---
+
 ## Tag Section
 
 ### Tag Permissions
@@ -99,21 +117,22 @@
 
 ---
 
-### Live Section 
+### Live Section
 
 ### Live Permissions
 
-| Permission Name  | Description                |
-| ---------------  | ---------------------------|
-| live.read.all    | Can read all live data     |
-| live.write.all   | Can add/edit all live data |
+| Permission Name | Description                |
+| --------------- | -------------------------- |
+| live.read.all   | Can read all live data     |
+| live.write.all  | Can add/edit all live data |
 
 ### Live Roles
 
-| Role Name         |  live.read.all   | live.write.all  |
-| ------------------|------------------|-----------------|
-| live.verified     |  Y               | N               |
-| live.superadmin   |  Y               | Y               |
+| Role Name       | live.read.all | live.write.all |
+| --------------- | ------------- | -------------- |
+| live.verified   | Y             | N              |
+| live.superadmin | Y             | Y              |
+
 ### Media Section
 
 ### Media Permissions
@@ -126,7 +145,7 @@
 
 ### Media Roles
 
-| Role Name   | media.write.new | media.write.self | media.write.all  |
-| ----------- | --------------- | ---------------- | ---------------- |
-| media.team  | Y               | Y                | N                |
-| media.admin | Y               | Y                | Y                |
+| Role Name   | media.write.new | media.write.self | media.write.all |
+| ----------- | --------------- | ---------------- | --------------- |
+| media.team  | Y               | Y                | N               |
+| media.admin | Y               | Y                | Y               |
