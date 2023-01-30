@@ -12,7 +12,7 @@ const canMutateComment = async (session, authToken, decodedToken, id, authorID, 
   }
 
   if (
-    (authorID !== mid || !UserPermission.exists(session, authToken, decodedToken, 'comment.write.self')) &&
+    (authorID !== mid || !UserPermission.exists(session, authToken, decodedToken, 'comment.write.new')) &&
     !UserPermission.exists(session, authToken, decodedToken, 'comment.write.all')
   ) {
     throw APIError('FORBIDDEN', null, 'User does not have required permission to update the comment');
@@ -60,7 +60,10 @@ module.exports = {
     { session, authToken, decodedToken, mid, API: { Comment } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'comment.write.new')) {
+      if (
+        !UserPermission.exists(session, authToken, decodedToken, 'comment.write.new') &&
+        !UserPermission.exists(session, authToken, decodedToken, 'comment.write.all')
+      ) {
         throw APIError('FORBIDDEN', null, 'User does not have required permission to create comment');
       }
 
