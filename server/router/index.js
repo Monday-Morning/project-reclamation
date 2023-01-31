@@ -59,7 +59,7 @@ router.use('/admin/spotify/auth', async (_req, res) => {
 router.use('/admin/media/auth', async (req, res) => {
   const { authToken, decodedToken } = await UserAuth.getContext(req);
 
-  if (!authToken || !decodedToken || !UserPermission.exists(req.session, authToken, decodedToken, 'media.write.new')) {
+  if (!authToken || !decodedToken) {
     return res.status(401).json({
       data: 'The user is not authorized to access media endpoint.',
       code: 401,
