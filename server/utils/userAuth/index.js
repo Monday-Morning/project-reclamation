@@ -68,15 +68,18 @@ const UserAuth = {
       }
 
       const { uid, exp, roles, mid } = _decodedToken;
-      req.session.auth = {
-        uid,
-        mid,
-        jwt: req.headers.authorization,
-        exp,
-        roles,
-        decodedToken: _decodedToken,
-      };
-      await req.session.save();
+
+      if (req.session) {
+        req.session.auth = {
+          uid,
+          mid,
+          jwt: req.headers.authorization,
+          exp,
+          roles,
+          decodedToken: _decodedToken,
+        };
+        await req.session.save();
+      }
 
       return {
         authToken: req.headers.authorization,
