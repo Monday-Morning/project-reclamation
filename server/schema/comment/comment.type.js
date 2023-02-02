@@ -8,7 +8,7 @@ const {
   // GraphQLSchema,
   GraphQLNonNull,
   // GraphQLError,
-  GraphQLList,
+  // GraphQLList,
   GraphQLString,
   GraphQLID,
   // GraphQLBoolean,
@@ -23,7 +23,6 @@ const {
 
 const ArticleType = require('../article/article.type');
 const { getArticleByID } = require('../article/article.resolver');
-const ContentType = require('../common/content.type');
 const { getCommentById } = require('./comment.resolver');
 const { getUser } = require('../user/user.resolver');
 const UserType = require('../user/user.type');
@@ -65,7 +64,7 @@ const CommentType = new GraphQLObjectType({
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
 
-    content: { type: new GraphQLList(new GraphQLNonNull(ContentType)) },
+    content: { type: new GraphQLNonNull(GraphQLString) },
 
     author: {
       type: AuthorType,

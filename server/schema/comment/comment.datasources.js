@@ -30,7 +30,7 @@ const countNumberOfComments = (parentID, parentModel) =>
     'parent.model': parentModel,
   });
 
-const create = async (authorID, parentID, parentType, session, authToken, mid) => {
+const create = async (authorID, content, parentID, parentType, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
   try {
     mdbSession.startTransaction();
@@ -39,6 +39,7 @@ const create = async (authorID, parentID, parentType, session, authToken, mid) =
     const _comment = await CommentModel.create(
       [
         {
+          content,
           author: {
             name: _author.fullName,
             reference: authorID,
@@ -51,6 +52,31 @@ const create = async (authorID, parentID, parentType, session, authToken, mid) =
         },
       ],
       { session: mdbSession }
+    );
+    await mdbSession.commitTransaction();
+    await mdbSession.endSession();
+
+    return _comment;
+  } catch (error) {
+    await mdbSession.abortTransaction();
+    await mdbSession.endSession();
+
+    throw APIError(null, error);
+  }
+};
+
+const updateContent = async (id, content, session, authToken, mid) => {
+  const mdbSession = await connection.startSession();
+  try {
+    mdbSession.startTransaction();
+
+    const _comment = await CommentModel.findByIdAndUpdate(
+      id,
+      {
+        content,
+        updatedBy: UserSession.valid(session, authToken) ? mid : null,
+      },
+      { new: true, session: mdbSession }
     );
     await mdbSession.commitTransaction();
     await mdbSession.endSession();
@@ -116,6 +142,7 @@ const CommentDataSources = () => ({
   findByID: findByID(),
   countNumberOfComments,
   create,
+  updateContent,
   updateAuthor,
   remove,
 });

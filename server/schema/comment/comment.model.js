@@ -19,13 +19,10 @@ const { Schema, model, Model: _Model } = require('mongoose');
  */
 const CommentSchema = new Schema(
   {
-    // TODO: update content with final structure
-    content: [
-      {
-        type: Object,
+    content: {
+        type: String,
         required: true,
-      },
-    ],
+    },
     author: {
       name: {
         type: String,

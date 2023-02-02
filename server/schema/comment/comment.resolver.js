@@ -56,7 +56,7 @@ module.exports = {
   },
   createComment: async (
     _parent,
-    { authorID, parentID, parentType },
+    { authorID, content, parentID, parentType },
     { session, authToken, decodedToken, mid, API: { Comment } }
   ) => {
     try {
@@ -68,7 +68,7 @@ module.exports = {
       }
 
       //TODO Add support for content.
-      const _comment = await Comment.create(authorID, parentID, parentType, session, authToken, mid);
+      const _comment = await Comment.create(authorID, content,parentID, parentType, session, authToken, mid);
 
       return _comment[0];
     } catch (error) {
@@ -89,7 +89,20 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  //TODO Add Update Content.
+  updateCommentContent: async (
+    _parent,
+    { id, content, authorID },
+    { session, authToken, decodedToken, mid, API: { Comment } }
+  ) => {
+    try {
+      await canMutateComment(session, authToken, decodedToken, id, authorID, mid, Comment);
+      const _comment = await Comment.updateContent(id, content, session, authToken, mid);
+
+      return _comment;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   deleteComment: async (_parent, { id, authorID }, { session, authToken, decodedToken, mid, API: { Comment } }) => {
     try {
       await canMutateComment(session, authToken, decodedToken, id, authorID, mid, Comment);

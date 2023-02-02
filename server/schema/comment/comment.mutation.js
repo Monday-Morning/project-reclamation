@@ -8,7 +8,7 @@ const {
   // GraphQLSchema,
   GraphQLNonNull,
   // GraphQLError,
-  GraphQLList,
+  // GraphQLList,
   GraphQLString,
   GraphQLID,
   // GraphQLBoolean,
@@ -18,9 +18,9 @@ const {
   // GraphQLTime,
   // GraphQLDateTime,
   // GraphQLJSON,
-  GraphQLJSONObject,
+  // GraphQLJSONObject,
 } = require('../scalars');
-const { createComment, updateCommentAuthor, deleteComment } = require('./comment.resolver');
+const { createComment, updateCommentAuthor, deleteComment, updateCommentContent } = require('./comment.resolver');
 
 const CommentType = require('./comment.type');
 
@@ -31,7 +31,7 @@ module.exports = new GraphQLObjectType({
       description: 'Create a comment',
       type: CommentType,
       args: {
-        content: { type: new GraphQLNonNull(new GraphQLList(GraphQLJSONObject)) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
         authorID: { type: new GraphQLNonNull(GraphQLID) },
         parentID: { type: new GraphQLNonNull(GraphQLID) },
         parentType: { type: new GraphQLNonNull(GraphQLString) },
@@ -43,9 +43,10 @@ module.exports = new GraphQLObjectType({
       type: CommentType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        content: { type: new GraphQLNonNull(new GraphQLList(GraphQLJSONObject)) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+        authorID: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve: null,
+      resolve: updateCommentContent,
     },
     updateCommentAuthor: {
       description: 'Update Comment by Id',
