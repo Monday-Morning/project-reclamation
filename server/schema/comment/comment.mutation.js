@@ -20,6 +20,7 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const { CommentParentModelEmum } = require('./comment.enum.types');
 const { createComment, updateCommentAuthor, deleteComment, updateCommentContent } = require('./comment.resolver');
 
 const CommentType = require('./comment.type');
@@ -34,7 +35,7 @@ module.exports = new GraphQLObjectType({
         content: { type: new GraphQLNonNull(GraphQLString) },
         authorID: { type: new GraphQLNonNull(GraphQLID) },
         parentID: { type: new GraphQLNonNull(GraphQLID) },
-        parentType: { type: new GraphQLNonNull(GraphQLString) },
+        parentType: { type: new GraphQLNonNull(CommentParentModelEmum) },
       },
       resolve: createComment,
     },

@@ -26,11 +26,12 @@ const { getArticleByID } = require('../article/article.resolver');
 const { getCommentById } = require('./comment.resolver');
 const { getUser } = require('../user/user.resolver');
 const UserType = require('../user/user.type');
+const { CommentParentModelEmum } = require('./comment.enum.types');
 
 const ParentType = new GraphQLObjectType({
   name: 'Parent',
   fields: () => ({
-    model: { type: GraphQLString },
+    model: { type: CommentParentModelEmum },
     reference: { type: GraphQLID },
 
     parent: {
