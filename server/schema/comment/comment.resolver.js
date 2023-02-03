@@ -67,8 +67,7 @@ module.exports = {
         throw APIError('FORBIDDEN', null, 'User does not have required permission to create comment');
       }
 
-      //TODO Add support for content.
-      const _comment = await Comment.create(authorID, content,parentID, parentType, session, authToken, mid);
+      const _comment = await Comment.create(authorID, content, parentID, parentType, session, authToken, mid);
 
       return _comment[0];
     } catch (error) {

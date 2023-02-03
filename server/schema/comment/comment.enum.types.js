@@ -25,10 +25,10 @@ const CommentParentModelEmum = new GraphQLEnumType({
   name: 'CommentParentModelEnum',
   values: {
     ARTICLE: { value: 'Article' },
-    COMMENT: { value: 'Comment' }
-  }
-})
+    COMMENT: { value: 'Comment' },
+  },
+});
 
 module.exports = {
   CommentParentModelEmum,
-}
+};

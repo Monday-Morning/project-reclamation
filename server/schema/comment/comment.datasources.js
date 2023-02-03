@@ -66,36 +66,29 @@ const create = async (authorID, content, parentID, parentType, session, authToke
 };
 
 const updateContent = async (id, content, session, authToken, mid) => {
-  const mdbSession = await connection.startSession();
   try {
-    mdbSession.startTransaction();
-
     const _comment = await CommentModel.findByIdAndUpdate(
       id,
       {
         content,
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
       },
-      { new: true, session: mdbSession }
+      { new: true }
     );
-    await mdbSession.commitTransaction();
-    await mdbSession.endSession();
 
     return _comment;
   } catch (error) {
-    await mdbSession.abortTransaction();
-    await mdbSession.endSession();
-
     throw APIError(null, error);
   }
 };
 
 const updateAuthor = async (id, authorID, session, authToken, mid) => {
-  const mdbSession = await connection.startSession();
   try {
-    mdbSession.startTransaction();
-
     const _author = await userModel.findById(authorID);
+    if (!_author) {
+      throw APIError('NOT FOUND', null, 'Invalid Author ID');
+    }
+
     const _comment = await CommentModel.findByIdAndUpdate(
       id,
       {
@@ -105,37 +98,16 @@ const updateAuthor = async (id, authorID, session, authToken, mid) => {
         },
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
       },
-      { new: true, session: mdbSession }
+      { new: true }
     );
-    await mdbSession.commitTransaction();
-    await mdbSession.endSession();
 
     return _comment;
   } catch (error) {
-    await mdbSession.abortTransaction();
-    await mdbSession.endSession();
-
     throw APIError(null, error);
   }
 };
 
-const remove = async (id) => {
-  const mdbSession = await connection.startSession();
-  try {
-    mdbSession.startTransaction();
-
-    const _comment = await CommentModel.findByIdAndDelete(id);
-    await mdbSession.commitTransaction();
-    await mdbSession.endSession();
-
-    return _comment;
-  } catch (error) {
-    await mdbSession.abortTransaction();
-    await mdbSession.endSession();
-
-    throw APIError(null, error);
-  }
-};
+const remove = (id) => CommentModel.findByIdAndDelete(id);
 
 const CommentDataSources = () => ({
   findAll,

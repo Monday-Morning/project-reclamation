@@ -20,8 +20,8 @@ const { Schema, model, Model: _Model } = require('mongoose');
 const CommentSchema = new Schema(
   {
     content: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     author: {
       name: {
