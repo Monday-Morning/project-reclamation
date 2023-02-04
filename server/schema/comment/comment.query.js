@@ -63,11 +63,11 @@ module.exports = new GraphQLObjectType({
       args: {
         id: {
           description: 'Id of article or comment',
-          type: GraphQLID,
+          type: new GraphQLNonNull(GraphQLID),
         },
         parentType: {
           description: 'Type of parent',
-          type: GraphQLString,
+          type: new GraphQLNonNull(GraphQLString),
         },
       },
       resolve: countOfComments,
