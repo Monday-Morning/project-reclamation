@@ -1,5 +1,4 @@
 const DataLoader = require('dataloader');
-const { connection } = require('../../config/mongoose');
 const { APIError } = require('../../utils/exception');
 const UserSession = require('../../utils/userAuth/session');
 const userModel = require('../user/user.model');
@@ -31,36 +30,29 @@ const countNumberOfComments = (parentID, parentModel) =>
   });
 
 const create = async (authorID, content, parentID, parentType, session, authToken, mid) => {
-  const mdbSession = await connection.startSession();
   try {
-    mdbSession.startTransaction();
     const _author = await userModel.findById(authorID);
+    if (!_author) {
+      throw APIError('NOT FOUND', null, 'Invalid Author ID');
+    }
 
-    const _comment = await CommentModel.create(
-      [
-        {
-          content,
-          author: {
-            name: _author.fullName,
-            reference: authorID,
-          },
-          parent: {
-            reference: parentID,
-            model: parentType,
-          },
-          createdBy: UserSession.valid(session, authToken) ? mid : null,
+    const [_comment] = await CommentModel.create([
+      {
+        content,
+        author: {
+          name: _author.fullName,
+          reference: authorID,
         },
-      ],
-      { session: mdbSession }
-    );
-    await mdbSession.commitTransaction();
-    await mdbSession.endSession();
+        parent: {
+          reference: parentID,
+          model: parentType,
+        },
+        createdBy: UserSession.valid(session, authToken) ? mid : null,
+      },
+    ]);
 
     return _comment;
   } catch (error) {
-    await mdbSession.abortTransaction();
-    await mdbSession.endSession();
-
     throw APIError(null, error);
   }
 };

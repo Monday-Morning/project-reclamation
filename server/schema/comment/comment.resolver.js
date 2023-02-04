@@ -69,7 +69,7 @@ module.exports = {
 
       const _comment = await Comment.create(authorID, content, parentID, parentType, session, authToken, mid);
 
-      return _comment[0];
+      return _comment;
     } catch (error) {
       throw APIError(null, error);
     }
