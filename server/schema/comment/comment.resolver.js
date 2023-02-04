@@ -4,7 +4,7 @@ const UserPermission = require('../../utils/userAuth/permission');
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
 
-const canMutateComment = async (session, authToken, decodedToken, id, authorID, mid, Comment) => {
+const canMutateComment = async (session, authToken, decodedToken, id, mid, Comment) => {
   const _comment = await Comment.findByID.load(id);
 
   if (!_comment) {
@@ -12,7 +12,8 @@ const canMutateComment = async (session, authToken, decodedToken, id, authorID, 
   }
 
   if (
-    (authorID !== mid || !UserPermission.exists(session, authToken, decodedToken, 'comment.write.new')) &&
+    (_comment.author.reference !== mid ||
+      !UserPermission.exists(session, authToken, decodedToken, 'comment.write.new')) &&
     !UserPermission.exists(session, authToken, decodedToken, 'comment.write.all')
   ) {
     throw APIError('FORBIDDEN', null, 'User does not have required permission to update the comment');
@@ -80,7 +81,7 @@ module.exports = {
     { session, authToken, decodedToken, mid, API: { Comment } }
   ) => {
     try {
-      await canMutateComment(session, authToken, decodedToken, id, authorID, mid, Comment);
+      await canMutateComment(session, authToken, decodedToken, id, mid, Comment);
       const _comment = await Comment.updateAuthor(id, authorID, session, authToken, mid);
 
       return _comment;
@@ -90,11 +91,11 @@ module.exports = {
   },
   updateCommentContent: async (
     _parent,
-    { id, content, authorID },
+    { id, content },
     { session, authToken, decodedToken, mid, API: { Comment } }
   ) => {
     try {
-      await canMutateComment(session, authToken, decodedToken, id, authorID, mid, Comment);
+      await canMutateComment(session, authToken, decodedToken, id, mid, Comment);
       const _comment = await Comment.updateContent(id, content, session, authToken, mid);
 
       return _comment;
@@ -102,9 +103,9 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  deleteComment: async (_parent, { id, authorID }, { session, authToken, decodedToken, mid, API: { Comment } }) => {
+  deleteComment: async (_parent, { id }, { session, authToken, decodedToken, mid, API: { Comment } }) => {
     try {
-      await canMutateComment(session, authToken, decodedToken, id, authorID, mid, Comment);
+      await canMutateComment(session, authToken, decodedToken, id, mid, Comment);
 
       const _comment = await Comment.remove(id);
 

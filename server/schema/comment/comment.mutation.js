@@ -45,7 +45,6 @@ module.exports = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
         content: { type: new GraphQLNonNull(GraphQLString) },
-        authorID: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: updateCommentContent,
     },
@@ -63,7 +62,6 @@ module.exports = new GraphQLObjectType({
       type: CommentType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        authorID: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: deleteComment,
     },
