@@ -24,13 +24,10 @@ module.exports = {
   getListOfComments: async (_parent, { ids = null, limit = DEF_LIMIT, offset = DEF_OFFSET }, { API: { Comment } }) => {
     try {
       const _comments = ids
-        ? await Promise.all(ids.slice(offset, offset + limit).map((id) => Comment.findByID.loadMany([id, id])))
+        ? await Promise.all(ids.slice(offset, offset + limit).map((id) => Comment.findByID.load(id)))
         : await Comment.findAll(offset, limit);
 
-      if (!_comments || _comments.length === 0) {
-        throw APIError('NOT FOUND', null, { reason: 'Requested comments were not found' });
-      }
-      return _comments;
+      return _comments.filter((comment) => comment);
     } catch (error) {
       throw APIError(null, error);
     }
