@@ -25,10 +25,12 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 
+const SquiggleMutation = require('./squiggle.mutation');
 const SquiggleQuery = require('./squiggle.query');
 const SquiggleType = require('./squiggle.type');
 
 module.exports = new GraphQLSchema({
   types: [SquiggleType],
   query: SquiggleQuery,
+  mutation: SquiggleMutation,
 });
