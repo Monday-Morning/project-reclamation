@@ -117,13 +117,13 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
         maxAge: 3600000, // 1 Hour
         secure: true,
         httpOnly: true,
-        domain: 'example.com',
-        path: 'foo/bar',
+        domain: 'mondaymorning.nitrkl.ac.in',
+        path: '/',
         expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
       },
       store,
-      resave: false,
-      saveUninitialized: false,
+      resave: true,
+      saveUninitialized: true,
     })
   );
 }
