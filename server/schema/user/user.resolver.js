@@ -348,7 +348,7 @@ module.exports = {
       const _user = await User.updateDetails(id, { interestedTopics }, session, authToken, mid);
       return _user;
     } catch (error) {
-      throw APIError(null, error, 'failed to update user topics');
+      throw APIError(null, error);
     }
   },
   updateUserBio: async (
