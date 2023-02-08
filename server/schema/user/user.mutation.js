@@ -45,6 +45,7 @@ const {
   newsletterSubscription,
   setUserAccountType,
   setUserRoles,
+  addUserPicStorePath,
 } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
@@ -100,7 +101,14 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateUserBio,
     },
-
+    addUserPicStorePath: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        storePath: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: addUserPicStorePath,
+    },
     addNITRMail: {
       type: UserType,
       args: {

@@ -79,9 +79,8 @@ const UserSchema = new Schema(
     },
     interestedTopics: [
       {
-        type: Number,
+        type: String,
         required: false,
-        min: 0,
       },
     ],
     isNewsletterSubscribed: {

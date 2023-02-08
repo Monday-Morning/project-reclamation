@@ -43,9 +43,7 @@ const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, ne
   if (needsAdmin && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the required administrative priveledges.' });
   } else if (
-    (mid === id &&
-      !UserPermission.exists(session, authToken, decodedToken, 'user.write.self') &&
-      !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) ||
+    (mid === id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.self')) ||
     (mid !== id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
   ) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the permissions to perform this update.' });
@@ -249,7 +247,14 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-
+  addUserPicStorePath: async (_parent, { id, storePath }, { mid, session, authToken, decodedToken, API: { User } }) => {
+    try {
+      canUpdateUser(id, mid, session, authToken, decodedToken);
+      return addStorePath(id, storePath, mid, session, authToken, decodedToken, User);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   updateUserName: async (
     _parent,
     { id, firstName, lastName },
@@ -343,7 +348,7 @@ module.exports = {
       const _user = await User.updateDetails(id, { interestedTopics }, session, authToken, mid);
       return _user;
     } catch (error) {
-      throw APIError(null, error);
+      throw APIError(null, error, 'failed to update user topics');
     }
   },
   updateUserBio: async (
@@ -438,7 +443,7 @@ module.exports = {
     try {
       canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      const _user = await User.updateDetails(id, { newsletterSubscription: flag }, session, authToken, mid);
+      const _user = await User.updateDetails(id, { isNewsletterSubscribed: flag }, session, authToken, mid);
 
       if (!_user) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
