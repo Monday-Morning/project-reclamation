@@ -79,7 +79,7 @@ const UserSchema = new Schema(
     },
     interestedTopics: [
       {
-        type: String,
+        type: Number,
         required: false,
       },
     ],

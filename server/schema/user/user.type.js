@@ -96,7 +96,7 @@ const UserType = new GraphQLObjectType({
     nitrMail: { type: GraphQLString },
     picture: { type: ImageType },
 
-    interestedTopics: { type: new GraphQLList(GraphQLString) },
+    interestedTopics: { type: new GraphQLList(GraphQLInt) },
     isNewsletterSubscribed: { type: GraphQLBoolean },
 
     profile: { type: UserProfileType },
