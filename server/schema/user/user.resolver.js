@@ -295,7 +295,7 @@ module.exports = {
     { mid, session, authToken, decodedToken, API: { User, Media } }
   ) => {
     try {
-      // canUpdateUser(id, mid, session, authToken, decodedToken);
+      canUpdateUser(id, mid, session, authToken, decodedToken);
 
       const user = await User.findByID(id);
 
