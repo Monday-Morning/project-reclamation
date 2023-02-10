@@ -1,6 +1,5 @@
 const UserPermission = require('../../utils/userAuth/permission');
 const { APIError } = require('../../utils/exception');
-const ImageKit = require('imagekit');
 
 const imagekit = require('../../config/imagekit');
 
