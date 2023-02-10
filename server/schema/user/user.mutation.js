@@ -37,7 +37,7 @@ const {
   createUser,
   setUserBan,
   updateUserName,
-  updateUserPicture,
+  updateUserProfilePicture,
   updateUserTopics,
   updateUserBio,
   addNITRMail,
@@ -70,15 +70,6 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateUserName,
     },
-    updateUserPicture: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        url: { type: new GraphQLNonNull(GraphQLString) },
-        blurhash: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: updateUserPicture,
-    },
     updateUserTopics: {
       type: UserType,
       args: {
@@ -101,13 +92,14 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateUserBio,
     },
-    addUserPicStorePath: {
+    updateUserProfilePicture: {
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        storePath: { type: new GraphQLNonNull(GraphQLString) },
+        storePath: { type: GraphQLString },
+        blurhash: { type: GraphQLString },
       },
-      resolve: addUserPicStorePath,
+      resolve: updateUserProfilePicture,
     },
     addNITRMail: {
       type: UserType,
