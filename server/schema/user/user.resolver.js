@@ -18,6 +18,7 @@ const UserSession = require('../../utils/userAuth/session');
 const { APIError, FirebaseAuthError } = require('../../utils/exception');
 const { AccountTypeEnumType } = require('./user.enum.types');
 const getFieldNodes = require('../../utils/getFieldNodes');
+const imagekit = require('../../config/imagekit');
 
 const PUBLIC_FIELDS = [
   'id',
@@ -31,7 +32,8 @@ const PUBLIC_FIELDS = [
   'email',
 ];
 const DEF_LIMIT = 10,
-  DEF_OFFSET = 0;
+  DEF_OFFSET = 0,
+  DEF_STORE = 2;
 const ACCOUNT_TYPES = Object.fromEntries(AccountTypeEnumType.getValues().map((item) => [item.name, item.value]));
 
 const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, needsAdmin = false) => {
@@ -287,55 +289,30 @@ module.exports = {
   // TODO: rewrite function with data sources
   // TODO: update all redundancies
   // TODO: delete older picture
-  // updateUserPicture: async (
-  //   _parent,
-  //   { id, url, blurhash },
-  //   context,
-  //   { fieldNodes },
-  //   _UserModel = UserModel,
-  //   _MediaModel = MediaModel,
-  //   _auth = admin.auth(),
-  //   _fetch = fetch
-  // ) => {
-  //   const fields = fieldNodes[0].selectionSet.selections.map((x) => x.name.value);
-  //   try {
-  //     if (!id || !url || !blurhash) {
-  //       return APIError('BAD_REQUEST');
-  //     }
-  //     const _writePermission = canUserUpdate(id, context, fields);
-  //     if (_writePermission !== true) {
-  //       return _writePermission;
-  //     }
-  //     if (!HasPermmission(context, 'media.read.public') || !HasPermmission(context, 'media.write.self')) {
-  //       return APIError('FORBIDDEN');
-  //     }
-  //     const _res = await _fetch(url);
-  //     if (!_res.ok) {
-  //       return APIError('BAD_REQUEST', { reason: 'The provided image resource was not found on the media server.' });
-  //     }
-  //     const _user = await _UserModel.findByID(id);
-  //     if (!_user) {
-  //       return APIError('NOT_FOUND');
-  //     }
-  //     const _fbUser = await _auth.getUserByEmail(_user.email);
-  //     const _media = await _MediaModel.create({
-  //       storePath: url,
-  //       blurhash,
-  //       author: [
-  //         {
-  //           name: _user.name,
-  //           reference: id,
-  //         },
-  //       ],
-  //     });
-  //     const _updatedUser = _UserModel.findByIdAndUpdate(id, { picture: _media.id });
-  //     const _updatedFbUser = _auth.updateUser(_fbUser.uid, { displayName: `${firstName} ${lastName}` });
-  //     await Promise.all([_updatedUser, _updatedFbUser]);
-  //     return _updatedUser;
-  //   } catch (error) {
-  //     return FirebaseAuthError(error);
-  //   }
-  // },
+  updateUserProfilePicture: async (
+    _parent,
+    { id, store = DEF_STORE, storePath, blurhash },
+    { mid, session, authToken, decodedToken, API: { User, Media } }
+  ) => {
+    try {
+      // canUpdateUser(id, mid, session, authToken, decodedToken);
+
+      const user = await User.findByID(id);
+
+      if (!user) {
+        throw APIError('NOT_FOUND', null, { reason: 'The user does not exist.' });
+      }
+
+      if (user.picture && user.picture.storePath) {
+        Media.deleteById(id, true);
+      }
+
+      const _user = await User.updateDetails(id, { picture: { store, storePath, blurhash } }, session, authToken, mid);
+      return _user;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   updateUserTopics: async (
     _parent,
     { id, interestedTopics },
