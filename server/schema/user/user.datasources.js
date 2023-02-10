@@ -153,8 +153,6 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
 // TODO: Update all redundancies
 
-const addStorePath = (uid, storePath) => admin.auth().updateUser(uid, { picture: { photoURL: storePath } });
-
 const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
   const _updatedUser = UserModel.findByIdAndUpdate(
     id,
