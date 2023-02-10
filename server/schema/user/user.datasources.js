@@ -171,15 +171,20 @@ const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
   return Promise.all([_updatedUser, _updatedFbUser]);
 };
 
-const updateDetails = (id, fields, session, authToken, mid) =>
-  UserModel.findOneAndUpdate(
-    id,
-    {
-      ...createUpdateObject(fields),
-      updatedBy: UserSession.valid(session, authToken) ? mid : null,
-    },
-    { new: true }
-  );
+const updateDetails = async (id, fields, session, authToken, mid) => {
+  try {
+    return await UserModel.findOneAndUpdate(
+      { _id: id },
+      {
+        ...createUpdateObject(fields),
+        updatedBy: UserSession.valid(session, authToken) ? mid : null,
+      },
+      { new: true }
+    );
+  } catch (error) {
+    throw FirebaseAuthError(error, { reason: "Cannot update user's details" });
+  }
+};
 
 const getFirebaseUser = async (email) => {
   try {
