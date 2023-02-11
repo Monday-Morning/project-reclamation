@@ -294,7 +294,6 @@ const UserDataSources = () => ({
   findByID: findByID(),
   findByEmail: findByEmail(),
   getUserByOldUserName: getUserByOldUserName(),
-  addStorePath,
   findFirebaseUserById,
   findFirebaseUserByEmail,
   findOne,
