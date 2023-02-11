@@ -74,7 +74,7 @@ module.exports = new GraphQLObjectType({
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        interestedTopics: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        interestedTopics: { type: new GraphQLNonNull(new GraphQLList(GraphQLInt)) },
       },
       resolve: updateUserTopics,
     },
@@ -96,6 +96,7 @@ module.exports = new GraphQLObjectType({
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
+        store: { type: GraphQLInt },
         storePath: { type: GraphQLString },
         blurhash: { type: GraphQLString },
       },
