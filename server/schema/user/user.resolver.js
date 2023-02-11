@@ -249,14 +249,6 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  addUserPicStorePath: async (_parent, { id, storePath }, { mid, session, authToken, decodedToken, API: { User } }) => {
-    try {
-      canUpdateUser(id, mid, session, authToken, decodedToken);
-      return addStorePath(id, storePath, mid, session, authToken, decodedToken, User);
-    } catch (error) {
-      throw APIError(null, error);
-    }
-  },
   updateUserName: async (
     _parent,
     { id, firstName, lastName },
@@ -297,7 +289,7 @@ module.exports = {
     try {
       canUpdateUser(id, mid, session, authToken, decodedToken);
 
-      const user = await User.findByID(id);
+      const user = await User.findByID.load(id);
 
       if (!user) {
         throw APIError('NOT_FOUND', null, { reason: 'The user does not exist.' });
