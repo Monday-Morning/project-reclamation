@@ -21,7 +21,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { CommentParentModelEmum } = require('./comment.enum.types');
-const { createComment, updateCommentAuthor, deleteComment, updateCommentContent } = require('./comment.resolver');
+const { createComment, deleteComment, updateCommentContent } = require('./comment.resolver');
 
 const CommentType = require('./comment.type');
 
