@@ -72,20 +72,6 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  updateCommentAuthor: async (
-    _parent,
-    { id, authorID },
-    { session, authToken, decodedToken, mid, API: { Comment } }
-  ) => {
-    try {
-      await canMutateComment(session, authToken, decodedToken, id, mid, Comment);
-      const _comment = await Comment.updateAuthor(id, authorID, session, authToken, mid);
-
-      return _comment;
-    } catch (error) {
-      throw APIError(null, error);
-    }
-  },
   updateCommentContent: async (
     _parent,
     { id, content },

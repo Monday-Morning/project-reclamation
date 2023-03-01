@@ -48,15 +48,6 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateCommentContent,
     },
-    updateCommentAuthor: {
-      description: 'Update Comment by Id',
-      type: CommentType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        authorID: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      resolve: updateCommentAuthor,
-    },
     deleteComment: {
       description: 'Delete comment by Id',
       type: CommentType,

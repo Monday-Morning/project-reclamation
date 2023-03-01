@@ -74,31 +74,6 @@ const updateContent = async (id, content, session, authToken, mid) => {
   }
 };
 
-const updateAuthor = async (id, authorID, session, authToken, mid) => {
-  try {
-    const _author = await userModel.findById(authorID);
-    if (!_author) {
-      throw APIError('NOT FOUND', null, 'Invalid Author ID');
-    }
-
-    const _comment = await CommentModel.findByIdAndUpdate(
-      id,
-      {
-        author: {
-          name: _author.fullName,
-          reference: authorID,
-        },
-        updatedBy: UserSession.valid(session, authToken) ? mid : null,
-      },
-      { new: true }
-    );
-
-    return _comment;
-  } catch (error) {
-    throw APIError(null, error);
-  }
-};
-
 const remove = (id) => CommentModel.findByIdAndDelete(id);
 
 const CommentDataSources = () => ({
@@ -107,7 +82,6 @@ const CommentDataSources = () => ({
   countNumberOfComments,
   create,
   updateContent,
-  updateAuthor,
   remove,
 });
 
