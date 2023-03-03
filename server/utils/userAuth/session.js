@@ -17,7 +17,7 @@ const UserSession = {
     !session.auth ||
     !session.auth.jwt ||
     !session.auth.exp ||
-    !session.auth.roles ||
+    !session.auth.uid ||
     session.auth.jwt !== jwt ||
     session.auth.exp <= Date.now() / 1000
       ? false

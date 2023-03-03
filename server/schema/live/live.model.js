@@ -33,7 +33,7 @@ const LiveSchema = new Schema(
     },
     recruits: {
       type: Number,
-      required: false,
+      required: true,
       min: 0,
     },
     year: {
@@ -42,7 +42,7 @@ const LiveSchema = new Schema(
       minlength: 4,
       maxlength: 4,
     },
-    /** [0-autumn ,1-spring] */
+    /** [0 - Autumn, 1 - Spring] */
     semester: {
       type: Number,
       required: true,
@@ -53,7 +53,7 @@ const LiveSchema = new Schema(
       {
         name: {
           type: String,
-          required: false,
+          required: true,
           trim: true,
         },
         rollNumber: {
@@ -65,21 +65,54 @@ const LiveSchema = new Schema(
         },
         branch: {
           type: String,
-          required: false,
+          required: true,
           trim: true,
-          // TODO: add enumarated list of branches
+          enum: [
+            'Biotechnology & Biomedical Engineering',
+            'Ceramic Engineering',
+            'Chemical Engineering',
+            'Civil Engineering',
+            'Computer Science and Engineering',
+            'Department of Chemistry',
+            'Department of Humanities',
+            'Department of Life Science',
+            'Department of Mathematics',
+            'Department of Physics',
+            'Electrical Engineering',
+            'Electronics and Communication Engineering',
+            'Food Process Engineering',
+            'Industrial Design',
+            'Mechanical Engineering',
+            'Metallurgical and Materials Engineering',
+            'Mining Engineering',
+            'Planning and Architecture',
+            'School of Management',
+            'Department of Earth and Atmospheric Science',
+            'Electronics and Instrumentation Engineering',
+            'Safety Engineering',
+            'Department of Applied Geology',
+          ],
         },
         degree: {
           type: String,
-          required: false,
+          required: true,
           trim: true,
-          // TODO: add enumerated list of degrees
+          enum: [
+            'B.Tech',
+            'M.Tech',
+            'M.Tech (Research)',
+            'Dual Degree M.Tech',
+            'M.Sc',
+            'Integrated M.Sc',
+            'PhD',
+            'School of Management',
+          ],
         },
       },
     ],
     ctc: {
       type: String,
-      required: false,
+      required: true,
       trim: true,
     },
     /** For type 4 - Add internship duration */
@@ -120,8 +153,14 @@ const LiveSchema = new Schema(
 );
 
 LiveSchema.virtual('internshipDuration')
-  .get(() => this.benefits)
-  .set((x) => (this.benefits = x));
+  .get(function () {
+    return this.type === 4 ? this.benefits ?? 'N/A' : 'N/A';
+  })
+  .set(function (x) {
+    if (this.type === 4) {
+      this.benefits = x;
+    }
+  });
 
 /**
  * @description Generated Live Model

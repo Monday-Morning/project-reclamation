@@ -1,5 +1,4 @@
 const { GraphQLInputObjectType, GraphQLString, GraphQLID } = require('../scalars');
-const StoreEnumType = require('./store.enum.type');
 
 const userDetailInput = new GraphQLInputObjectType({
   name: 'UserDetailInputType',
