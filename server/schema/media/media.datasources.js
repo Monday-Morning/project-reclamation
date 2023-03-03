@@ -2,6 +2,8 @@ const DataLoader = require('dataloader');
 const { APIError } = require('../../utils/exception');
 const MediaModel = require('./media.model');
 const UserSession = require('../../utils/userAuth/session');
+const { connection } = require('../../config/mongoose');
+const imagekit = require('../../config/imagekit');
 
 const findByID = () =>
   new DataLoader(
@@ -35,11 +37,26 @@ const create = (imageKitFileID, authors, store, storePath, mediaType, blurhash, 
   }
 };
 
-const deleteById = (id) => {
+const deleteById = async (id, isUser = false) => {
+  const mdbSession = await connection.startSession();
   try {
-    const deleteMedia = MediaModel.findByIdAndDelete(id);
-    return deleteMedia;
+    mdbSession.startTransaction();
+
+    const [_file] = imagekit.listFiles({
+      searchQuery: `name = "${id}"`,
+    });
+
+    imagekit.deleteFile(_file.fileId);
+
+    const deleteMedia = !isUser ? await MediaModel.findByIdAndDelete(id) : null;
+
+    await mdbSession.commitTransaction();
+    await mdbSession.endSession();
+
+    return isUser ? _file : deleteMedia;
   } catch (error) {
+    await mdbSession.abortTransaction();
+    await mdbSession.endSession();
     throw APIError(error, { reason: 'Failed to delete media' });
   }
 };

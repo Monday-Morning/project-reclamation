@@ -81,7 +81,6 @@ const UserSchema = new Schema(
       {
         type: Number,
         required: false,
-        min: 0,
       },
     ],
     isNewsletterSubscribed: {

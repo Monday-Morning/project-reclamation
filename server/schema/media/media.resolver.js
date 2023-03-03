@@ -1,12 +1,7 @@
 const UserPermission = require('../../utils/userAuth/permission');
 const { APIError } = require('../../utils/exception');
-const ImageKit = require('imagekit');
 
-const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-  urlEndpoint: process.env.IMAGEKIT_URLENDPOINT,
-});
+const imagekit = require('../../config/imagekit');
 
 module.exports = {
   getMediaByID: async (_parent, { id }, { API: { Media } }, _) => {
