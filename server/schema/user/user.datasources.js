@@ -151,6 +151,50 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
   }
 };
 
+const link = async (uid, id, interestedTopics, session, authToken, mid) => {
+  const mdbSession = await connection.startSession();
+
+  try {
+    mdbSession.startTransaction();
+
+    const _user = await UserModel.findByIdAndUpdate(
+      id,
+      interestedTopics
+        ? {
+            $addToSet: {
+              interestedTopics,
+            },
+            newUserLinked: true,
+            updatedBy: UserSession.valid(session, authToken) ? mid : null,
+          }
+        : {
+            newUserLinked: true,
+            updatedBy: UserSession.valid(session, authToken) ? mid : null,
+          },
+      {
+        new: true,
+        session: mdbSession,
+      }
+    );
+
+    await admin.auth().setCustomUserClaims(uid, {
+      mid: id,
+      // TODO: add all standard roles here
+      roles: ['user.basic'],
+    });
+
+    await mdbSession.commitTransaction();
+    await mdbSession.endSession();
+    return _user;
+  } catch (error) {
+    await mdbSession.abortTransaction();
+    await mdbSession.endSession();
+
+    await admin.auth().deleteUser(uid);
+    throw FirebaseAuthError(error, { reason: "The user's account could not be created." });
+  }
+};
+
 // TODO: Update all redundancies
 
 const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
@@ -171,8 +215,8 @@ const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
 
 const updateDetails = async (id, fields, session, authToken, mid) => {
   try {
-    return await UserModel.findOneAndUpdate(
-      { _id: id },
+    return await UserModel.findByIdAndUpdate(
+      id,
       {
         ...createUpdateObject(fields),
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
@@ -292,6 +336,7 @@ const UserDataSources = () => ({
   exists,
   search,
   create,
+  link,
   updateName,
   updateDetails,
   updateCustomClaims,

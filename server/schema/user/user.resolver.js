@@ -232,7 +232,20 @@ module.exports = {
         throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user does not have the required permissions.' });
       }
 
-      if (await User.exists({ email })) {
+      const _user = await User.findByEmail(email);
+
+      if (_user && _user.accountType === 2 && _user.oldUserId > 0) {
+        const _fbUser = await User.findFirebaseUserByEmail(email);
+        if (_fbUser.displayName !== fullName) {
+          return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
+        }
+
+        const _mdbUser = await User.link(_fbUser.uid, _user.id, interestedTopics, session, authToken, mid);
+
+        return _mdbUser;
+      }
+
+      if (_user) {
         throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'User already exists' });
       }
 
