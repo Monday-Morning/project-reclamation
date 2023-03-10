@@ -184,17 +184,6 @@ const updateDetails = async (id, fields, session, authToken, mid) => {
   }
 };
 
-const getFirebaseUser = async (email) => {
-  try {
-    const _fbUser = await admin.auth().getUserByEmail(email);
-    if (!_fbUser) {
-      throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
-    }
-    return _fbUser;
-  } catch (error) {
-    throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
-  }
-};
 const updateCustomClaims = async (email, customClaims) => {
   try {
     const _fbUser = await admin.auth().getUserByEmail(email);
@@ -217,24 +206,26 @@ const updateCustomClaims = async (email, customClaims) => {
   }
 };
 
-const setVerified = async (id, email, token, accountType, session, authToken, mid) => {
+const setNITRVerified = async (id, accountType, email, nitrMail, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
 
   try {
     mdbSession.startTransaction();
 
-    const _user = await UserModel.findOneAndUpdate(
-      { $and: [{ _id: id }, { nitrMail: email }, { verfiyEmailToken: token }] },
-      { accountType, verfiyEmailToken: null, updatedBy: UserSession.valid(session, authToken) ? mid : null },
+    const _user = await UserModel.findByIdAndUpdate(
+      id,
+      { accountType, nitrMail, updatedBy: UserSession.valid(session, authToken) ? mid : null },
       { session: mdbSession, new: true }
     );
     if (!_user) {
       throw APIError('NOT_FOUND', null, {
-        reason: 'Either the verification token is invalid or the user does not exist.',
+        reason: 'The user does not exist.',
       });
     }
 
-    const _fbUser = await findFirebaseUserByEmail(_user.email);
+    const _fbUser = await findFirebaseUserByEmail(nitrMail);
+    await admin.auth().updateUser(_fbUser.uid, { email });
+
     // TODO: update all roles as required
     const _roles = _fbUser.customClaims.roles.map((item) => {
       if (item.toString() !== 'user.basic') {
@@ -304,9 +295,8 @@ const UserDataSources = () => ({
   updateName,
   updateDetails,
   updateCustomClaims,
-  setVerified,
+  setNITRVerified,
   setBan,
-  getFirebaseUser,
 });
 
 module.exports = UserDataSources;

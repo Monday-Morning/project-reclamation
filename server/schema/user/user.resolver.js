@@ -24,12 +24,12 @@ const PUBLIC_FIELDS = [
   'id',
   'firstName',
   'lastName',
+  'fullName',
+  'email',
+  'accountType',
+  'nitrMail',
   'picture',
   'pictureId',
-  'fullName',
-  'nitrMail',
-  'accountType',
-  'email',
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0,
@@ -45,7 +45,9 @@ const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, ne
   if (needsAdmin && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the required administrative priveledges.' });
   } else if (
-    (mid === id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.self')) ||
+    (mid === id &&
+      !UserPermission.exists(session, authToken, decodedToken, 'user.write.self') &&
+      !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) ||
     (mid !== id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
   ) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the permissions to perform this update.' });
@@ -224,10 +226,10 @@ module.exports = {
     try {
       if (
         !UserSession.valid(session, authToken) ||
-        ((await User.getFirebaseUser(email)).email !== email &&
+        ((await User.findFirebaseUserByEmail(email)).uid !== decodedToken.uid &&
           !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
       ) {
-        throw APIError('METHOD_NOT_ALLOWED');
+        throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user does not have the required permissions.' });
       }
 
       if (await User.exists({ email })) {
@@ -344,54 +346,28 @@ module.exports = {
 
   addNITRMail: async (
     _parent,
-    { id, email },
-    { mid, session, authToken, decodedToken, API: { User } },
-    { fieldNodes },
-    _transporter = transporter,
-    _namespace = process.env.UUID_NAMESPACE,
-    _fromAddress = process.env.SMTP_FROM_ADDRESS
-  ) => {
-    try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
-
-      const _uuid = UUID(JSON.stringify({ id, email, authToken }), _namespace).toString();
-
-      // TODO: Configure proper html template
-      await _transporter.sendMail({
-        to: email,
-        from: _fromAddress,
-        html: `<a href="https://mondaymorning.nitrkl.ac.in/user/verify/${email}?token=${_uuid}">Click here to verify!</a>`,
-      });
-
-      const _user = await User.updateDetails(
-        id,
-        {
-          nitrMail: email,
-          verifyEmailToken: _uuid,
-        },
-        session,
-        authToken,
-        mid
-      );
-      return _user;
-    } catch (error) {
-      throw APIError(null, error);
-    }
-  },
-  verifyNITRMail: async (
-    _parent,
-    { id, email, token },
+    { email, nitrMail },
     { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
+      const _user = await User.findByEmail.load(email);
+      if (!_user) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+      }
 
-      const _updatedUser = await User.setVerified(
-        id,
+      const _fbUser = await User.findFirebaseUserByEmail(nitrMail);
+      if (!_fbUser) {
+        throw APIError('BAD_REQUEST', null, { reason: 'The requested user has not been linked.' });
+      }
+
+      canUpdateUser(_user._id.toString(), mid, session, authToken, decodedToken, fieldNodes);
+
+      const _updatedUser = await User.setNITRVerified(
+        _user._id,
+        RegExp(/^([0-9]{3})([a-zA-Z]{2})([0-9]{4})(\@nitrkl\.ac\.in)$/).test(nitrMail) ? 1 : 3,
         email,
-        token,
-        ACCOUNT_TYPES.NITR_STUDENT,
+        nitrMail,
         session,
         authToken,
         mid
@@ -399,7 +375,7 @@ module.exports = {
 
       return _updatedUser;
     } catch (error) {
-      throw FirebaseAuthError(error);
+      throw APIError(null, error);
     }
   },
 
@@ -497,9 +473,23 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  getFirebaseUserByEmail: async (_parent, { email }, { API: { User } }) => {
+  getFirebaseUserByEmail: async (_parent, { email }, { API: { mid, session, authToken, decodedToken, User } }) => {
     try {
-      const firebaseUser = await User.getFirebaseUser(email);
+      const firebaseUser = await User.findFirebaseUserByEmail(email);
+
+      if (!firebaseUser) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+      }
+
+      if (
+        mid !== firebaseUser.customClaims.mid &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not the required permissions to read the requested data.',
+        });
+      }
+
       return firebaseUser;
     } catch (error) {
       return FirebaseAuthError(error);
