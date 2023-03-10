@@ -41,7 +41,6 @@ const {
   updateUserTopics,
   updateUserBio,
   addNITRMail,
-  verifyNITRMail,
   newsletterSubscription,
   setUserAccountType,
   setUserRoles,

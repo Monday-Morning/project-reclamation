@@ -11,14 +11,14 @@
  */
 
 // const fetch = require('node-fetch');
-const { v5: UUID } = require('uuid');
-const { transporter } = require('../../config/nodemailer');
+// const { v5: UUID } = require('uuid');
+// const { transporter } = require('../../config/nodemailer');
 const UserPermission = require('../../utils/userAuth/permission');
 const UserSession = require('../../utils/userAuth/session');
 const { APIError, FirebaseAuthError } = require('../../utils/exception');
 const { AccountTypeEnumType } = require('./user.enum.types');
 const getFieldNodes = require('../../utils/getFieldNodes');
-const imagekit = require('../../config/imagekit');
+// const imagekit = require('../../config/imagekit');
 
 const PUBLIC_FIELDS = [
   'id',
