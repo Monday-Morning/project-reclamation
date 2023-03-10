@@ -17,7 +17,7 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  addMedia: (
+  addMedia: async (
     _parent,
     { imageKitFileID, authors, store, storePath, mediaType, blurhash },
     { mid, session, authToken, decodedToken, API: { Media } }
@@ -28,29 +28,19 @@ module.exports = {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-      imagekit.getFileDetails(imageKitFileID, (err, _) => {
-        if (err) {
-          throw APIError('Image not uploaded', null, err);
-        } else {
-          const media = Media.create(
-            imageKitFileID,
-            authors,
-            store,
-            storePath,
-            mediaType,
-            blurhash,
-            session,
-            authToken,
-            mid
-          );
-          return media;
-        }
-      });
+
+      const _imageData = await imagekit.getFileDetails(imageKitFileID);
+      if (!_imageData || (_imageData.statusCode && _imageData.statusCode !== 200)) {
+        throw APIError('BAD_REQUEST', null, { reason: 'The media was not uploaded.' });
+      }
+
+      const media = await Media.create(authors, store, storePath, mediaType, blurhash, session, authToken, mid);
+      return media;
     } catch (error) {
       throw APIError(null, error);
     }
   },
-  deleteMediaById: (_parent, { id, imageKitFileID }, { session, authToken, decodedToken, API: { Media } }) => {
+  deleteMediaById: async (_parent, { id }, { session, authToken, decodedToken, API: { Media } }) => {
     try {
       if (
         !UserPermission.exists(session, authToken, decodedToken, 'media.write.all') ||
@@ -60,13 +50,14 @@ module.exports = {
           reason: 'The user does not have the required permission to perform this operation.',
         });
       }
-      imagekit.getFileDetails(imageKitFileID, (err, res) => {
-        if (err) {
-          const _deletedMedia = Media.deleteById(id);
-          return _deletedMedia;
-        }
-        throw APIError('Image not deleted', null, res);
-      });
+
+      const _media = await Media.findByID.load(id);
+      if (!_media) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested media was not found.' });
+      }
+
+      const deleteMedia = await Media.deleteById(id, true);
+      return deleteMedia;
     } catch (error) {
       throw APIError(null, error);
     }
