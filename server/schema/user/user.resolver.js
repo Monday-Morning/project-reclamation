@@ -357,6 +357,29 @@ module.exports = {
     }
   },
 
+  checkNITRMail: async (_parent, { nitrMail }, { mid, session, authToken, decodedToken, API: { User } }, _) => {
+    try {
+      if (!UserSession.valid(session, authToken)) {
+        throw APIError('UNAUTHORIZED', null, { reason: 'The user is not logged in.' });
+      }
+
+      const _user = await User.findOne({ nitrMail });
+
+      if (!_user) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+      }
+
+      if (!UserPermission.exists(session, authToken, decodedToken, 'user.read.all') && _user._id.toString() !== mid) {
+        const _returnUser = PUBLIC_FIELDS.map((field) => [field, _user[field]]);
+        return Object.fromEntries(_returnUser);
+      }
+
+      return _user;
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+
   addNITRMail: async (
     _parent,
     { email, nitrMail },
