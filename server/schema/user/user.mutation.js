@@ -41,11 +41,9 @@ const {
   updateUserTopics,
   updateUserBio,
   addNITRMail,
-  verifyNITRMail,
   newsletterSubscription,
   setUserAccountType,
   setUserRoles,
-  addUserPicStorePath,
 } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
@@ -97,7 +95,7 @@ module.exports = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
         store: { type: GraphQLInt },
-        storePath: { type: GraphQLString },
+        storePath: { type: new GraphQLNonNull(GraphQLString) },
         blurhash: { type: GraphQLString },
       },
       resolve: updateUserProfilePicture,
@@ -105,19 +103,10 @@ module.exports = new GraphQLObjectType({
     addNITRMail: {
       type: UserType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
         email: { type: new GraphQLNonNull(GraphQLString) },
+        nitrMail: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: addNITRMail,
-    },
-    verifyNITRMail: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        token: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: verifyNITRMail,
     },
 
     newsletterSubscription: {

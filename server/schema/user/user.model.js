@@ -73,8 +73,16 @@ const UserSchema = new Schema(
         required: false,
       },
     },
+    oldUserId: {
+      type: Number,
+      required: false,
+    },
     oldUserName: {
       type: String,
+      required: false,
+    },
+    newUserLinked: {
+      type: Boolean,
       required: false,
     },
     interestedTopics: [

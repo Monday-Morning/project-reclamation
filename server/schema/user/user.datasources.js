@@ -151,6 +151,50 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
   }
 };
 
+const link = async (uid, id, interestedTopics, session, authToken, mid) => {
+  const mdbSession = await connection.startSession();
+
+  try {
+    mdbSession.startTransaction();
+
+    const _user = await UserModel.findByIdAndUpdate(
+      id,
+      interestedTopics
+        ? {
+            $addToSet: {
+              interestedTopics,
+            },
+            newUserLinked: true,
+            updatedBy: UserSession.valid(session, authToken) ? mid : null,
+          }
+        : {
+            newUserLinked: true,
+            updatedBy: UserSession.valid(session, authToken) ? mid : null,
+          },
+      {
+        new: true,
+        session: mdbSession,
+      }
+    );
+
+    await admin.auth().setCustomUserClaims(uid, {
+      mid: id,
+      // TODO: add all standard roles here
+      roles: ['user.basic'],
+    });
+
+    await mdbSession.commitTransaction();
+    await mdbSession.endSession();
+    return _user;
+  } catch (error) {
+    await mdbSession.abortTransaction();
+    await mdbSession.endSession();
+
+    await admin.auth().deleteUser(uid);
+    throw FirebaseAuthError(error, { reason: "The user's account could not be created." });
+  }
+};
+
 // TODO: Update all redundancies
 
 const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
@@ -171,8 +215,8 @@ const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
 
 const updateDetails = async (id, fields, session, authToken, mid) => {
   try {
-    return await UserModel.findOneAndUpdate(
-      { _id: id },
+    return await UserModel.findByIdAndUpdate(
+      id,
       {
         ...createUpdateObject(fields),
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
@@ -184,17 +228,6 @@ const updateDetails = async (id, fields, session, authToken, mid) => {
   }
 };
 
-const getFirebaseUser = async (email) => {
-  try {
-    const _fbUser = await admin.auth().getUserByEmail(email);
-    if (!_fbUser) {
-      throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
-    }
-    return _fbUser;
-  } catch (error) {
-    throw FirebaseAuthError(error, { reason: "Cannot find user's roles" });
-  }
-};
 const updateCustomClaims = async (email, customClaims) => {
   try {
     const _fbUser = await admin.auth().getUserByEmail(email);
@@ -217,24 +250,26 @@ const updateCustomClaims = async (email, customClaims) => {
   }
 };
 
-const setVerified = async (id, email, token, accountType, session, authToken, mid) => {
+const setNITRVerified = async (id, accountType, email, nitrMail, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
 
   try {
     mdbSession.startTransaction();
 
-    const _user = await UserModel.findOneAndUpdate(
-      { $and: [{ _id: id }, { nitrMail: email }, { verfiyEmailToken: token }] },
-      { accountType, verfiyEmailToken: null, updatedBy: UserSession.valid(session, authToken) ? mid : null },
+    const _user = await UserModel.findByIdAndUpdate(
+      id,
+      { accountType, nitrMail, updatedBy: UserSession.valid(session, authToken) ? mid : null },
       { session: mdbSession, new: true }
     );
     if (!_user) {
       throw APIError('NOT_FOUND', null, {
-        reason: 'Either the verification token is invalid or the user does not exist.',
+        reason: 'The user does not exist.',
       });
     }
 
-    const _fbUser = await findFirebaseUserByEmail(_user.email);
+    const _fbUser = await findFirebaseUserByEmail(nitrMail);
+    await admin.auth().updateUser(_fbUser.uid, { email });
+
     // TODO: update all roles as required
     const _roles = _fbUser.customClaims.roles.map((item) => {
       if (item.toString() !== 'user.basic') {
@@ -301,12 +336,12 @@ const UserDataSources = () => ({
   exists,
   search,
   create,
+  link,
   updateName,
   updateDetails,
   updateCustomClaims,
-  setVerified,
+  setNITRVerified,
   setBan,
-  getFirebaseUser,
 });
 
 module.exports = UserDataSources;

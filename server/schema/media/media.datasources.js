@@ -20,10 +20,9 @@ const findByID = () =>
     }
   );
 
-const create = (imageKitFileID, authors, store, storePath, mediaType, blurhash, session, authToken, mid) => {
+const create = async (authors, store, storePath, mediaType, blurhash, session, authToken, mid) => {
   try {
-    const media = MediaModel.create({
-      imageKitFileID,
+    const media = await MediaModel.create({
       authors,
       store,
       storePath,
@@ -37,10 +36,12 @@ const create = (imageKitFileID, authors, store, storePath, mediaType, blurhash, 
   }
 };
 
-const deleteById = async (id, isUser = false) => {
+const deleteById = async (id, noDocument = false) => {
   const mdbSession = await connection.startSession();
   try {
     mdbSession.startTransaction();
+
+    const deleteMedia = !noDocument ? await MediaModel.findByIdAndDelete(id) : null;
 
     const [_file] = imagekit.listFiles({
       searchQuery: `name = "${id}"`,
@@ -48,12 +49,10 @@ const deleteById = async (id, isUser = false) => {
 
     imagekit.deleteFile(_file.fileId);
 
-    const deleteMedia = !isUser ? await MediaModel.findByIdAndDelete(id) : null;
-
     await mdbSession.commitTransaction();
     await mdbSession.endSession();
 
-    return isUser ? _file : deleteMedia;
+    return noDocument ? _file : deleteMedia;
   } catch (error) {
     await mdbSession.abortTransaction();
     await mdbSession.endSession();
