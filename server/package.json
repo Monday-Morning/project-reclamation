@@ -4,7 +4,7 @@
   "description": "The Server Application for Monday Morning under Project Infinity",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js --development",
+    "start": "nodemon app.js --development",
     "start:stage": "node app.js --staging",
     "start:prod": "node app.js --production"
   },
@@ -37,6 +37,7 @@
     "url": "https://github.com/Monday-Morning/project-reclamation/issues"
   },
   "homepage": "https://github.com/Monday-Morning/project-reclamation#readme",
+  "nodemonConfig": {"ignore": ["./roles.json"]},
   "dependencies": {
     "@graphql-tools/stitch": "^8.3.1",
     "apollo-server-core": "^3.10.1",
@@ -64,6 +65,7 @@
     "async": "^3.2.0",
     "https": "^1.0.0",
     "mysql": "^2.18.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.22"
   }
 }
