@@ -232,7 +232,7 @@ module.exports = {
         throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user does not have the required permissions.' });
       }
 
-      const _user = await User.findByEmail(email);
+      const _user = await User.findByEmail.load(email);
 
       if (_user && _user.accountType === 2 && _user.oldUserId > 0) {
         const _fbUser = await User.findFirebaseUserByEmail(email);
