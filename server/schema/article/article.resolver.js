@@ -97,7 +97,7 @@ module.exports = {
 
       if (
         _article.isInstituteRestricted &&
-        !UserPermission(session, authToken, decodedToken, 'article.read.restricted')
+        !UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted')
       ) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The requested article can only be viewed by students and faculty of NIT Rourkela.',
