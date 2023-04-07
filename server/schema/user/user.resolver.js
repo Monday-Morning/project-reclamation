@@ -509,7 +509,7 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  getFirebaseUserByEmail: async (_parent, { email }, { API: { mid, session, authToken, decodedToken, User } }) => {
+  getFirebaseUserByEmail: async (_parent, { email }, { mid, session, authToken, decodedToken, API: { User } }) => {
     try {
       const firebaseUser = await User.findFirebaseUserByEmail(email);
 
