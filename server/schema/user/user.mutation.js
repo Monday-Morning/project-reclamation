@@ -36,7 +36,7 @@ const FirebaseUserType = require('./firebaseUser.type');
 const {
   createUser,
   setUserBan,
-  updateUserName,
+  // updateUserName,
   updateUserProfilePicture,
   updateUserTopics,
   updateUserBio,
@@ -59,15 +59,15 @@ module.exports = new GraphQLObjectType({
       },
       resolve: createUser,
     },
-    updateUserName: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
-        lastName: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: updateUserName,
-    },
+    // updateUserName: {
+    //   type: UserType,
+    //   args: {
+    //     id: { type: new GraphQLNonNull(GraphQLID) },
+    //     firstName: { type: new GraphQLNonNull(GraphQLString) },
+    //     lastName: { type: new GraphQLNonNull(GraphQLString) },
+    //   },
+    //   resolve: updateUserName,
+    // },
     updateUserTopics: {
       type: UserType,
       args: {
