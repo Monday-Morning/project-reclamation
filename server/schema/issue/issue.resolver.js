@@ -10,14 +10,27 @@
  */
 
 const { APIError } = require('../../utils/exception');
+const getFieldNodes = require('../../utils/getFieldNodes');
 const UserPermission = require('../../utils/userAuth/permission');
 
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
 
+const PUBLIC_FIELDS = ['id', 'name', 'thumbnail', 'description', 'articles', 'featured'];
+
 module.exports = {
-  getIssueByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, _) => {
+  getIssueByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, { fieldNodes }) => {
     try {
+      const _fields = getFieldNodes(fieldNodes);
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
       const _issue = await Issue.findByID.load(id);
 
       if (!_issue.isPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')) {
@@ -33,10 +46,20 @@ module.exports = {
     _parent,
     { onlyPublished = true, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { Issue } },
-    _
+    { fieldNodes }
   ) => {
     try {
-      if (!onlyPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.list.unpublished')) {
+      const _fields = getFieldNodes(fieldNodes);
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
+      if (!onlyPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')) {
         onlyPublished = true;
       }
 
@@ -49,20 +72,26 @@ module.exports = {
     _parent,
     { ids, limit = DEF_LIMIT, offset = DEF_OFFSET },
     { session, authToken, decodedToken, API: { Issue } },
-    _
+    { fieldNodes }
   ) => {
     try {
-      const _issues = await Issue.find({ _id: ids }, limit, offset);
-
-      // TODO: return issues alongside the errors
+      const _fields = getFieldNodes(fieldNodes);
       if (
-        _issues.some((_issue) => !_issue.isPublished) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
       ) {
-        throw APIError('NOT_FOUND', null, { reason: 'One or more of the requested issues were not found.' });
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
       }
 
-      return _issues;
+      const _issues = await Issue.find({ _id: ids }, limit, offset);
+
+      return _issues.map((_issue) =>
+        !_issue.isPublished && !UserPermission.exists(session, authToken, decodedToken, 'issue.read.unpublished')
+          ? APIError('NOT_FOUND', null, { reason: 'The requested issue is not found.' })
+          : _issue
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -71,15 +100,26 @@ module.exports = {
     _parent,
     { name, description, startDate, endDate, articles, featured },
     { session, authToken, decodedToken, mid, API: { Issue } },
-    _
+    { fieldNodes }
   ) => {
     try {
+      const _fields = getFieldNodes(fieldNodes);
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
       if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.new')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to create a new issue.',
         });
       }
 
+      // TODO: consider moving article validation to the resolver from datasource
       return Issue.create(name, description, startDate, endDate, articles, featured, session, authToken, mid);
     } catch (error) {
       throw APIError(null, error);
@@ -89,9 +129,19 @@ module.exports = {
     _parent,
     { id, name, description, startDate, endDate },
     { session, authToken, decodedToken, mid, API: { Issue } },
-    _
+    { fieldNodes }
   ) => {
     try {
+      const _fields = getFieldNodes(fieldNodes);
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
       if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to update this issue.',
@@ -107,9 +157,19 @@ module.exports = {
     _parent,
     { id, articles, featured },
     { session, authToken, decodedToken, mid, API: { Issue } },
-    _
+    { fieldNodes }
   ) => {
     try {
+      const _fields = getFieldNodes(fieldNodes);
+      if (
+        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'issue.read.admin')
+      ) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read the requested fields.',
+        });
+      }
+
       if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to update this issue.',
@@ -123,7 +183,7 @@ module.exports = {
   },
   removeIssue: (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, _) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.all')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'issue.write.delete')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to delete this issue.',
         });
