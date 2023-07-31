@@ -74,6 +74,7 @@ const PositionType = new GraphQLObjectType({
   fields: () => ({
     position: { type: PositionEnumType },
     team: { type: TeamEnumType },
+    // TODO: consider resolving to SessionType instead
     session: { type: GraphQLInt },
   }),
 });
@@ -111,8 +112,9 @@ const UserType = new GraphQLObjectType({
 
     isBanned: { type: GraphQLBoolean },
 
-    lastPollID: { type: GraphQLID },
+    // TODO: implement Poll System
     // TODO: resolve to PollType
+    // lastPollID: { type: GraphQLID },
     /*
 		lastPoll: {
 			type: PollType,
@@ -121,7 +123,6 @@ const UserType = new GraphQLObjectType({
 		*/
 
     isNameChanged: { type: GraphQLBoolean },
-    verifyEmailToken: { type: GraphQLString },
 
     createdAt: { type: GraphQLDateTime },
     createdBy: { type: GraphQLID },
