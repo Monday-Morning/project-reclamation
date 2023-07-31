@@ -72,10 +72,12 @@
 
 ## Squiggle Section
 
-| Permission Name       | Description                | Admin |
-| --------------------- | -------------------------- | ----- |
-| squiggle.write.all    | Can add/edit all squiggles | true  |
-| squiggle.write.delete | Can delete all squiggles   | true  |
+| Permission Name       | Description              | Admin |
+| --------------------- | ------------------------ | ----- |
+| squiggle.read.all     | Can read all squiggles   | true  |
+| squiggle.write.new    | Can add new squiggles    | true  |
+| squiggle.write.all    | Can update all squiggles | true  |
+| squiggle.write.delete | Can delete all squiggles | true  |
 
 ---
 

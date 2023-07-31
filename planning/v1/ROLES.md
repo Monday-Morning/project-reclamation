@@ -68,11 +68,11 @@
 
 ## Squiggle Section
 
-| Role Name           | squiggle.write.all | squiggle.write.delete |
-| ------------------- | ------------------ | --------------------- |
-| squiggle.basic      | false              | false                 |
-| squiggle.admin      | true               | false                 |
-| squiggle.superadmin | true               | true                  |
+| Role Name           | squiggle.read.all | squiggle.write.new | squiggle.write.all | squiggle.write.delete |
+| ------------------- | ----------------- | ------------------ | ------------------ | --------------------- |
+| squiggle.basic      | false             | false              | false              | false                 |
+| squiggle.admin      | true              | true               | false              | false                 |
+| squiggle.superadmin | true              | true               | true               | true                  |
 
 ---
 
