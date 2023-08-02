@@ -35,6 +35,7 @@ const ARTICLE_PUBLISH_TYPES = Object.fromEntries(
   PublishStatusEnumType.getValues().map((item) => [item.name, item.value])
 );
 
+// TODO: add a needsAdmin check for admin APIs
 const canReadArticle = (article, session, authToken, decodedToken, fieldNodes, noError = false) => {
   if (
     [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
