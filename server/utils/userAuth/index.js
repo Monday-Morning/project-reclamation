@@ -2,6 +2,28 @@ const { admin } = require('../../config/firebase');
 const { APIError, FirebaseAuthError } = require('../exception');
 const UserSession = require('./session');
 
+const SUPERADMIN_ROLES = [
+  'user.superadmin',
+  'article.superadmin',
+  'reactions.superadmin',
+  'comment.superadmin',
+  'issue.superadmin',
+  'session.superadmin',
+  'squiggle.superadmin',
+  'poll.superadmin',
+  'media.superadmin',
+  'album.superadmin',
+  'tag.superadmin',
+  'category.superadmin',
+  'role.superadmin',
+  'club.superadmin',
+  'event.superadmin',
+  'company.superadmin',
+  'live.superadmin',
+  'shareInternship.superadmin',
+  'forum.superadmin',
+];
+
 const UserAuth = {
   /**
    * @description Authenticates a user and returns the uid
@@ -19,7 +41,7 @@ const UserAuth = {
           uid: '',
           exp: 4102444800, // Jan 1, 2100 at midnight
           mid: '',
-          roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin', 'live.superadmin', 'media.admin'],
+          roles: SUPERADMIN_ROLES,
           email_verified: true,
         };
       }
@@ -29,7 +51,7 @@ const UserAuth = {
           uid: '',
           exp: 4102444800, // Jan 1, 2100 at midnight
           mid: '',
-          roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin', 'live.superadmin', 'media.admin'],
+          roles: SUPERADMIN_ROLES,
           email_verified: true,
         };
       }

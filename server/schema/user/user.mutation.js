@@ -32,7 +32,7 @@ const {
 } = require('../scalars');
 
 const UserType = require('./user.type');
-const FirebaseUserType = require('./firebaseUser.type');
+// const FirebaseUserType = require('./firebaseUser.type');
 const {
   createUser,
   setUserBan,
@@ -43,7 +43,7 @@ const {
   addNITRMail,
   newsletterSubscription,
   setUserAccountType,
-  setUserRoles,
+  // setUserRoles,
 } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
@@ -135,17 +135,17 @@ module.exports = new GraphQLObjectType({
       },
       resolve: setUserBan,
     },
-    setUserRoles: {
-      type: FirebaseUserType,
-      args: {
-        email: {
-          description: "The user's email id",
-          type: new GraphQLNonNull(GraphQLString),
-        },
-        roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
-      },
-      resolve: setUserRoles,
-    },
+    // setUserRoles: {
+    //   type: FirebaseUserType,
+    //   args: {
+    //     email: {
+    //       description: "The user's email id",
+    //       type: new GraphQLNonNull(GraphQLString),
+    //     },
+    //     roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    //   },
+    //   resolve: setUserRoles,
+    // },
 
     // TODO: update contributions from other schemas
     // TODO: update last poll from other schemas

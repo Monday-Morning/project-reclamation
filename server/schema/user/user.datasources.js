@@ -325,7 +325,7 @@ const UserDataSources = () => ({
   search,
   create,
   link,
-  updateName,
+  // updateName,
   updateDetails,
   updateCustomClaims,
   setNITRVerified,

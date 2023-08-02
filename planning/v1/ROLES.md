@@ -4,7 +4,7 @@
 
 | Role Name       | user.read.private | user.read.admin | user.write.self | user.write.all |
 | --------------- | ----------------- | --------------- | --------------- | -------------- |
-| user.basic      | true              | false           | false           | false          |
+| user.basic      | true              | false           | true            | false          |
 | user.verified   | true              | false           | true            | false          |
 | user.admin      | true              | true            | true            | false          |
 | user.superadmin | true              | true            | true            | true           |
