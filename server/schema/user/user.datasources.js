@@ -6,6 +6,70 @@ const { APIError, FirebaseAuthError } = require('../../utils/exception');
 const UserSession = require('../../utils/userAuth/session');
 const UserModel = require('./user.model');
 
+const USER_BASE_ROLES = [
+  'user.basic',
+  'article.basic',
+  'reactions.basic',
+  'comment.basic',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.basic',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.basic',
+  'live.basic',
+  'shareInternship.basic',
+  'forum.basic',
+];
+const USER_VERIFIED_STUDENT_ROLES = [
+  'user.verfiied',
+  'article.student',
+  'reactions.basic',
+  'comment.verified',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.verified',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.verified',
+  'live.verified',
+  'shareInternship.verified',
+  'forum.verified',
+];
+const USER_VERIFIED_FACULTY_ROLES = [
+  'user.verfiied',
+  'article.faculty',
+  'reactions.basic',
+  'comment.verified',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.verified',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.verified',
+  'live.verified',
+  'shareInternship.verified',
+  'forum.verified',
+];
+
 const findByID = () =>
   new DataLoader(
     async (ids) => {
@@ -123,8 +187,7 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
     await admin.auth().setCustomUserClaims(uid, {
       mid: _user[0].id,
-      // TODO: add all standard roles here
-      roles: ['user.basic'],
+      roles: USER_BASE_ROLES,
     });
 
     await mdbSession.commitTransaction();
@@ -167,8 +230,7 @@ const link = async (uid, id, interestedTopics, session, authToken, mid) => {
 
     await admin.auth().setCustomUserClaims(uid, {
       mid: id,
-      // TODO: add all standard roles here
-      roles: ['user.basic'],
+      roles: USER_VERIFIED_STUDENT_ROLES,
     });
 
     await mdbSession.commitTransaction();
@@ -258,12 +320,15 @@ const setNITRVerified = async (id, accountType, email, nitrMail, session, authTo
     const _fbUser = await findFirebaseUserByEmail(nitrMail);
     await admin.auth().updateUser(_fbUser.uid, { email });
 
-    // TODO: update all roles as required
     const _roles = _fbUser.customClaims.roles.map((item) => {
-      if (item.toString() !== 'user.basic') {
-        return item;
+      const _roleIndex = USER_BASE_ROLES.indexOf(item);
+      if (_roleIndex > -1 && (accountType === 1 || accountType === 2)) {
+        return USER_VERIFIED_STUDENT_ROLES[_roleIndex];
       }
-      return 'user.verified';
+      if (_roleIndex > -1 && accountType === 3) {
+        return USER_VERIFIED_FACULTY_ROLES[_roleIndex];
+      }
+      return item;
     });
 
     await admin.auth().setCustomUserClaims(_fbUser.uid, {

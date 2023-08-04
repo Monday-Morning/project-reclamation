@@ -32,6 +32,8 @@
 | reactions.admin      | true                 | false               |
 | reactions.superadmin | true                 | true                |
 
+_TODO: Consider combining reaction permissions in comment roles_
+
 ---
 
 ## Comment Section
@@ -54,6 +56,8 @@
 | issue.admin      | true                   | true             | true            | true            | false              |
 | issue.superadmin | true                   | true             | true            | true            | true               |
 
+_TODO: Consider combining session and issue permissions in singular roles_
+
 ---
 
 ## Session Section
@@ -63,6 +67,8 @@
 | session.basic      | false             | false             | false                |
 | session.admin      | false             | true              | false                |
 | session.superadmin | true              | true              | true                 |
+
+_TODO: Consider combining session and issue permissions in singular roles_
 
 ---
 
@@ -105,6 +111,8 @@
 | album.admin      | true            |
 | album.superadmin | true            |
 
+_TODO: Consider combining album permissions in media roles_
+
 ---
 
 ## Tag Section
@@ -145,6 +153,8 @@
 | club.admin      | true           | false             |
 | club.superadmin | true           | true              |
 
+_TODO: Consider combining club and event permissions in singular roles_
+
 ---
 
 ## Event Section
@@ -154,6 +164,8 @@
 | event.basic      | false           |
 | event.admin      | true            |
 | event.superadmin | true            |
+
+_TODO: Consider combining club and event permissions in singular roles_
 
 ---
 
@@ -165,6 +177,8 @@
 | company.verified   | true                | true                    | false                | false             | false             | false                |
 | company.admin      | true                | true                    | true                 | true              | true              | false                |
 | company.superadmin | true                | true                    | true                 | true              | true              | true                 |
+
+_TODO: Consider combining company permissions in live roles_
 
 ---
 
@@ -187,6 +201,8 @@
 | shareInternship.verified   | true                        | true                            | false                           | true                      | false                     | false                       |
 | shareInternship.admin      | true                        | true                            | true                            | true                      | true                      | true                        |
 | shareInternship.superadmin | true                        | true                            | true                            | true                      | true                      | true                        |
+
+_TODO: Consider combining shareInternship permissions in live roles_
 
 ---
 
