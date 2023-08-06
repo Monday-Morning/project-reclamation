@@ -28,7 +28,7 @@ const USER_BASE_ROLES = [
   'forum.basic',
 ];
 const USER_VERIFIED_STUDENT_ROLES = [
-  'user.verfiied',
+  'user.verified',
   'article.student',
   'reactions.basic',
   'comment.verified',
@@ -49,7 +49,7 @@ const USER_VERIFIED_STUDENT_ROLES = [
   'forum.verified',
 ];
 const USER_VERIFIED_FACULTY_ROLES = [
-  'user.verfiied',
+  'user.verified',
   'article.faculty',
   'reactions.basic',
   'comment.verified',
