@@ -6,6 +6,70 @@ const { APIError, FirebaseAuthError } = require('../../utils/exception');
 const UserSession = require('../../utils/userAuth/session');
 const UserModel = require('./user.model');
 
+const USER_BASE_ROLES = [
+  'user.basic',
+  'article.basic',
+  'reactions.basic',
+  'comment.basic',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.basic',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.basic',
+  'live.basic',
+  'shareInternship.basic',
+  'forum.basic',
+];
+const USER_VERIFIED_STUDENT_ROLES = [
+  'user.verified',
+  'article.student',
+  'reactions.basic',
+  'comment.verified',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.verified',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.verified',
+  'live.verified',
+  'shareInternship.verified',
+  'forum.verified',
+];
+const USER_VERIFIED_FACULTY_ROLES = [
+  'user.verified',
+  'article.faculty',
+  'reactions.basic',
+  'comment.verified',
+  'issue.basic',
+  'session.basic',
+  'squiggle.basic',
+  'poll.verified',
+  'media.basic',
+  'album.basic',
+  'tag.basic',
+  'category.basic',
+  'role.basic',
+  'club.basic',
+  'event.basic',
+  'company.verified',
+  'live.verified',
+  'shareInternship.verified',
+  'forum.verified',
+];
+
 const findByID = () =>
   new DataLoader(
     async (ids) => {
@@ -39,6 +103,16 @@ const findByEmail = () =>
     }
   );
 
+const findByOldUserName = async (oldUserName) => {
+  try {
+    const _user = await UserModel.findOne({ oldUserName });
+
+    return _user;
+  } catch (error) {
+    throw APIError(null, error);
+  }
+};
+
 const findFirebaseUserById = (id) => admin.auth().getUser(id);
 const findFirebaseUserByEmail = (email) => admin.auth().getUserByEmail(email);
 
@@ -52,7 +126,7 @@ const search = (query, accountType, limit, offset) =>
   UserModel.aggregate([
     {
       $search: {
-        // TODO: rectify index name
+        // TODO: move const to env
         index: 'default',
         text: {
           query,
@@ -94,28 +168,6 @@ const search = (query, accountType, limit, offset) =>
     },
   ]);
 
-const getUserByOldUserName = () =>
-  new DataLoader(
-    async (oldUserNames) => {
-      try {
-        const _users = await UserModel.find({ oldUserName: oldUserNames });
-        const _returnIds = oldUserNames.map(
-          (oldUserName) => _users.find((_u) => _u.oldUserName === oldUserName) || null
-        );
-
-        for (const _user of _users) {
-          findByID().prime(_user._id, _user);
-        }
-        return _returnIds;
-      } catch (error) {
-        throw APIError(null, error);
-      }
-    },
-    {
-      batchScheduleFn: (cb) => setTimeout(cb, 100),
-    }
-  );
-
 const create = async (uid, fullName, email, interestedTopics, session, authToken, mid) => {
   const mdbSession = await connection.startSession();
 
@@ -135,8 +187,7 @@ const create = async (uid, fullName, email, interestedTopics, session, authToken
 
     await admin.auth().setCustomUserClaims(uid, {
       mid: _user[0].id,
-      // TODO: add all standard roles here
-      roles: ['user.basic'],
+      roles: USER_BASE_ROLES,
     });
 
     await mdbSession.commitTransaction();
@@ -179,8 +230,7 @@ const link = async (uid, id, interestedTopics, session, authToken, mid) => {
 
     await admin.auth().setCustomUserClaims(uid, {
       mid: id,
-      // TODO: add all standard roles here
-      roles: ['user.basic'],
+      roles: USER_VERIFIED_STUDENT_ROLES,
     });
 
     await mdbSession.commitTransaction();
@@ -197,21 +247,21 @@ const link = async (uid, id, interestedTopics, session, authToken, mid) => {
 
 // TODO: Update all redundancies
 
-const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
-  const _updatedUser = UserModel.findByIdAndUpdate(
-    id,
-    {
-      firstName,
-      lastName,
-      isNameChanged: true,
-      updatedBy: UserSession.valid(session, authToken) ? mid : null,
-    },
-    { new: true }
-  );
-  const _updatedFbUser = admin.auth().updateUser(uid, { displayName: `${firstName} ${lastName}` });
+// const updateName = (uid, id, firstName, lastName, session, authToken, mid) => {
+//   const _updatedUser = UserModel.findByIdAndUpdate(
+//     id,
+//     {
+//       firstName,
+//       lastName,
+//       isNameChanged: true,
+//       updatedBy: UserSession.valid(session, authToken) ? mid : null,
+//     },
+//     { new: true }
+//   );
+//   const _updatedFbUser = admin.auth().updateUser(uid, { displayName: `${firstName} ${lastName}` });
 
-  return Promise.all([_updatedUser, _updatedFbUser]);
-};
+//   return Promise.all([_updatedUser, _updatedFbUser]);
+// };
 
 const updateDetails = async (id, fields, session, authToken, mid) => {
   try {
@@ -270,12 +320,15 @@ const setNITRVerified = async (id, accountType, email, nitrMail, session, authTo
     const _fbUser = await findFirebaseUserByEmail(nitrMail);
     await admin.auth().updateUser(_fbUser.uid, { email });
 
-    // TODO: update all roles as required
     const _roles = _fbUser.customClaims.roles.map((item) => {
-      if (item.toString() !== 'user.basic') {
-        return item;
+      const _roleIndex = USER_BASE_ROLES.indexOf(item);
+      if (_roleIndex > -1 && (accountType === 1 || accountType === 2)) {
+        return USER_VERIFIED_STUDENT_ROLES[_roleIndex];
       }
-      return 'user.verified';
+      if (_roleIndex > -1 && accountType === 3) {
+        return USER_VERIFIED_FACULTY_ROLES[_roleIndex];
+      }
+      return item;
     });
 
     await admin.auth().setCustomUserClaims(_fbUser.uid, {
@@ -328,7 +381,7 @@ const setBan = async (id, flag, session, authToken, mid) => {
 const UserDataSources = () => ({
   findByID: findByID(),
   findByEmail: findByEmail(),
-  getUserByOldUserName: getUserByOldUserName(),
+  findByOldUserName,
   findFirebaseUserById,
   findFirebaseUserByEmail,
   findOne,
@@ -337,7 +390,7 @@ const UserDataSources = () => ({
   search,
   create,
   link,
-  updateName,
+  // updateName,
   updateDetails,
   updateCustomClaims,
   setNITRVerified,

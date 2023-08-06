@@ -10,15 +10,11 @@
  * @since 0.1.0
  */
 
-// const fetch = require('node-fetch');
-// const { v5: UUID } = require('uuid');
-// const { transporter } = require('../../config/nodemailer');
 const UserPermission = require('../../utils/userAuth/permission');
 const UserSession = require('../../utils/userAuth/session');
 const { APIError, FirebaseAuthError } = require('../../utils/exception');
 const { AccountTypeEnumType } = require('./user.enum.types');
 const getFieldNodes = require('../../utils/getFieldNodes');
-// const imagekit = require('../../config/imagekit');
 
 const PUBLIC_FIELDS = [
   'id',
@@ -29,38 +25,73 @@ const PUBLIC_FIELDS = [
   'accountType',
   'nitrMail',
   'picture',
-  'pictureId',
+  'profile',
+  'isBanned',
 ];
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0,
   DEF_STORE = 2;
 const ACCOUNT_TYPES = Object.fromEntries(AccountTypeEnumType.getValues().map((item) => [item.name, item.value]));
 
-const canUpdateUser = (id, mid, session, authToken, decodedToken, fieldNodes, needsAdmin = false) => {
+// TODO: add a needsAdmin check for admin APIs
+const canReadUser = (user, mid, session, authToken, decodedToken, fieldNodes, noError = false) => {
+  if ([ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY].includes(user.accountType)) {
+    return true;
+  }
+
+  if (mid === (user.id ?? user._id.toString())) {
+    return true;
+  }
+
+  if (!UserPermission.exists(session, authToken, decodedToken, 'user.read.private')) {
+    if (noError) {
+      return false;
+    }
+    throw APIError('FORBIDDEN', null, {
+      reason: "The user does not have the required permissions to read the requested user's data.",
+    });
+  }
+
   const _fields = getFieldNodes(fieldNodes);
+  if (
+    _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
+    !UserPermission.exists(session, authToken, decodedToken, 'user.read.admin')
+  ) {
+    if (noError) {
+      return false;
+    }
+    throw APIError('FORBIDDEN', null, {
+      reason: 'The user does not have the required permissions to read the requested fields.',
+    });
+  }
+
+  return true;
+};
+
+const canUpdateUser = async (id, mid, session, authToken, decodedToken, fieldNodes, User, needsAdmin = false) => {
   if (!UserSession.valid(session, authToken)) {
     throw APIError('UNAUTHORIZED', null, { reason: 'The user is not authenticated.' });
   }
 
+  const _user = await User.findByID.load(id);
+
+  canReadUser(_user, mid, session, authToken, decodedToken, fieldNodes);
+
   if (needsAdmin && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the required administrative priveledges.' });
-  } else if (
-    (mid === id &&
-      !UserPermission.exists(session, authToken, decodedToken, 'user.write.self') &&
-      !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) ||
-    (mid !== id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
+  }
+
+  if (
+    !needsAdmin &&
+    mid === id &&
+    !UserPermission.exists(session, authToken, decodedToken, 'user.write.self') &&
+    !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')
   ) {
     throw APIError('FORBIDDEN', null, { reason: 'The user does not have the permissions to perform this update.' });
   }
 
-  if (
-    mid !== id &&
-    _fields?.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-    !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
-  ) {
-    throw APIError('FORBIDDEN', null, {
-      reason: 'The user does not have the permissions to read the equested fields.',
-    });
+  if (!needsAdmin && mid !== id && !UserPermission.exists(session, authToken, decodedToken, 'user.write.all')) {
+    throw APIError('FORBIDDEN', null, { reason: 'The user does not have the permissions to perform this update.' });
   }
 
   return true;
@@ -74,7 +105,9 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
+      if (!id && !email) {
+        throw APIError('BAD_REQUEST', null, { reason: 'No ID or Email was provided in the arguments.' });
+      }
 
       const _user = !id ? await User.findByEmail.load(email) : await User.findByID.load(id);
 
@@ -82,22 +115,7 @@ module.exports = {
         throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
       }
 
-      if ([ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY].includes(_user.accountType)) {
-        return _user;
-      }
-
-      if (mid === _user.id) {
-        return _user;
-      }
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permissions to read the requested fields.',
-        });
-      }
+      canReadUser(_user, mid, session, authToken, decodedToken, fieldNodes);
 
       return _user;
     } catch (error) {
@@ -105,11 +123,22 @@ module.exports = {
     }
   },
 
-  getUserByOldUserName: async (_parent, { oldUserName }, { API: { User } }) => {
+  getUserByOldUserName: async (
+    _parent,
+    { oldUserName },
+    { mid, session, authToken, decodedToken, API: { User } },
+    { fieldNodes }
+  ) => {
     try {
-      const user = await User.getUserByOldUserName.load(oldUserName);
+      const _user = await User.findByOldUserName(oldUserName);
 
-      return user;
+      if (!_user) {
+        throw APIError('NOT_FOUND', null, { reason: 'The requested user does not exist.' });
+      }
+
+      canReadUser(_user, mid, session, authToken, decodedToken, fieldNodes);
+
+      return _user;
     } catch (error) {
       throw APIError(null, error);
     }
@@ -118,25 +147,14 @@ module.exports = {
   getListOfUsers: async (
     _parent,
     { ids = [], emails = [], limit = DEF_LIMIT, offset = DEF_OFFSET },
-    { session, authToken, decodedToken, API: { User } },
+    { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
       if (ids.length <= 0 && emails.length <= 0) {
         throw APIError('BAD_REQUEST', null, { reason: 'No IDs and Emails were provided in the arguments.' });
       }
 
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
-      }
-
-      // TODO: Use findByID and findByEmail
       const _users = await User.find({ $or: [{ _id: ids }, { email: emails }] }, limit, offset);
 
       if (!_users || !(_users instanceof Array) || _users.length <= 0) {
@@ -148,71 +166,51 @@ module.exports = {
         User.findByEmail.prime(_user.email, _user);
       }
 
-      // TODO: check user account type for all values and return error acordingly
-
-      return _users.length < ids.length + emails.length
-        ? [..._users, APIError('NOT_FOUND', null, { reason: 'One or more of the requested users were not found.' })]
-        : _users;
+      return _users.map((user) => {
+        try {
+          canReadUser(user, mid, session, authToken, decodedToken, fieldNodes);
+          return user;
+        } catch (error) {
+          return error;
+        }
+      });
     } catch (error) {
       throw APIError(null, error);
     }
   },
-  // TODO: use aggregation pipelines
+
   searchUsers: async (
     _parent,
-    { searchTerm, accountType, limit = DEF_LIMIT, offset = DEF_OFFSET },
-    { session, authToken, decodedToken, API: { User } },
+    {
+      searchTerm,
+      accountType = [ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY],
+      limit = DEF_LIMIT,
+      offset = DEF_OFFSET,
+    },
+    { mid, session, authToken, decodedToken, API: { User } },
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.public')) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permissions to perform this action.',
-        });
-      }
-
       if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+        accountType.some(
+          (_accountType) => ![ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY].includes(_accountType)
+        ) &&
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.admin')
       ) {
         throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permissions to view the requested fields',
+          reason: 'The user does not the required permission to view the requested account type.',
         });
-      }
-
-      if (!accountType) {
-        accountType = [ACCOUNT_TYPES.MM_TEAM, ACCOUNT_TYPES.NITR_FACULTY];
-        if (UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
-          accountType = [
-            ACCOUNT_TYPES.NORMAL,
-            ACCOUNT_TYPES.NITR_STUDENT,
-            ACCOUNT_TYPES.MM_TEAM,
-            ACCOUNT_TYPES.NITR_FACULTY,
-          ];
-        }
-      } else {
-        if (
-          [ACCOUNT_TYPES.NORMAL, ACCOUNT_TYPES.NITR_STUDENT].includes(accountType) &&
-          !UserPermission.exists(session, authToken, decodedToken, 'user.list.all')
-        ) {
-          throw APIError('FORBIDDEN', null, {
-            reason: 'The user does not the required permission to view the requested account type.',
-          });
-        }
-        accountType = [accountType];
       }
 
       const _users = await User.search(searchTerm, accountType, limit, offset);
 
-      if (!_users || _users.length <= 0) {
+      if (!_users || !(_users instanceof Array) || _users.length <= 0) {
         throw APIError('NOT_FOUND', null, {
           reason: 'No users were found with the given search term and account type(s).',
         });
       }
 
-      return _users;
+      return _users.filter((user) => canReadUser(user, mid, session, authToken, decodedToken, fieldNodes, true));
     } catch (error) {
       throw APIError(null, error);
     }
@@ -224,18 +222,17 @@ module.exports = {
     { mid, session, authToken, decodedToken, API: { User } }
   ) => {
     try {
-      if (
-        !UserSession.valid(session, authToken) ||
-        ((await User.findFirebaseUserByEmail(email)).uid !== decodedToken.uid &&
-          !UserPermission.exists(session, authToken, decodedToken, 'user.write.all'))
-      ) {
+      // TODO: add data validation and cleaning
+
+      const _fbUser = await User.findFirebaseUserByEmail(email);
+
+      if (!UserSession.valid(session, authToken) || _fbUser.uid !== decodedToken.uid) {
         throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user does not have the required permissions.' });
       }
 
       const _user = await User.findByEmail.load(email);
 
       if (_user && _user.accountType === 2 && _user.oldUserId > 0) {
-        const _fbUser = await User.findFirebaseUserByEmail(email);
         if (_fbUser.displayName !== fullName) {
           return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
         }
@@ -249,21 +246,20 @@ module.exports = {
         throw APIError('METHOD_NOT_ALLOWED', null, { reason: 'User already exists' });
       }
 
-      // const _fbUser = await _auth.getUserByEmail(email);
-      const _fbUser = await User.findFirebaseUserByEmail(email);
       if (_fbUser.displayName !== fullName) {
         return APIError('BAD_REQUEST', null, { reason: 'The name provided did not match the existing records.' });
       }
 
       const [_mdbUser] = await User.create(_fbUser.uid, fullName, email, interestedTopics, session, authToken, mid);
 
-      // TODO: send welcome mail if required
-
       return _mdbUser;
     } catch (error) {
       throw FirebaseAuthError(error);
     }
   },
+
+  // TODO: implement a way to update all redundancies gracefully
+  /*
   updateUserName: async (
     _parent,
     { id, firstName, lastName },
@@ -271,9 +267,8 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
 
-      // const _user = await _UserModel.findByID(id, 'firstName lastName isNameChanged');
       const _user = await User.findByID(id);
 
       if (_user.firstName === firstName && _user.lastName === lastName) {
@@ -283,7 +278,6 @@ module.exports = {
         return APIError('METHOD_NOT_ALLOWED', null, { reason: 'The user has already changed their name once.' });
       }
 
-      // const _fbUser = await _auth.getUserByEmail(_user.email);
       const _fbUser = await User.findFirebaseUserByEmail(_user.email);
 
       const _updatedUser = await User.updateName(_fbUser.uid, id, firstName, lastName);
@@ -293,16 +287,16 @@ module.exports = {
       throw FirebaseAuthError(error);
     }
   },
-  // TODO: rewrite function with data sources
-  // TODO: update all redundancies
-  // TODO: delete older picture
+  */
+  // TODO: implement a way to update all redundancies gracefully
   updateUserProfilePicture: async (
     _parent,
     { id, store = DEF_STORE, storePath, blurhash },
-    { mid, session, authToken, decodedToken, API: { User, Media } }
+    { mid, session, authToken, decodedToken, API: { User, Media } },
+    { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User);
 
       const user = await User.findByID.load(id);
 
@@ -327,7 +321,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User);
 
       const _user = await User.updateDetails(id, { interestedTopics }, session, authToken, mid);
       return _user;
@@ -342,7 +336,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User);
 
       const _user = await User.updateDetails(
         id,
@@ -397,7 +391,7 @@ module.exports = {
         throw APIError('BAD_REQUEST', null, { reason: 'The requested user has not been linked.' });
       }
 
-      canUpdateUser(_user._id.toString(), mid, session, authToken, decodedToken, fieldNodes);
+      await canUpdateUser(_user._id.toString(), mid, session, authToken, decodedToken, fieldNodes, User);
 
       const _updatedUser = await User.setNITRVerified(
         _user._id,
@@ -422,7 +416,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User);
 
       const _user = await User.updateDetails(id, { isNewsletterSubscribed: flag }, session, authToken, mid);
 
@@ -444,6 +438,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
+      // TODO: use canReadUser instead of custom checks
       const _fields = getFieldNodes(fieldNodes);
 
       if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
@@ -480,7 +475,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User, true);
 
       const _user = await User.updateDetails(id, { accountType }, session, authToken, mid);
 
@@ -500,7 +495,7 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, true);
+      await canUpdateUser(id, mid, session, authToken, decodedToken, fieldNodes, User, true);
 
       const _user = await User.setBan(id, flag, session, authToken, mid);
 
@@ -519,7 +514,7 @@ module.exports = {
 
       if (
         mid !== firebaseUser.customClaims.mid &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
+        !UserPermission.exists(session, authToken, decodedToken, 'user.read.admin')
       ) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not the required permissions to read the requested data.',
@@ -531,18 +526,19 @@ module.exports = {
       return FirebaseAuthError(error);
     }
   },
-  setUserRoles: async (
-    _parent,
-    { email, roles },
-    { mid, session, authToken, decodedToken, API: { User } },
-    { fieldNodes }
-  ) => {
-    try {
-      canUpdateUser(null, mid, session, authToken, decodedToken, fieldNodes, true);
-      const _user = await User.updateCustomClaims(email, { roles });
-      return _user;
-    } catch (error) {
-      return FirebaseAuthError(error);
-    }
-  },
+  // TODO: use id to query the user and then update the custom claims
+  // setUserRoles: async (
+  //   _parent,
+  //   { email, roles },
+  //   { mid, session, authToken, decodedToken, API: { User } },
+  //   { fieldNodes }
+  // ) => {
+  //   try {
+  //     await canUpdateUser(null, mid, session, authToken, decodedToken, fieldNodes, User, true);
+  //     const _user = await User.updateCustomClaims(email, { roles });
+  //     return _user;
+  //   } catch (error) {
+  //     return FirebaseAuthError(error);
+  //   }
+  // },
 };

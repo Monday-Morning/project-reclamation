@@ -26,7 +26,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
-      const _query = UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')
+      const _query = UserPermission.exists(session, authToken, decodedToken, 'tag.read.admin')
         ? { _id: ids }
         : { $and: [{ _id: ids }, { isAdmin: false }] };
 
@@ -55,10 +55,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
-      if (
-        (isAdmin && !UserPermission.exists(session, authToken, decodedToken, 'tag.list.admin')) ||
-        (!isAdmin && !UserPermission.exists(session, authToken, decodedToken, 'tag.list.public'))
-      ) {
+      if (isAdmin && !UserPermission.exists(session, authToken, decodedToken, 'tag.read.admin')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permission to perform this operation.',
         });
@@ -73,7 +70,7 @@ module.exports = {
   },
   createTag: async (
     _parent,
-    { name, isAdmin = false, adminColor },
+    { name, isAdmin = false, adminColor = DEFAULT_TAG_COLOR },
     { mid, session, authToken, decodedToken, API: { Tag } }
   ) => {
     try {
@@ -85,9 +82,6 @@ module.exports = {
           reason: 'The user does not have the required permissions to perform this operation',
         });
       }
-      if (isAdmin && !adminColor) {
-        adminColor = DEFAULT_TAG_COLOR;
-      }
 
       const _tag = await Tag.create(name, isAdmin, isAdmin ? adminColor : undefined, session, authToken, mid);
 
@@ -96,23 +90,25 @@ module.exports = {
       throw APIError(null, error);
     }
   },
-  updateTag: async (
-    _parent,
-    { id, name, isAdmin, adminColor },
-    { mid, session, authToken, decodedToken, API: { Tag } }
-  ) => {
-    try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'tag.write.public')) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permission to perform this operation.',
-        });
-      }
+  // TODO: read tag first, then check if user has permission to update
+  // TODO: gracefully propagate changes to all redundancies
+  // updateTag: async (
+  //   _parent,
+  //   { id, name, isAdmin, adminColor },
+  //   { mid, session, authToken, decodedToken, API: { Tag } }
+  // ) => {
+  //   try {
+  //     if (!UserPermission.exists(session, authToken, decodedToken, 'tag.write.public')) {
+  //       throw APIError('FORBIDDEN', null, {
+  //         reason: 'The user does not have the required permission to perform this operation.',
+  //       });
+  //     }
 
-      const _tag = await Tag.update(id, name, isAdmin, adminColor, session, authToken, mid);
+  //     const _tag = await Tag.update(id, name, isAdmin, adminColor, session, authToken, mid);
 
-      return _tag;
-    } catch (error) {
-      throw APIError(null, error);
-    }
-  },
+  //     return _tag;
+  //   } catch (error) {
+  //     throw APIError(null, error);
+  //   }
+  // },
 };

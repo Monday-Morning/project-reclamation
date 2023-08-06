@@ -175,18 +175,15 @@ const UserSchema = new Schema(
       type: Boolean,
       required: false,
     },
+    // TODO: implement poll system later
     /** @see module:app.models.poll */
-    lastPoll: {
-      type: Schema.Types.ObjectId,
-      ref: 'Poll',
-      required: false,
-    },
+    // lastPoll: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Poll',
+    //   required: false,
+    // },
     isNameChanged: {
       type: Boolean,
-      required: false,
-    },
-    verfiyEmailToken: {
-      type: String,
       required: false,
     },
     createdBy: {

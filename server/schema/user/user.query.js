@@ -125,7 +125,7 @@ module.exports = new GraphQLObjectType({
         },
         accountType: {
           description: "The user's account type or verification status",
-          type: AccountTypeEnumType,
+          type: new GraphQLList(AccountTypeEnumType),
         },
         limit: {
           description: 'The number of results to return',
