@@ -16,7 +16,7 @@ const UserPermission = require('../../utils/userAuth/permission');
 const DEF_LIMIT = 10,
   DEF_OFFSET = 0;
 
-const PUBLIC_FIELDS = ['id', 'name', 'thumbnail', 'description', 'articles', 'featured'];
+const PUBLIC_FIELDS = ['id', 'name', 'thumbnail', 'description', 'articles', 'featured', '__typename'];
 
 module.exports = {
   getIssueByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Issue } }, { fieldNodes }) => {
