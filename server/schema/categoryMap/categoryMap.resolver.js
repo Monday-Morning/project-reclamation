@@ -1,7 +1,7 @@
 const { APIError } = require('../../utils/exception');
 
 module.exports = {
-  getCategory: async (_parent, { id = null, number = null }, { API: { Category: CategoryMap } }) => {
+  getCategory: async (_parent, { id = null, number = null }, { API: { CategoryMap } }) => {
     try {
       const _category = !id ? await CategoryMap.findByNumber.load(number) : await CategoryMap.findByID.load(id);
 

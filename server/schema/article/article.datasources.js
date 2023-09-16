@@ -4,7 +4,6 @@ const ArticleModel = require('./article.model');
 const { PublishStatusEnumType } = require('./article.enum.types');
 const UserSession = require('../../utils/userAuth/session');
 const UserModel = require('../user/user.model');
-const CategoryMapModel = require('../categoryMap/categoryMap.model');
 const { connection } = require('../../config/mongoose');
 const createUpdateObject = require('../../utils/createUpdateObject');
 const TagModel = require('../tag/tag.model');
@@ -208,48 +207,37 @@ const create = async (
     mdbSession.startTransaction();
 
     const _users = await UserModel.find({ _id: [...authors, ...photographers, ...designers, ...tech] });
-    const _categories = await CategoryMapModel.find({ _id: categories });
 
-    if (
-      _users.length !== authors.length + photographers.length + designers.length + tech.length ||
-      _users.some((user) => !user || user.accountType !== 2)
-    ) {
+    if (_users.some((user) => !user || user.accountType !== 2)) {
       throw APIError('BAD_REQUEST', null, {
         reason:
           'At least one of the user IDs supplied supplied is invalid, i.e. that user does not exist or is not a MM Team Member.',
       });
     }
-    if (_categories.length !== categories.length || _users.some((item) => !item)) {
-      throw APIError('BAD_REQUEST', null, {
-        reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
-      });
-    }
 
     // TODO: create google doc and link
-    const _article = await ArticleModel.create(
-      {
-        articleType,
-        title,
-        users: _users.map((_user) => ({
-          name: _user.fullName,
-          team: authors.includes(_user._id.toString())
-            ? 0
-            : photographers.includes(_user._id.toString())
-            ? 1
-            : designers.includes(_user._id.toString())
-            ? 2
-            : tech.includes(_user._id.toString())
-            ? 3
-            : APIError(null, null, { reason: 'The data being processed was invalid.' }),
-          details: _user._id,
-        })),
-        categories: _categories.map((_category) => ({
-          subcategory: _category.parent?.number ? true : false,
-          number: _category.number,
-          reference: _category._id,
-        })),
-        createdBy: UserSession.valid(session, authToken) ? mid : null,
-      },
+    const [_article] = await ArticleModel.create(
+      [
+        {
+          articleType,
+          title,
+          users: _users.map((_user) => ({
+            name: _user.fullName,
+            team: authors.includes(_user._id.toString())
+              ? 0
+              : photographers.includes(_user._id.toString())
+              ? 1
+              : designers.includes(_user._id.toString())
+              ? 2
+              : tech.includes(_user._id.toString())
+              ? 3
+              : APIError(null, null, { reason: 'The data being processed was invalid.' }),
+            details: _user._id,
+          })),
+          categories,
+          createdBy: UserSession.valid(session, authToken) ? mid : null,
+        },
+      ],
       { session: mdbSession }
     );
 
@@ -283,7 +271,7 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
   try {
     mdbSession.startTransaction();
 
-    const _uniqueUserIds = [...Set([...authors, ...photographers, ...designers, ...tech])];
+    const _uniqueUserIds = [...new Set([...authors, ...photographers, ...designers, ...tech])];
 
     const _users = await UserModel.find({ _id: _uniqueUserIds });
 
@@ -301,28 +289,28 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
           ..._users
             .filter((_u) => authors.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 0,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => photographers.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 1,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => designers.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 2,
               details: _u._id,
             })),
           ..._users
             .filter((_u) => tech.includes(_u._id.toString()))
             .map((_u) => ({
-              name: _u.name,
+              name: _u.fullName,
               team: 3,
               details: _u._id,
             })),
@@ -348,22 +336,10 @@ const updateUsers = async (id, authors, photographers, designers, tech, session,
 
 const updateCategories = async (id, categories, session, authToken, mid) => {
   try {
-    const _categories = await CategoryMapModel.find({ _id: categories });
-
-    if (_categories.length !== categories.length || _users.some((item) => !item)) {
-      throw APIError('BAD_REQUEST', null, {
-        reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
-      });
-    }
-
     const _article = await ArticleModel.findByIdAndUpdate(
       id,
       {
-        categories: _categories.map((_category) => ({
-          subcategory: _category.parent?.number ? true : false,
-          number: _category.number,
-          reference: _category._id,
-        })),
+        categories,
         updatedBy: UserSession.valid(session, authToken) ? mid : null,
       },
       { new: true }
@@ -425,7 +401,15 @@ const removeTag = async (id, tag, isAdmin, session, authToken, mid) => {
 };
 
 // TODO: link up with other models
-const updateCover = () => null;
+const updateCover = (id, squareRef, rectangleRef, session, authToken, mid) =>
+  ArticleModel.findByIdAndUpdate(
+    id,
+    {
+      coverMedia: { square: squareRef, rectangle: rectangleRef },
+      updatedBy: UserSession.valid(session, authToken) ? mid : null,
+    },
+    { new: true }
+  );
 
 // TODO: code google docs API
 const updateContent = () => null;

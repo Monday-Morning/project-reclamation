@@ -347,8 +347,9 @@ module.exports = {
 
   createArticle: async (
     _parent,
-    { articleType, title, authors, photographers, designers, tech, categories },
-    { session, authToken, decodedToken, API: { Article } }
+    { articleType, title, authors, photographers, designers, tech, categoryNumbers },
+    { mid, session, authToken, decodedToken, API: { Article, CategoryMap } },
+    { fieldNodes }
   ) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'article.write.new')) {
@@ -357,7 +358,18 @@ module.exports = {
         });
       }
 
-      // TODO: add data validation and cleaning
+      const _categories = await CategoryMap.findByNumber.loadMany(categoryNumbers);
+
+      const categories = _categories?.reduce((acc, curr) => {
+        acc.push({ reference: curr._id, number: curr.number, subcategory: curr.number > 10 ? true : false });
+        return acc;
+      }, []);
+
+      if (!categories || categories.length <= 0 || categories.length !== categoryNumbers.length) {
+        throw APIError('NOT_FOUND', null, {
+          reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
+        });
+      }
 
       const _article = await Article.create(
         articleType,
@@ -409,14 +421,27 @@ module.exports = {
   },
   updateArticleCategories: async (
     _parent,
-    { id, categories },
-    { session, authToken, decodedToken, mid, API: { Article } },
+    { id, categoryNumbers },
+    { session, authToken, decodedToken, mid, API: { Article, CategoryMap } },
     { fieldNodes }
   ) => {
     try {
       await canUpdateArticle(id, mid, session, authToken, decodedToken, fieldNodes, Article);
 
       // TODO: check if no categories have been changed
+
+      const _categories = await CategoryMap.findByNumber.loadMany(categoryNumbers);
+
+      const categories = _categories.reduce((acc, curr) => {
+        acc.push({ reference: curr._id, number: curr.number, subcategory: curr.number > 10 ? true : false });
+        return acc;
+      }, []);
+
+      if (!categories || categories.length <= 0 || categories.length !== categoryNumbers.length) {
+        throw APIError('NOT_FOUND', null, {
+          reason: 'At least one of the category IDs supplied supplied is invalid, i.e. that category does not exist.',
+        });
+      }
 
       return Article.updateCategories(id, categories, session, authToken, mid);
     } catch (error) {
@@ -440,7 +465,20 @@ module.exports = {
     }
   },
   // TODO: link with media models
-  updateArticleCover: () => null,
+  updateArticleCover: async (
+    _parent,
+    { id, squareRef, rectangleRef },
+    { session, authToken, decodedToken, mid, API: { Article } },
+    { fieldNodes }
+  ) => {
+    try {
+      await canUpdateArticle(id, mid, session, authToken, decodedToken, fieldNodes, Article, true);
+
+      return Article.updateCover(id, squareRef, rectangleRef, session, authToken, mid);
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
   // TODO: get google docs API setup
   updateArticleContent: () => null,
   updateArticleApprovalStatus: async (
