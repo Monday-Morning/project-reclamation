@@ -441,18 +441,9 @@ module.exports = {
       // TODO: use canReadUser instead of custom checks
       const _fields = getFieldNodes(fieldNodes);
 
-      if (!UserPermission.exists(session, authToken, decodedToken, 'user.list.all')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'user.read.admin')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to perform this action.',
-        });
-      }
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'user.read.all')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
         });
       }
 
