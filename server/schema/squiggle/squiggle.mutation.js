@@ -23,6 +23,7 @@ module.exports = new GraphQLObjectType({
         newSquiggleType: { type: GraphQLString },
         newContent: { type: GraphQLString },
       },
+      resolve: updateSquiggle,
   },
 }
 });
