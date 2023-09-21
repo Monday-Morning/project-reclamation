@@ -33,6 +33,34 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+
+  // added code to update squiggle here..
+  updateSquiggle: async (
+    _parent,
+    { id, newSquiggleType, newContent },
+    { session, authToken, decodedToken, API: { Squiggle } }
+  ) => {
+    try {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.update')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to update squiggles.',
+        });
+      }
+      const _squiggle = await Squiggle.findByID(id);
+
+      if (!_squiggle) {
+        throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.',});
+      }
+      _squiggle.squiggleType = newSquiggleType;
+      _squiggle.content = newContent;
+  
+      await _squiggle.save();
+      return _squiggle; 
+    } catch (error) {
+      throw APIError(null, error);
+    }
+  },
+  
   getLatestSquiggle: async (_parent, _args, { API: { Squiggle } }, _) => {
     try {
       const _squiggle = await Squiggle.getLatest();

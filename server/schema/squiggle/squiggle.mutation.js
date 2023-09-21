@@ -1,5 +1,5 @@
 const { GraphQLObjectType, GraphQLNonNull, GraphQLString } = require('../scalars');
-const { createSquiggle } = require('./squiggle.resolver');
+const { createSquiggle, updateSquiggle } = require('./squiggle.resolver');
 
 const SquiggleType = require('./squiggle.type');
 
