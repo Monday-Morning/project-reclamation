@@ -40,7 +40,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Squiggle } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.update')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.new')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to update squiggles.',
         });
