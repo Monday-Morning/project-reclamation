@@ -34,10 +34,9 @@ module.exports = {
     }
   },
 
-  // added code to update squiggle here..
   updateSquiggle: async (
     _parent,
-    { id, newSquiggleType, newContent },
+    { id, newContent },
     { session, authToken, decodedToken, API: { Squiggle } }
   ) => {
     try {
@@ -51,7 +50,6 @@ module.exports = {
       if (!_squiggle) {
         throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.',});
       }
-      _squiggle.squiggleType = newSquiggleType;
       _squiggle.content = newContent;
   
       await _squiggle.save();
