@@ -13,5 +13,16 @@ module.exports = new GraphQLObjectType({
       },
       resolve: createSquiggle,
     },
+    updateSquiggle: {
+      type: SquiggleType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: "The squiggle's mongo ID",
+        },
+        newSquiggleType: { type: GraphQLString },
+        newContent: { type: GraphQLString },
+      },
   },
+}
 });
