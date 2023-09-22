@@ -35,6 +35,11 @@ const CommentSchema = new Schema(
         trim: true,
       },
     },
+    approved: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     parent: {
       model: {
         type: String,

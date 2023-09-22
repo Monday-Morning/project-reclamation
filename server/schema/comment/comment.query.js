@@ -9,7 +9,7 @@ const {
   GraphQLNonNull,
   // GraphQLError,
   GraphQLList,
-  GraphQLString,
+  // GraphQLString,
   GraphQLID,
   // GraphQLBoolean,
   GraphQLInt,
@@ -20,6 +20,7 @@ const {
   // GraphQLJSON,
   // GraphQLJSONObject,
 } = require('../scalars');
+const { CommentParentModelEmum } = require('./comment.enum.types');
 const { getListOfComments, getCommentById, countOfComments } = require('./comment.resolver');
 
 const CommentType = require('./comment.type');
@@ -36,11 +37,11 @@ module.exports = new GraphQLObjectType({
           type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
         },
         limit: {
-          description: 'No of Comments to be retrieved',
+          description: 'No. of Comments to be retrieved',
           type: GraphQLInt,
         },
         offset: {
-          description: 'No of Comments to be skipped | pagination',
+          description: 'No. of Comments to be skipped | pagination',
           type: GraphQLInt,
         },
       },
@@ -67,7 +68,7 @@ module.exports = new GraphQLObjectType({
         },
         parentType: {
           description: 'Type of parent',
-          type: new GraphQLNonNull(GraphQLString),
+          type: new GraphQLNonNull(CommentParentModelEmum),
         },
       },
       resolve: countOfComments,

@@ -11,7 +11,7 @@ const {
   // GraphQLList,
   GraphQLString,
   GraphQLID,
-  // GraphQLBoolean,
+  GraphQLBoolean,
   GraphQLInt,
   // GraphQLFloat,
   // GraphQLDate,
@@ -71,6 +71,8 @@ const CommentType = new GraphQLObjectType({
       type: AuthorType,
     },
 
+    approved: { type: GraphQLBoolean },
+
     parent: { type: ParentType },
 
     createdAt: { type: GraphQLDateTime },
@@ -85,7 +87,7 @@ const ParentUniontype = new GraphQLUnionType({
   name: 'ParentUnion',
   description: 'Union of article and comment for parent of comment',
   types: [ArticleType, CommentType],
-  resolveType: (value) => (value.categories ? ArticleType : CommentType),
+  resolveType: (value) => (value.categories ? 'Article' : 'Comment'),
 });
 
 module.exports = CommentType;

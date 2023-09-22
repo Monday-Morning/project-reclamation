@@ -21,7 +21,7 @@ const {
   // GraphQLJSONObject,
 } = require('../scalars');
 const { CommentParentModelEmum } = require('./comment.enum.types');
-const { createComment, deleteComment, updateCommentContent } = require('./comment.resolver');
+const { createComment, deleteComment, updateCommentContent, approveComment } = require('./comment.resolver');
 
 const CommentType = require('./comment.type');
 
@@ -38,6 +38,14 @@ module.exports = new GraphQLObjectType({
         parentType: { type: new GraphQLNonNull(CommentParentModelEmum) },
       },
       resolve: createComment,
+    },
+    approveComment: {
+      description: 'Approve a comment',
+      type: CommentType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: approveComment,
     },
     updateCommentContent: {
       description: 'Update Comment by Id',

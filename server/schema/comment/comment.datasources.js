@@ -6,11 +6,14 @@ const CommentModel = require('./comment.model');
 
 const findByID = () =>
   new DataLoader(
-    async (ids) => {
+    async (data) => {
       try {
-        const _comments = await CommentModel.find({ _id: ids });
+        const _comments = await CommentModel.find({ _id: { $in: data.map(({ id }) => id) } });
 
-        const _returnComments = ids.map((id) => _comments.find((_comment) => _comment.id.toString() === id.toString()));
+        const _returnComments = data.map(({ id, permission, mid }) => {
+          const _comment = _comments.find((comment) => comment._id.toString() === id.toString());
+          return _comment && _comment.approved ? _comment : permission || mid === _comment.createdBy ? _comment : null;
+        });
         return _returnComments;
       } catch (error) {
         throw APIError(null, error);
@@ -21,15 +24,21 @@ const findByID = () =>
     }
   );
 
-const findAll = (offset, limit) => CommentModel.find().sort({ createdAt: 'desc' }).skip(offset).limit(limit);
+const findAll = (offset, limit, permission, mid) => {
+  // Get approved comments if the user does not have permission to read unapproved comments and the user is not the author
+  // Get all comments if the user has permission to read unapproved comments or the user is the author
+  const query = permission ? {} : { $or: [{ approved: true }, { approved: false, createdBy: mid }] };
+  return CommentModel.find(query).sort({ createdAt: 'desc' }).skip(offset).limit(limit);
+};
 
 const countNumberOfComments = (parentID, parentModel) =>
   CommentModel.countDocuments({
     'parent.reference': parentID,
     'parent.model': parentModel,
+    approved: true,
   });
 
-const create = async (authorID, content, parentID, parentType, session, authToken, mid) => {
+const create = async (authorID, content, parentID, parentType, session, authToken, mid, approved) => {
   try {
     const _author = await userModel.findById(authorID);
     if (!_author) {
@@ -47,6 +56,7 @@ const create = async (authorID, content, parentID, parentType, session, authToke
           reference: parentID,
           model: parentType,
         },
+        approved: approved || false,
         createdBy: UserSession.valid(session, authToken) ? mid : null,
       },
     ]);
@@ -74,6 +84,8 @@ const updateContent = async (id, content, session, authToken, mid) => {
   }
 };
 
+const approve = (id) => CommentModel.findByIdAndUpdate(id, { approved: true }, { new: true });
+
 const remove = (id) => CommentModel.findByIdAndDelete(id);
 
 const CommentDataSources = () => ({
@@ -81,6 +93,7 @@ const CommentDataSources = () => ({
   findByID: findByID(),
   countNumberOfComments,
   create,
+  approve,
   updateContent,
   remove,
 });
