@@ -45,14 +45,14 @@ module.exports = {
           reason: 'The user does not have the required permissions to update squiggles.',
         });
       }
-      const _squiggle = await Squiggle.findByID(id);
+      let _squiggle = await Squiggle.findByID(id);
 
       if (!_squiggle) {
         throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.',});
       }
       _squiggle.content = newContent;
   
-      await _squiggle.save();
+      _squiggle = await Squiggle.save(id, newContent);
       return _squiggle; 
     } catch (error) {
       throw APIError(null, error);
