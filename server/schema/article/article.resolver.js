@@ -348,8 +348,7 @@ module.exports = {
   createArticle: async (
     _parent,
     { articleType, title, authors, photographers, designers, tech, categoryNumbers },
-    { mid, session, authToken, decodedToken, API: { Article, CategoryMap } },
-    { fieldNodes }
+    { mid, session, authToken, decodedToken, API: { Article, CategoryMap } }
   ) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'article.write.new')) {
