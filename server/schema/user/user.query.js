@@ -38,6 +38,7 @@ const {
   getUserByOldUserName,
   listAllUsers,
   searchUsers,
+  checkNITRMail,
 } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
@@ -124,7 +125,7 @@ module.exports = new GraphQLObjectType({
         },
         accountType: {
           description: "The user's account type or verification status",
-          type: AccountTypeEnumType,
+          type: new GraphQLList(AccountTypeEnumType),
         },
         limit: {
           description: 'The number of results to return',
@@ -136,6 +137,17 @@ module.exports = new GraphQLObjectType({
         },
       },
       resolve: searchUsers,
+    },
+    checkNITRMail: {
+      description: 'Checks if the NITR email already exists',
+      type: UserType,
+      args: {
+        nitrMail: {
+          description: 'The NITR email ID',
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: checkNITRMail,
     },
 
     /** Admin APIs */

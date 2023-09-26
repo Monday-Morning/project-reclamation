@@ -32,19 +32,18 @@ const {
 } = require('../scalars');
 
 const UserType = require('./user.type');
-const FirebaseUserType = require('./firebaseUser.type');
+// const FirebaseUserType = require('./firebaseUser.type');
 const {
   createUser,
   setUserBan,
-  updateUserName,
-  updateUserPicture,
+  // updateUserName,
+  updateUserProfilePicture,
   updateUserTopics,
   updateUserBio,
   addNITRMail,
-  verifyNITRMail,
   newsletterSubscription,
   setUserAccountType,
-  setUserRoles,
+  // setUserRoles,
 } = require('./user.resolver');
 const { AccountTypeEnumType } = require('./user.enum.types');
 
@@ -60,29 +59,20 @@ module.exports = new GraphQLObjectType({
       },
       resolve: createUser,
     },
-    updateUserName: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
-        lastName: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: updateUserName,
-    },
-    updateUserPicture: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        url: { type: new GraphQLNonNull(GraphQLString) },
-        blurhash: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: updateUserPicture,
-    },
+    // updateUserName: {
+    //   type: UserType,
+    //   args: {
+    //     id: { type: new GraphQLNonNull(GraphQLID) },
+    //     firstName: { type: new GraphQLNonNull(GraphQLString) },
+    //     lastName: { type: new GraphQLNonNull(GraphQLString) },
+    //   },
+    //   resolve: updateUserName,
+    // },
     updateUserTopics: {
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
-        interestedTopics: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        interestedTopics: { type: new GraphQLNonNull(new GraphQLList(GraphQLInt)) },
       },
       resolve: updateUserTopics,
     },
@@ -100,23 +90,23 @@ module.exports = new GraphQLObjectType({
       },
       resolve: updateUserBio,
     },
-
+    updateUserProfilePicture: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        store: { type: GraphQLInt },
+        storePath: { type: new GraphQLNonNull(GraphQLString) },
+        blurhash: { type: GraphQLString },
+      },
+      resolve: updateUserProfilePicture,
+    },
     addNITRMail: {
       type: UserType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
         email: { type: new GraphQLNonNull(GraphQLString) },
+        nitrMail: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: addNITRMail,
-    },
-    verifyNITRMail: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        token: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve: verifyNITRMail,
     },
 
     newsletterSubscription: {
@@ -145,17 +135,17 @@ module.exports = new GraphQLObjectType({
       },
       resolve: setUserBan,
     },
-    setUserRoles: {
-      type: FirebaseUserType,
-      args: {
-        email: {
-          description: "The user's email id",
-          type: new GraphQLNonNull(GraphQLString),
-        },
-        roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
-      },
-      resolve: setUserRoles,
-    },
+    // setUserRoles: {
+    //   type: FirebaseUserType,
+    //   args: {
+    //     email: {
+    //       description: "The user's email id",
+    //       type: new GraphQLNonNull(GraphQLString),
+    //     },
+    //     roles: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    //   },
+    //   resolve: setUserRoles,
+    // },
 
     // TODO: update contributions from other schemas
     // TODO: update last poll from other schemas

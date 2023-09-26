@@ -2,33 +2,61 @@ const { admin } = require('../../config/firebase');
 const { APIError, FirebaseAuthError } = require('../exception');
 const UserSession = require('./session');
 
+const SUPERADMIN_ROLES = [
+  'user.superadmin',
+  'article.superadmin',
+  'reactions.superadmin',
+  'comment.superadmin',
+  'issue.superadmin',
+  'session.superadmin',
+  'squiggle.superadmin',
+  'poll.superadmin',
+  'media.superadmin',
+  'album.superadmin',
+  'tag.superadmin',
+  'category.superadmin',
+  'role.superadmin',
+  'club.superadmin',
+  'event.superadmin',
+  'company.superadmin',
+  'live.superadmin',
+  'shareInternship.superadmin',
+  'forum.superadmin',
+];
+
 const UserAuth = {
   /**
    * @description Authenticates a user and returns the uid
    * @function
    * @async
    *
-   * @param {String} jwt JSON Web Token
+   * @param {String} authToken JSON Web Token
    * @param {admin.Auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  authenticate: async (jwt, _auth = admin?.auth()) => {
+  authenticate: async (authToken, _auth = admin?.auth()) => {
     try {
-      const _decodedToken =
-        process.env.NODE_ENV === 'development' && process.env.FIREBASE_TEST_AUTH_KEY === jwt
-          ? {
-              uid: '',
-              exp: 4102444800, // Jan 1, 2100 at midnight
-              mid: process.env.MID,
-              roles: ['user.superadmin', 'article.admin', 'issue.admin', 'tag.admin', 'live.superadmin', 'media.admin'],
-              email_verified: true,
-            }
-          : await _auth.verifyIdToken(jwt, true);
-      if (!_decodedToken.email_verified) {
-        throw APIError('UNAUTHORIZED', null, {
-          reason: "The User's Email ID is not verified.",
-        });
+      if (process.env.NODE_ENV === 'development' && process.env.FIREBASE_TEST_AUTH_KEY === authToken) {
+        return {
+          uid: '',
+          exp: 4102444800, // Jan 1, 2100 at midnight
+          mid: '',
+          roles: SUPERADMIN_ROLES,
+          email_verified: true,
+        };
       }
+
+      if (process.env.SERVER_ACCESS_API_KEY === authToken) {
+        return {
+          uid: '',
+          exp: 4102444800, // Jan 1, 2100 at midnight
+          mid: '',
+          roles: SUPERADMIN_ROLES,
+          email_verified: true,
+        };
+      }
+
+      const _decodedToken = await _auth.verifyIdToken(authToken, true);
       return _decodedToken;
     } catch (error) {
       throw FirebaseAuthError(error);
@@ -39,32 +67,32 @@ const UserAuth = {
    * @description Parses the auth status
    * @function
    *
-   * @param {String} jwt
+   * @param req
    * @returns {NULL | Object | GraphQLError}
    */
   getContext: async (req, _auth = admin?.auth()) => {
     try {
-      if (!req || !req.headers || !req.headers.authorization) {
+      if (!req || !req.headers || (!req.headers.authorization && !req.headers['x-api-key'])) {
         return { authToken: null, decodedToken: null, mid: null };
       }
 
-      const jwt = decodeURI(req.headers.authorization);
-      if (!jwt) {
+      const authToken = decodeURI(req.headers.authorization ?? req.headers['x-api-key']);
+      if (!authToken) {
         return { authToken: null, decodedToken: null, mid: null };
       }
 
-      if (UserSession.valid(req.session, jwt)) {
+      if (UserSession.valid(req.session, authToken)) {
         return {
-          authToken: req.session.auth.jwt,
+          authToken: req.session.auth.authToken,
           decodedToken: req.session.auth.decodedToken,
           mid: req.session.auth.mid,
         };
       }
 
-      const _decodedToken = await UserAuth.authenticate(jwt, _auth);
+      const _decodedToken = await UserAuth.authenticate(authToken, _auth);
 
       if (!_decodedToken) {
-        return { authToken: req.headers.authorization, decodedToken: null, mid: null };
+        return { authToken: req.headers.authorization ?? req.headers['x-api-key'], decodedToken: null, mid: null };
       }
 
       const { uid, exp, roles, mid } = _decodedToken;
@@ -73,7 +101,7 @@ const UserAuth = {
         req.session.auth = {
           uid,
           mid,
-          jwt: req.headers.authorization,
+          authToken: req.headers.authorization ?? req.headers['x-api-key'],
           exp,
           roles,
           decodedToken: _decodedToken,
@@ -82,7 +110,7 @@ const UserAuth = {
       }
 
       return {
-        authToken: req.headers.authorization,
+        authToken: req.headers.authorization ?? req.headers['x-api-key'],
         decodedToken: _decodedToken,
         mid: _decodedToken.mid,
       };

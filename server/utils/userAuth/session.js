@@ -8,17 +8,16 @@ const UserSession = {
    * @function
    *
    * @param {session.Session} session
-   * @param {String} jwt
+   * @param {String} authToken
    * @returns {Boolean}
    */
-  valid: (session, jwt) =>
+  valid: (session, authToken) =>
     !session ||
-    !jwt ||
+    !authToken ||
     !session.auth ||
-    !session.auth.jwt ||
+    !session.auth.authToken ||
     !session.auth.exp ||
-    !session.auth.uid ||
-    session.auth.jwt !== jwt ||
+    session.auth.authToken !== authToken ||
     session.auth.exp <= Date.now() / 1000
       ? false
       : true,
@@ -29,18 +28,18 @@ const UserSession = {
    * @async
    *
    * @param {session.Session} session
-   * @param {String} jwt
+   * @param {String} authToken
    * @param {auth} _auth Firebase Authentication Library
    * @returns {Object | GraphQLError} decodedToken
    */
-  start: async (session, jwt, _auth = admin?.auth()) => {
+  start: async (session, authToken, _auth = admin?.auth()) => {
     try {
-      const _decodedToken = await UserAuth.authenticate(jwt, _auth);
+      const _decodedToken = await UserAuth.authenticate(authToken, _auth);
       const { uid, exp, roles, mid } = _decodedToken;
       session.auth = {
         uid,
         mid,
-        jwt,
+        authToken,
         exp,
         roles,
         decodedToken: _decodedToken,
@@ -60,12 +59,12 @@ const UserSession = {
    * @async
    *
    * @param {session.Session} session
-   * @param {String} jwt
+   * @param {String} authToken
    * @returns {NULL | GraphQLError}
    */
-  end: async (session, jwt) => {
+  end: async (session, authToken) => {
     try {
-      if (UserSession.valid(session, jwt)) {
+      if (UserSession.valid(session, authToken)) {
         await session.destroy();
         return true;
       }

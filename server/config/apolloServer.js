@@ -68,6 +68,7 @@ const apolloServer = (httpServer) =>
       graphRef: process.env.APOLLO_GRAPH_REF,
       graphVariant: process.env.APOLLO_GRAPH_VARIANT,
     },
+    cache: 'bounded',
     stopOnTerminationSignals: false,
     plugins: [CustomLandingPagePlugin, ApolloServerPluginDrainHttpServer({ httpServer })],
   });
