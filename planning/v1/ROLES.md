@@ -46,26 +46,6 @@ _TODO: Consider combining reaction permissions in comment roles_
 | comment.superadmin | true                | true                    | true              | true                   | true               | true                 | true                |
 
 ---
-
-## Comment Section
-
-### Comment Permissions
-
-| Permission Name        | Description                        |
-| ---------------------- | ---------------------------------- |
-| comment.write.new      | Can create/update a new comment           |
-| comment.write.all      | Can update/delete all comment      |
-|                        |                                    |
-
-### Comment Roles
-
-| Role Name        | comment.write.new  | comment.write.all|
-| ---------------- | ------------------ | ---------------- |
-| comment.admin    | Y                  | Y                |
-| comment.verified | Y                  | N                |
-|                  |                    |                  |
-
----
 ## Issue Section
 
 | Role Name        | issue.read.unpublished | issue.read.admin | issue.write.new | issue.write.all | issue.write.delete |
