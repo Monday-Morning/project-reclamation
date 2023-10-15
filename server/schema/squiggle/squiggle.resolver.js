@@ -73,9 +73,14 @@ module.exports = {
     }
   },
 
-  // TODO: Only display if admin
   getSquiggleByID: async (_parent, { id }, { API: { Squiggle } }, _) => {
     try {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.read.all')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read select squiggles.',
+        });
+      }
+
       const _squiggle = await Squiggle.findByID(id);
 
       if (!_squiggle) {
@@ -89,6 +94,12 @@ module.exports = {
   },
   listSquiggles: async (_parent, { limit = DEF_LIMIT, offset = DEF_OFFSET }, { API: { Squiggle } }, _) => {
     try {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.read.all')) {
+        throw APIError('FORBIDDEN', null, {
+          reason: 'The user does not have the required permissions to read select squiggles.',
+        });
+      }
+
       const _squiggles = await Squiggle.find({}, limit, offset);
 
       return _squiggles;

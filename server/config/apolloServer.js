@@ -8,6 +8,7 @@ const MediaDataSources = require('../schema/media/media.datasources');
 const IssueDataSources = require('../schema/issue/issue.datasources');
 const CategoryMapDataSources = require('../schema/categoryMap/categoryMap.datasources');
 const ArticleDataSources = require('../schema/article/article.datasources');
+const CommentDataSources = require('../schema/comment/comment.datasources');
 const CompanyDataSources = require('../schema/company/company.datasources');
 const LiveDataSources = require('../schema/live/live.datasources');
 
@@ -59,6 +60,7 @@ const apolloServer = (httpServer) =>
         Article: ArticleDataSources(),
         Company: CompanyDataSources(),
         Live: LiveDataSources(),
+        Comment: CommentDataSources(),
       },
     }),
     debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
@@ -68,6 +70,7 @@ const apolloServer = (httpServer) =>
       graphRef: process.env.APOLLO_GRAPH_REF,
       graphVariant: process.env.APOLLO_GRAPH_VARIANT,
     },
+    cache: 'bounded',
     stopOnTerminationSignals: false,
     plugins: [CustomLandingPagePlugin, ApolloServerPluginDrainHttpServer({ httpServer })],
   });

@@ -9,7 +9,7 @@
  * @since 0.1.0
  */
 
-const { Schema, model } = require('mongoose');
+const { Schema, model, Model: _Model } = require('mongoose');
 
 /**
  * @description The schema definition for Comment Model
@@ -19,13 +19,10 @@ const { Schema, model } = require('mongoose');
  */
 const CommentSchema = new Schema(
   {
-    // TODO: update content with final structure
-    content: [
-      {
-        type: Object,
-        required: true,
-      },
-    ],
+    content: {
+      type: String,
+      required: true,
+    },
     author: {
       name: {
         type: String,
@@ -37,6 +34,11 @@ const CommentSchema = new Schema(
         ref: 'User',
         trim: true,
       },
+    },
+    approved: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     parent: {
       model: {
@@ -81,6 +83,6 @@ const CommentSchema = new Schema(
  * @description Generated Comment Model
  * @constant CommentModel
  *
- * @type {model}
+ * @type {_Model}
  */
 module.exports = model('Comment', CommentSchema);

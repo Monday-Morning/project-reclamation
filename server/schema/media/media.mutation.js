@@ -1,7 +1,7 @@
 const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLString, GraphQLInt } = require('../scalars');
 const MediaType = require('./media.type');
 
-const { addMedia, deleteMediaById } = require('./media.resolver');
+const { addMedia /*, deleteMediaById*/ } = require('./media.resolver');
 
 module.exports = new GraphQLObjectType({
   name: 'MediaMutation',
@@ -19,14 +19,14 @@ module.exports = new GraphQLObjectType({
       },
       resolve: addMedia,
     },
-    deleteMediaById: {
-      type: MediaType,
-      description: 'delete media by id',
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        imageKitFileID: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      resolve: deleteMediaById,
-    },
+    // deleteMediaById: {
+    //   type: MediaType,
+    //   description: 'delete media by id',
+    //   args: {
+    //     id: { type: new GraphQLNonNull(GraphQLID) },
+    //     imageKitFileID: { type: new GraphQLNonNull(GraphQLID) },
+    //   },
+    //   resolve: deleteMediaById,
+    // },
   },
 });

@@ -20,7 +20,7 @@ module.exports = {
   init: () => {
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
-      if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.NODE_ENV === 'production') {
+      if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.NODE_ENV !== 'development') {
         const firebaseServiceAccount = JSON.parse(
           Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
         );
@@ -28,7 +28,11 @@ module.exports = {
           credential: Admin.credential.cert(firebaseServiceAccount),
           storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
         });
-        logger.info('Admin Application Initialized: Production Environment');
+        logger.info(
+          `Admin Application Initialized: ${
+            process.env.NODE_ENV === 'production' ? 'Production' : 'Staging'
+          } Environment`
+        );
       } else if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
         Admin.initializeApp({ projectId: process.env.GCLOUD_PROJECT });
         logger.info('Admin Application Initialized: Emulated Environment');
