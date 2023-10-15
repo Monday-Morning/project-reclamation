@@ -46,7 +46,6 @@ _TODO: Consider combining reaction permissions in comment roles_
 | comment.superadmin | true                | true                    | true              | true                   | true               | true                 | true                |
 
 ---
-
 ## Issue Section
 
 | Role Name        | issue.read.unpublished | issue.read.admin | issue.write.new | issue.write.all | issue.write.delete |

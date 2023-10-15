@@ -40,7 +40,7 @@ const UserAuth = {
         return {
           uid: '',
           exp: 4102444800, // Jan 1, 2100 at midnight
-          mid: '',
+          mid: process.env.MID || '',
           roles: SUPERADMIN_ROLES,
           email_verified: true,
         };
@@ -50,7 +50,7 @@ const UserAuth = {
         return {
           uid: '',
           exp: 4102444800, // Jan 1, 2100 at midnight
-          mid: '',
+          mid: process.env.MID || '',
           roles: SUPERADMIN_ROLES,
           email_verified: true,
         };
