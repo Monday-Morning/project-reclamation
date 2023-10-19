@@ -41,7 +41,7 @@ const create = async (squiggleType, content) => {
   }
 };
 
-const save = async (id, newContent) => {
+const updateContent = async (id, newContent) => {
   try {
     const _squiggle = await SquiggleModel.findById(id);
 
@@ -60,7 +60,7 @@ const SquiggleDataSources = () => ({
   findByID,
   find,
   create,
-  save
+  updateContent
 });
 
 module.exports = SquiggleDataSources;

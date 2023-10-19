@@ -40,7 +40,7 @@ module.exports = {
     { session, authToken, decodedToken, API: { Squiggle } }
   ) => {
     try {
-      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.new')) {
+      if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.all')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to update squiggles.',
         });
@@ -50,9 +50,8 @@ module.exports = {
       if (!_squiggle) {
         throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.',});
       }
-      _squiggle.content = newContent;
-  
-      _squiggle = await Squiggle.save(id, newContent);
+      
+      _squiggle = await Squiggle.updateContent(id, newContent);
       return _squiggle; 
     } catch (error) {
       throw APIError(null, error);
