@@ -16,7 +16,8 @@ const UserRole = {
   cache: async (_RoleModel = RoleModel) => {
     try {
       const _roles = await _RoleModel.find({}, 'name permissions section', { lean: true });
-      fs.writeFileSync('./roles.json', JSON.stringify(_roles));
+      // Write the roles to a file for caching with proper formatting
+      fs.writeFileSync('./roles.json', JSON.stringify(_roles, null, 2));
       rolesCacheFile = fs.realpathSync('./roles.json');
       return rolesCacheFile;
     } catch (error) {

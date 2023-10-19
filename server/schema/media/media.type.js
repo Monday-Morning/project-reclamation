@@ -28,7 +28,6 @@ const MediaType = new GraphQLObjectType({
   name: 'Media',
   fields: () => ({
     id: { type: GraphQLID },
-    imageKitFileID: { type: GraphQLString },
     authors: { type: new GraphQLList(UserDetailType) },
     store: { type: StoreEnumType },
     storePath: { type: GraphQLString },

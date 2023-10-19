@@ -23,7 +23,7 @@ const UserPermission = {
    * @function
    *
    * @param {Object} session
-   * @param {String} jwt
+   * @param {String} authToken
    * @param {String} permission
    * @returns {Boolean | GraphQLError}
    */

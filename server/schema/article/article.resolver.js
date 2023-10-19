@@ -35,23 +35,56 @@ const ARTICLE_PUBLISH_TYPES = Object.fromEntries(
   PublishStatusEnumType.getValues().map((item) => [item.name, item.value])
 );
 
-const canUpdateArticle = async (id, mid, session, authToken, decodedToken, fieldNodes, Article, needsAdmin = false) => {
-  const _fields = getFieldNodes(fieldNodes);
+// TODO: add a needsAdmin check for admin APIs
+const canReadArticle = (article, session, authToken, decodedToken, fieldNodes, noError = false) => {
+  if (
+    [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
+      article.publishStatus
+    ) &&
+    !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished')
+  ) {
+    if (noError) {
+      return false;
+    }
+    throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
+  }
 
+  if (
+    article.isInstituteRestricted &&
+    !UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted')
+  ) {
+    if (noError) {
+      return false;
+    }
+    throw APIError('FORBIDDEN', null, {
+      reason: 'The requested article can only be viewed by students and faculty of NIT Rourkela.',
+    });
+  }
+
+  const _fields = getFieldNodes(fieldNodes);
   if (
     _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
     !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
   ) {
+    if (noError) {
+      return false;
+    }
     throw APIError('FORBIDDEN', null, {
-      reason: 'The user does not the required permissions to read the requested fields.',
+      reason: 'The user does not have the required permissions to read the requested fields.',
     });
   }
 
+  return true;
+};
+
+const canUpdateArticle = async (id, mid, session, authToken, decodedToken, fieldNodes, Article, needsAdmin = false) => {
   const _article = await Article.findByID.load(id);
 
   if (!_article) {
     throw APIError('NOT_FOUND', null, { reason: 'The requested was not found.' });
   }
+
+  canReadArticle(_article, session, authToken, decodedToken, fieldNodes);
 
   const _users = _article.users.map((user) => user.details);
 
@@ -62,7 +95,9 @@ const canUpdateArticle = async (id, mid, session, authToken, decodedToken, field
     throw APIError('FORBIDDEN', null, {
       reason: 'The user does not have required permission to perform this operation.',
     });
-  } else if (
+  }
+
+  if (
     _users.includes(mid) &&
     !UserPermission.exists(session, authToken, decodedToken, 'article.write.self') &&
     !UserPermission.exists(session, authToken, decodedToken, 'article.write.all')
@@ -78,40 +113,13 @@ const canUpdateArticle = async (id, mid, session, authToken, decodedToken, field
 module.exports = {
   getArticleByID: async (_parent, { id }, { session, authToken, decodedToken, API: { Article } }, { fieldNodes }) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
       const _article = await Article.findByID.load(id);
 
       if (!_article) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
       }
 
-      if (
-        [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
-          _article.publishStatus
-        ) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished')
-      ) {
-        throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
-      }
-
-      if (
-        _article.isInstituteRestricted &&
-        !UserPermission(session, authToken, decodedToken, 'article.read.restricted')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The requested article can only be viewed by students and faculty of NIT Rourkela.',
-        });
-      }
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permissions to read the requested fields.',
-        });
-      }
+      canReadArticle(_article, session, authToken, decodedToken, fieldNodes);
 
       return _article;
     } catch (error) {
@@ -125,40 +133,13 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
       const _article = await Article.findByOldID.load(id);
 
       if (!_article) {
         throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
       }
 
-      if (
-        [ARTICLE_PUBLISH_TYPES.UNPUBLISHED, ARTICLE_PUBLISH_TYPES.ARCHIVED, ARTICLE_PUBLISH_TYPES.TRASHED].includes(
-          _article.publishStatus
-        ) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished')
-      ) {
-        throw APIError('NOT_FOUND', null, { reason: 'The requested article was not found.' });
-      }
-
-      if (
-        _article.isInstituteRestricted &&
-        !UserPermission(session, authToken, decodedToken, 'article.read.restricted')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The requested article can only be viewed by students and faculty of NIT Rourkela.',
-        });
-      }
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not have the required permissions to read the requested fields.',
-        });
-      }
+      canReadArticle(_article, session, authToken, decodedToken, fieldNodes);
 
       return _article;
     } catch (error) {
@@ -172,43 +153,24 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
+      if (!ids || ids.length <= 0) {
+        throw APIError('BAD_REQUEST', null, { reason: 'No IDs were provided in the arguments.' });
       }
 
-      const _articles = await Promise.all(ids.slice(offset, offset + limit).map((id) => Article.findByID.load(id)));
+      const _articles = await Article.find({ _id: ids }, limit, offset);
 
-      if (!_articles || _articles.length <= 0) {
-        throw APIError('NOT_FOUND', null, { reason: 'The requested article(s) were not found.' });
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No article(s) were not found.' });
       }
 
-      const _unpublishedPermission = UserPermission.exists(
-        session,
-        authToken,
-        decodedToken,
-        'article.read.unpublished'
-      );
-      const _restritedPermission = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
-
-      if (_restritedPermission && _unpublishedPermission) {
-        return _articles;
-      }
-
-      const publicArticles = _articles.filter(
-        ({ publishStatus, isInstituteRestricted }) =>
-          (_restritedPermission || !isInstituteRestricted) && (_unpublishedPermission || publishStatus)
-      );
-
-      return publicArticles.length === _articles.length
-        ? publicArticles
-        : [...publicArticles, APIError('FORBIDDEN', null, { reason: 'One or more article(s) were not found.' })];
+      return _articles.map((_article) => {
+        try {
+          canReadArticle(_article, session, authToken, decodedToken, fieldNodes);
+          return _article;
+        } catch (error) {
+          return error;
+        }
+      });
     } catch (error) {
       throw APIError(null, error);
     }
@@ -220,31 +182,27 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
+      if (!categoryNumbers || categoryNumbers.length <= 0) {
+        throw APIError('BAD_REQUEST', null, { reason: 'No category numbers were provided in the arguments.' });
       }
 
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
       onlyPublished =
-        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       const _articles = await Article.findByCategories(allowRestricted, onlyPublished, categoryNumbers, limit, offset);
 
-      if (!_articles || _articles.length <= 0) {
-        throw APIError('NOT_FOUND', null, { reason: 'No categories were requested or no articles were found.' });
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
+        throw APIError('NOT_FOUND', null, { reason: 'No articles were found in the requested categories.' });
       }
 
-      // TODO: check each category for zero articles
       // TODO: do not trust array order completely, try using category number based object
-
-      return _articles;
+      return _articles.map(
+        (_articleCategory) =>
+          _articleCategory?.filter((_article) =>
+            canReadArticle(_article, session, authToken, decodedToken, fieldNodes, true)
+          ) ?? APIError('NOT_FOUND', null, { reason: 'No articles were found in one of the requested categories.' })
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -256,9 +214,9 @@ module.exports = {
     _
   ) => {
     try {
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
       onlyPublished =
-        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       const _articleCount = await Article.countOfArticleBySubCategory(allowRestricted, onlyPublished, categoryNumber);
 
@@ -274,21 +232,11 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
-      }
-
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
       onlyPublished =
-        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
+      // TODO: refactor this - bad practice
       function startAndEndDate(year, month) {
         return month ? [new Date(year, month - 1), new Date(year, month)] : [new Date(year, 0), new Date(year + 1, 0)];
       }
@@ -299,11 +247,14 @@ module.exports = {
         offset,
         startAndEndDate(year, month)
       );
-      if (!_articles || _articles.length <= 0) {
+
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'No articles were found.' });
       }
 
-      return _articles;
+      return _articles.filter((_article) =>
+        canReadArticle(_article, session, authToken, decodedToken, fieldNodes, true)
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -314,9 +265,9 @@ module.exports = {
     { session, authToken, decodedToken, API: { Article } }
   ) => {
     try {
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
       onlyPublished =
-        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       return await Article.countNumberOfArticles(allowRestricted, onlyPublished);
     } catch (error) {
@@ -330,28 +281,19 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
-      }
-
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
       onlyPublished =
-        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+        onlyPublished || !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       const _articles = await Article.findAll(allowRestricted, onlyPublished, limit, offset);
 
-      if (!_articles || _articles.length <= 0) {
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'No articles were found.' });
       }
 
-      return _articles;
+      return _articles.filter((_article) =>
+        canReadArticle(_article, session, authToken, decodedToken, fieldNodes, true)
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -363,27 +305,18 @@ module.exports = {
     { fieldNodes }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
-      }
-
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
-      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
+      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       const _articles = await Article.search(keywords, allowRestricted, onlyPublished, limit, offset);
 
-      if (!_articles || _articles.length <= 0) {
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'No articles were found with the given keywords.' });
       }
 
-      return _articles;
+      return _articles.filter((_article) =>
+        canReadArticle(_article, session, authToken, decodedToken, fieldNodes, true)
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -391,18 +324,22 @@ module.exports = {
   getAutoComplete: async (
     _parent,
     { keywords, limit = DEF_LIMIT },
-    { session, authToken, decodedToken, API: { Article } }
+    { session, authToken, decodedToken, API: { Article } },
+    { fieldNodes }
   ) => {
     try {
-      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.list.restricted');
-      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.list.unpublished');
+      const allowRestricted = UserPermission.exists(session, authToken, decodedToken, 'article.read.restricted');
+      const onlyPublished = !UserPermission.exists(session, authToken, decodedToken, 'article.read.unpublished');
 
       const _articles = await Article.autoComplete(keywords, allowRestricted, onlyPublished, limit);
 
-      if (!_articles || _articles.length <= 0) {
+      if (!_articles || !(_articles instanceof Array) || _articles.length <= 0) {
         throw APIError('NOT_FOUND', null, { reason: 'No articles were found with the given keywords.' });
       }
-      return _articles;
+
+      return _articles.filter((_article) =>
+        canReadArticle(_article, session, authToken, decodedToken, fieldNodes, true)
+      );
     } catch (error) {
       throw APIError(null, error);
     }
@@ -411,21 +348,9 @@ module.exports = {
   createArticle: async (
     _parent,
     { articleType, title, authors, photographers, designers, tech, categoryNumbers },
-    { mid, session, authToken, decodedToken, API: { Article, CategoryMap } },
-    { fieldNodes }
+    { mid, session, authToken, decodedToken, API: { Article, CategoryMap } }
   ) => {
     try {
-      const _fields = getFieldNodes(fieldNodes);
-
-      if (
-        _fields.some((item) => !PUBLIC_FIELDS.includes(item)) &&
-        !UserPermission.exists(session, authToken, decodedToken, 'article.read.admin')
-      ) {
-        throw APIError('FORBIDDEN', null, {
-          reason: 'The user does not the required permissions to read the requested fields.',
-        });
-      }
-
       if (!UserPermission.exists(session, authToken, decodedToken, 'article.write.new')) {
         throw APIError('FORBIDDEN', null, {
           reason: 'The user does not have the required permissions to create an article.',
@@ -597,6 +522,7 @@ module.exports = {
       throw APIError(null, error);
     }
   },
+  // TODO: only allow server side calls or after app check validation
   incrementViewCount: (_parent, { id }, { API: { Article } }, _) => {
     try {
       return Article.incrementEngagementCount(id, { views: 1 });
