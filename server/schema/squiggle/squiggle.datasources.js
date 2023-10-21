@@ -51,7 +51,7 @@ const updateContent = async (id, newContent) => {
 
     return _squiggle;
   } catch (error) {
-    throw APIError(null, error);
+    throw APIError("failed to update squiggle content.", error);
   }
 };
 
