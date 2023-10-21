@@ -41,11 +41,26 @@ const create = async (squiggleType, content) => {
   }
 };
 
+const updateContent = async (id, newContent) => {
+  try {
+    const _squiggle = await SquiggleModel.findById(id);
+
+    _squiggle.content = newContent || _squiggle.content;
+
+    await _squiggle.save();
+
+    return _squiggle;
+  } catch (error) {
+    throw APIError("failed to update squiggle content.", error);
+  }
+};
+
 const SquiggleDataSources = () => ({
   getLatest,
   findByID,
   find,
   create,
+  updateContent
 });
 
 module.exports = SquiggleDataSources;
