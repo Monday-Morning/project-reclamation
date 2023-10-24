@@ -10,7 +10,7 @@ const CategoryMapDataSources = require('../schema/categoryMap/categoryMap.dataso
 const ArticleDataSources = require('../schema/article/article.datasources');
 const CompanyDataSources = require('../schema/company/company.datasources');
 const LiveDataSources = require('../schema/live/live.datasources');
-
+const PollDataSources = require('../schema/poll/poll.datasources');
 const APOLLO_ENDPOINT = process.env.APOLLO_ENDPOINT?.includes('herokuapp')
   ? process.env.APOLLO_ENDPOINT.replace('num', process.env.HEROKU_PR_NUMBER)
   : process.env.APOLLO_ENDPOINT;
@@ -59,6 +59,7 @@ const apolloServer = (httpServer) =>
         Article: ArticleDataSources(),
         Company: CompanyDataSources(),
         Live: LiveDataSources(),
+        Poll:PollDataSources()
       },
     }),
     debug: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
