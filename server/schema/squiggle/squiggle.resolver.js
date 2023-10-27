@@ -34,11 +34,7 @@ module.exports = {
     }
   },
 
-  updateSquiggle: async (
-    _parent,
-    { id, newContent },
-    { session, authToken, decodedToken, API: { Squiggle } }
-  ) => {
+  updateSquiggle: async (_parent, { id, newContent }, { session, authToken, decodedToken, API: { Squiggle } }) => {
     try {
       if (!UserPermission.exists(session, authToken, decodedToken, 'squiggle.write.all')) {
         throw APIError('FORBIDDEN', null, {
@@ -48,16 +44,16 @@ module.exports = {
       let _squiggle = await Squiggle.findByID(id);
 
       if (!_squiggle) {
-        throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.',});
+        throw APIError('NOT_FOUND', null, { reason: 'The squiggle to update does not exist.' });
       }
-      
+
       _squiggle = await Squiggle.updateContent(id, newContent);
-      return _squiggle; 
+      return _squiggle;
     } catch (error) {
       throw APIError(null, error);
     }
   },
-  
+
   getLatestSquiggle: async (_parent, _args, { API: { Squiggle } }, _) => {
     try {
       const _squiggle = await Squiggle.getLatest();
