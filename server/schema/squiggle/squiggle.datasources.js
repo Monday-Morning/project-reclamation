@@ -60,7 +60,7 @@ const SquiggleDataSources = () => ({
   findByID,
   find,
   create,
-  updateContent
+  updateContent,
 });
 
 module.exports = SquiggleDataSources;
