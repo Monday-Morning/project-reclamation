@@ -25,9 +25,7 @@ const CompanySchema = require('./company/company.schema');
 const CompanyType = require('./company/company.type');
 const LiveSchema = require('./live/live.schema');
 const MediaSchema = require('./media/media.schema');
-const CommentSchema = require('./comment/comment.schema');
-const CommentType = require('./comment/comment.type');
-
+const PollSchema = require('./poll/poll.schema')
 module.exports = stitchSchemas({
   subschemas: [
     UserSchema,
@@ -39,6 +37,7 @@ module.exports = stitchSchemas({
     LiveSchema,
     MediaSchema,
     CommentSchema,
+    PollSchema
   ],
   types: [MediaType, ContentType, UserDetailType, CategoryMapType, CompanyType, CommentType],
   mergeTypes: true,
