@@ -85,7 +85,7 @@ const ArticleType = new GraphQLObjectType({
     id: { type: GraphQLID },
 
     articleType: { type: ArticleTypeEnumType },
-
+    googleDocsId: { type: GraphQLString },
     title: { type: GraphQLString },
     content: { type: new GraphQLList(ContentType) },
     inshort: { type: GraphQLString },

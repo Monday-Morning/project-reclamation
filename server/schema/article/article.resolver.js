@@ -347,7 +347,7 @@ module.exports = {
 
   createArticle: async (
     _parent,
-    { articleType, title, authors, photographers, designers, tech, categoryNumbers },
+    { articleType, title, authors, photographers, designers, tech, emails, categoryNumbers },
     { mid, session, authToken, decodedToken, API: { Article, CategoryMap } }
   ) => {
     try {
@@ -377,6 +377,7 @@ module.exports = {
         photographers,
         designers,
         tech,
+        emails,
         categories,
         session,
         authToken,

@@ -562,6 +562,7 @@ out
 
 # Roles Cache
 roles.json
+firebaseServiceAccount.json
 
 # Environment Variables
 .env.*

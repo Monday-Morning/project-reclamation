@@ -26,6 +26,10 @@ const ArticleSchema = new Schema(
       min: 0,
       max: 2,
     },
+    googleDocsId: {
+      type: String,
+      required: false,
+    },
     title: {
       type: String,
       required: true,

@@ -11,6 +11,7 @@
 
 const Admin = require('firebase-admin');
 const logger = require('../utils/logger')('firebase');
+const fs = require('fs');
 
 module.exports = {
   /**
@@ -18,12 +19,17 @@ module.exports = {
    * @function
    */
   init: () => {
+    const firebaseServiceAccount = JSON.parse(
+      Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
+    );
+
+    if (!fs.existsSync('firebaseServiceAccount.json')) {
+      fs.writeFileSync('firebaseServiceAccount.json', JSON.stringify(firebaseServiceAccount));
+    }
+    
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
       if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.NODE_ENV !== 'development') {
-        const firebaseServiceAccount = JSON.parse(
-          Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('ascii')
-        );
         Admin.initializeApp({
           credential: Admin.credential.cert(firebaseServiceAccount),
           storageBucket: process.env.FIREBASE_STORAGE_BUCKET || null,
