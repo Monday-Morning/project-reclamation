@@ -26,7 +26,7 @@ module.exports = {
     if (!fs.existsSync('firebaseServiceAccount.json')) {
       fs.writeFileSync('firebaseServiceAccount.json', JSON.stringify(firebaseServiceAccount));
     }
-    
+
     try {
       /** Inititalize Firebase Admin SDK with required configuration */
       if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.NODE_ENV !== 'development') {
