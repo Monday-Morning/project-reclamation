@@ -49,6 +49,7 @@ module.exports = new GraphQLObjectType({
         photographers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
         designers: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
         tech: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        emails: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
         categoryNumbers: { type: new GraphQLNonNull(new GraphQLList(GraphQLInt)) },
       },
       resolve: createArticle,

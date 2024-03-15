@@ -47,7 +47,7 @@ jobs:
 
       - name: Run Prettier
         id: prettier-run
-        uses: rutajdash/prettier-cli-action@v1.0.0
+        uses: rutajdash/prettier-cli-action@v1.0.2
         with:
           file_pattern: ${{ inputs.file_pattern }}
           config_path: ${{ inputs.config_path }}

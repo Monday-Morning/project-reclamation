@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLNonNull, GraphQLID ,GraphQLString } = require('../scalars');
+const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = require('../scalars');
 const { createSquiggle, updateSquiggle } = require('./squiggle.resolver');
 
 const SquiggleType = require('./squiggle.type');
@@ -23,6 +23,6 @@ module.exports = new GraphQLObjectType({
         newContent: { type: GraphQLString },
       },
       resolve: updateSquiggle,
+    },
   },
-}
 });

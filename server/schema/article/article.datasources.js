@@ -7,6 +7,54 @@ const UserModel = require('../user/user.model');
 const { connection } = require('../../config/mongoose');
 const createUpdateObject = require('../../utils/createUpdateObject');
 const TagModel = require('../tag/tag.model');
+const docs = require('@googleapis/docs');
+const drive = require('@googleapis/drive');
+
+let auth;
+
+const googleAuth = () => {
+  auth = new drive.auth.GoogleAuth({
+    keyFilename: './firebaseServiceAccount.json',
+    scopes: ['https://www.googleapis.com/auth/documents', 'https://www.googleapis.com/auth/drive'],
+  });
+};
+
+const createGoogleDoc = async (title = 'test', emails) => {
+  try {
+    googleAuth();
+    const authClient = await auth.getClient();
+
+    const driveClient = drive.drive({
+      version: 'v3',
+      auth: authClient,
+    });
+
+    const driveResponse = await driveClient.files.create({
+      requestBody: {
+        name: title,
+        mimeType: 'application/vnd.google-apps.document',
+      },
+    });
+
+    const googleDocsId = driveResponse.data.id;
+
+    await emails.forEach(async (email) => {
+      driveClient.permissions.create({
+        fileId: googleDocsId,
+        requestBody: {
+          role: 'writer',
+          type: 'user',
+          transferOwnership: true,
+          emailAddress: email,
+        },
+      });
+    });
+
+    return googleDocsId;
+  } catch (error) {
+    console.log('error:', error);
+  }
+};
 
 const ARTICLE_PUBLISH_TYPES = Object.fromEntries(
   PublishStatusEnumType.getValues().map((item) => [item.name, item.value])
@@ -196,6 +244,7 @@ const create = async (
   photographers,
   designers,
   tech,
+  emails,
   categories,
   session,
   authToken,
@@ -214,13 +263,18 @@ const create = async (
           'At least one of the user IDs supplied supplied is invalid, i.e. that user does not exist or is not a MM Team Member.',
       });
     }
-
-    // TODO: create google doc and link
+    let googleDocsId;
+    try {
+      googleDocsId = await createGoogleDoc(title, emails);
+    } catch (error) {
+      throw APIError(`Google docs can not be created`, null, { reason: error });
+    }
     const [_article] = await ArticleModel.create(
       [
         {
           articleType,
           title,
+          googleDocsId,
           users: _users.map((_user) => ({
             name: _user.fullName,
             team: authors.includes(_user._id.toString())
@@ -235,7 +289,7 @@ const create = async (
             details: _user._id,
           })),
           categories,
-          createdBy: UserSession.valid(session, authToken) ? mid : null,
+          createdBy: UserSession.valid(session, authToken) ? mid || null : null,
         },
       ],
       { session: mdbSession }
