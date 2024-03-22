@@ -19,12 +19,10 @@ const { Schema, model } = require('mongoose');
  */
 const PollSchema = new Schema(
   {
-    question: [
-      {
-        type: Object,
-        required: true,
-      },
-    ],
+    question: {
+      type: String,
+      required: true,
+    },
     options: [
       {
         type: String,
@@ -32,13 +30,11 @@ const PollSchema = new Schema(
         trim: true,
       },
     ],
-    optionsCount: [
-      {
-        type: Number,
-        required: true,
-        min: 0,
-      },
-    ],
+    optionsCount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
     totalVotes: {
       type: Number,
       required: false,
@@ -47,7 +43,7 @@ const PollSchema = new Schema(
     },
     expiry: {
       type: Date,
-      required: true,
+      required: false,
       min: new Date(Date.now()),
     },
     article: [
